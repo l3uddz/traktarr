@@ -76,11 +76,11 @@ class Sonarr:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def add_series(self, series_tvdbid, series_title, profile_id, root_folder, search_missing=False):
+    def add_series(self, series_tvdbid, series_title, series_title_slug, profile_id, root_folder, search_missing=False):
         try:
             # generate payload
             payload = {
-                'tvdbId': series_tvdbid, 'title': series_title,
+                'tvdbId': series_tvdbid, 'title': series_title, 'titleSlug': series_title_slug,
                 'qualityProfileId': profile_id, 'images': [],
                 'seasons': [], 'seasonFolder': True,
                 'monitored': True, 'rootFolderPath': root_folder,
