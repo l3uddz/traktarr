@@ -106,9 +106,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
                          series['show']['country'].upper())
 
                 # add show to sonarr
-                if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'], profile_id,
-                                     cfg.sonarr.root_folder,
-                                     not no_search):
+                if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
+                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, not no_search):
                     log.info("ADDED %s (%d)", series['show']['title'], series['show']['year'])
                     added_shows += 1
                 else:
@@ -204,7 +203,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
                 if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
-                                    profile_id, cfg.radarr.root_folder, not no_search):
+                                    movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
                     log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
                     added_movies += 1
                 else:
