@@ -76,14 +76,15 @@ class Radarr:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def add_movie(self, movie_tmdbid, movie_title, movie_year, profile_id, root_folder, search_missing=False):
+    def add_movie(self, movie_tmdbid, movie_title, movie_year, movie_title_slug, profile_id, root_folder,
+                  search_missing=False):
         try:
             # generate payload
             payload = {
                 'tmdbId': movie_tmdbid, 'title': movie_title, 'year': movie_year,
                 'qualityProfileId': profile_id, 'images': [],
                 'monitored': True, 'rootFolderPath': root_folder,
-                'minimumAvailability': 'released', 'titleSlug': '',
+                'minimumAvailability': 'released', 'titleSlug': movie_title_slug,
                 'addOptions': {'ignoreEpisodesWithFiles': False, 'ignoreEpisodesWithoutFiles': False,
                                'searchForMovie': search_missing}
             }
