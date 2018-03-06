@@ -94,5 +94,5 @@ Script to add new TV series & movies to Sonarr/Radarr based on Trakt lists.
   "trakt": {
     "api_key": ""
   }
-}%
+}
 ```
