@@ -81,13 +81,13 @@ Script to add new TV series & movies to Sonarr/Radarr based on Trakt lists.
   },
   "radarr": {
     "api_key": "",
-    "profile": "Remux",
+    "profile": "HD-1080p",
     "root_folder": "/movies/",
-    "url": "http://localhost:8989"
+    "url": "http://localhost:7878"
   },
   "sonarr": {
     "api_key": "",
-    "profile": "WEBDL-1080p",
+    "profile": "HD-1080p",
     "root_folder": "/tv/",
     "url": "http://localhost:8989"
   },
