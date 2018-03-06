@@ -12,7 +12,7 @@ Script to add new TV series & movies to Sonarr/Radarr based on Trakt lists.
 4. `sudo chown -R user:group traktarr` (run `id` to find your user / group)
 5. `cd traktarr`
 6. `sudo python3 -m pip install -r requirements.txt`
-7. `python3 traktarr.py` to generate a default config.json file.
+7. `python3 traktarr.py` to generate a default a config.json file.
 8. Edit `config.json` to your preference.
 
 
