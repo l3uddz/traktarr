@@ -15,13 +15,13 @@ base_config = {
     'sonarr': {
         'url': 'http://localhost:8989',
         'api_key': '',
-        'profile': 'WEBDL-1080p',
+        'profile': 'HD-1080p',
         'root_folder': '/tv/'
     },
     'radarr': {
-        'url': 'http://localhost:8989',
+        'url': 'http://localhost:7878',
         'api_key': '',
-        'profile': 'Remux',
+        'profile': 'HD-1080p',
         'root_folder': '/movies/'
     },
     'filters': {
