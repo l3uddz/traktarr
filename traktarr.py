@@ -33,7 +33,8 @@ def app():
               help='Trakt list to process.', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of series added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
-def shows(list_type, add_limit=0, add_delay=2.5):
+@click.option('--no-search', is_flag=True, help='Disable search when adding series to Sonarr.')
+def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     added_shows = 0
 
     # validate trakt api_key
@@ -107,7 +108,7 @@ def shows(list_type, add_limit=0, add_delay=2.5):
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'], profile_id,
                                      cfg.sonarr.root_folder,
-                                     True):
+                                     not no_search):
                     log.info("ADDED %s (%d)", series['show']['title'], series['show']['year'])
                     added_shows += 1
                 else:
@@ -131,7 +132,8 @@ def shows(list_type, add_limit=0, add_delay=2.5):
               help='Trakt list to process.', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
-def movies(list_type, add_limit=0, add_delay=2.5):
+@click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
+def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     added_movies = 0
 
     # validate trakt api_key
@@ -202,7 +204,7 @@ def movies(list_type, add_limit=0, add_delay=2.5):
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
                 if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
-                                    profile_id, cfg.sonarr.root_folder, True):
+                                    profile_id, cfg.radarr.root_folder, not no_search):
                     log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
                     added_movies += 1
                 else:
