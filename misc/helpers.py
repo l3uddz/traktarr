@@ -8,17 +8,29 @@ log = logger.get_logger(__name__)
 # SONARR
 ############################################################
 
+def sonarr_series_tag_id_from_network(profile_tags, network_tags, network):
+    try:
+        for tag_name, tag_networks in network_tags.items():
+            for tag_network in tag_networks:
+                if tag_network.lower() in network.lower() and tag_name.lower() in profile_tags:
+                    log.debug("Using %s tag for network: %s", tag_name, network)
+                    return [profile_tags[tag_name.lower()]]
+    except Exception:
+        log.exception("Exception determining tag to use for network %s: ", network)
+    return None
+
+
 def sonarr_series_to_tvdb_dict(sonarr_series):
     series = {}
     try:
         for tmp in sonarr_series:
             if 'tvdbId' not in tmp:
-                log.debug("Could not handle series: %s", tmp['title'])
+                log.debug("Could not handle show: %s", tmp['title'])
                 continue
             series[tmp['tvdbId']] = tmp
         return series
     except Exception:
-        log.exception("Exception processing sonarr series to tvdb dict: ")
+        log.exception("Exception processing Sonarr shows to TVDB dict: ")
     return None
 
 
@@ -47,11 +59,11 @@ def sonarr_remove_existing_series(sonarr_series, trakt_series):
 
             new_series_list.append(tmp)
 
-        log.debug("Filtered %d trakt shows to %d shows that weren't already in Sonarr", len(trakt_series),
+        log.debug("Filtered %d Trakt shows to %d shows that weren't already in Sonarr", len(trakt_series),
                   len(new_series_list))
         return new_series_list
     except Exception:
-        log.exception("Exception removing existing series from trakt list: ")
+        log.exception("Exception removing existing shows from Trakt list: ")
     return None
 
 
@@ -133,7 +145,7 @@ def trakt_blacklisted_show_runtime(show, lowest_runtime):
             blacklisted = True
         elif int(show['show']['runtime']) < lowest_runtime:
             log.debug("%s was blacklisted because it had a runtime of: %d", show['show']['title'],
-                      show['movie']['runtime'])
+                      show['show']['runtime'])
             blacklisted = True
 
     except Exception:
@@ -173,7 +185,7 @@ def radarr_movies_to_tmdb_dict(radarr_movies):
             movies[tmp['tmdbId']] = tmp
         return movies
     except Exception:
-        log.exception("Exception processing radarr movies to tmdb dict: ")
+        log.exception("Exception processing Radarr movies to TMDB dict: ")
     return None
 
 
@@ -202,11 +214,11 @@ def radarr_remove_existing_movies(radarr_movies, trakt_movies):
 
             new_movies_list.append(tmp)
 
-        log.debug("Filtered %d trakt movies to %d movies that weren't already in Radarr", len(trakt_movies),
+        log.debug("Filtered %d Trakt movies to %d movies that weren't already in Radarr", len(trakt_movies),
                   len(new_movies_list))
         return new_movies_list
     except Exception:
-        log.exception("Exception removing existing movies from trakt list: ")
+        log.exception("Exception removing existing movies from Trakt list: ")
     return None
 
 

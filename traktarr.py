@@ -19,7 +19,7 @@ log = logger.get_logger('traktarr')
 
 
 # Click
-@click.group(help='Add new series/movies to Sonarr & Radarr from Trakt.')
+@click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
 def app():
     pass
 
@@ -28,12 +28,12 @@ def app():
 # SHOWS
 ############################################################
 
-@app.command(help='Add new series to Sonarr.')
+@app.command(help='Add new shows to Sonarr.')
 @click.option('--list-type', '-t', type=click.Choice(['anticipated', 'trending', 'popular']),
               help='Trakt list to process.', required=True)
-@click.option('--add-limit', '-l', default=0, help='Limit number of series added to Sonarr.', show_default=True)
+@click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
-@click.option('--no-search', is_flag=True, help='Disable search when adding series to Sonarr.')
+@click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     added_shows = 0
 
@@ -61,13 +61,21 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     else:
         log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
 
+    # retrieve profile tags
+    profile_tags = sonarr.get_tags()
+    if profile_tags is None:
+        log.error("Aborting due to failure to retrieve Tag ID's")
+        return
+    else:
+        log.info("Retrieved %d Tag ID's", len(profile_tags))
+
     # get sonarr series list
     sonarr_series_list = sonarr.get_series()
     if not sonarr_series_list:
-        log.error("Aborting due to failure to retrieve Sonarr series list")
+        log.error("Aborting due to failure to retrieve Sonarr shows list")
         return
     else:
-        log.info("Retrieved Sonarr series list, series found: %d", len(sonarr_series_list))
+        log.info("Retrieved Sonarr shows list, shows found: %d", len(sonarr_series_list))
 
     # get trakt series list
     trakt_series_list = None
@@ -81,23 +89,23 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
         log.error("Aborting due to unknown Trakt list type")
         return
     if not trakt_series_list:
-        log.error("Aborting due to failure to retrieve Trakt %s series list", list_type)
+        log.error("Aborting due to failure to retrieve Trakt %s shows list", list_type)
         return
     else:
-        log.info("Retrieved Trakt %s series list, series found: %d", list_type, len(trakt_series_list))
+        log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_series_list))
 
     # build filtered series list without series that exist in sonarr
     processed_series_list = helpers.sonarr_remove_existing_series(sonarr_series_list, trakt_series_list)
     if not processed_series_list:
-        log.error("Aborting due to failure to remove existing Sonarr series from retrieved Trakt series list")
+        log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         return
     else:
-        log.info("Removed existing Sonarr series from Trakt series list, series left to process: %d",
+        log.info("Removed existing Sonarr shows from Trakt shows list, shows left to process: %d",
                  len(processed_series_list))
 
     # sort filtered series list by highest votes
     sorted_series_list = sorted(processed_series_list, key=lambda k: k['show']['votes'], reverse=True)
-    log.info("Sorted series list to process by highest votes")
+    log.info("Sorted shows list to process by highest votes")
 
     # loop series_list
     log.info("Processing list now...")
@@ -109,13 +117,18 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
 
+                # determine which tags to use when adding this series
+                use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                                                                     series['show']['network'])
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
-                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, not no_search):
-                    log.info("ADDED %s (%d)", series['show']['title'], series['show']['year'])
+                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
+                                     not no_search):
+                    log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'], use_tags)
                     added_shows += 1
                 else:
-                    log.error("FAILED adding %s (%d)", series['show']['title'], series['show']['year'])
+                    log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
+                              use_tags)
 
                 # stop adding shows, if added_shows >= add_limit
                 if add_limit and added_shows >= add_limit:
@@ -125,9 +138,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
                 time.sleep(add_delay)
 
         except Exception:
-            log.exception("Exception while processing series %s: ", series['show']['title'])
+            log.exception("Exception while processing show %s: ", series['show']['title'])
 
-    log.info("Added %d new shows to Sonarr", added_shows)
+    log.info("Added %d new show(s) to Sonarr", added_shows)
 
 
 @app.command(help='Add new movies to Radarr.')
@@ -227,7 +240,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
         except Exception:
             log.exception("Exception while processing movie %s: ", movie['movie']['title'])
 
-    log.info("Added %d new movies to Radarr", added_movies)
+    log.info("Added %d new movie(s) to Radarr", added_movies)
 
 
 ############################################################
