@@ -61,6 +61,14 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     else:
         log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
 
+    # retrieve profile tags
+    profile_tags = sonarr.get_tags()
+    if profile_tags is None:
+        log.error("Aborting due to failure to retrieve Tag ID's")
+        return
+    else:
+        log.info("Retrieved %d Tag ID's", len(profile_tags))
+
     # get sonarr series list
     sonarr_series_list = sonarr.get_series()
     if not sonarr_series_list:
@@ -109,13 +117,18 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
 
+                # determine which tags to use when adding this series
+                use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                                                                     series['show']['network'])
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
-                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, not no_search):
-                    log.info("ADDED %s (%d)", series['show']['title'], series['show']['year'])
+                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
+                                     not no_search):
+                    log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'], use_tags)
                     added_shows += 1
                 else:
-                    log.error("FAILED adding %s (%d)", series['show']['title'], series['show']['year'])
+                    log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
+                              use_tags)
 
                 # stop adding shows, if added_shows >= add_limit
                 if add_limit and added_shows >= add_limit:

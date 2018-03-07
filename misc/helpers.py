@@ -8,6 +8,18 @@ log = logger.get_logger(__name__)
 # SONARR
 ############################################################
 
+def sonarr_series_tag_id_from_network(profile_tags, network_tags, network):
+    try:
+        for tag_name, tag_networks in network_tags.items():
+            for tag_network in tag_networks:
+                if tag_network.lower() in network.lower() and tag_name.lower() in profile_tags:
+                    log.debug("Using %s tag for network: %s", tag_name, network)
+                    return [profile_tags[tag_name.lower()]]
+    except Exception:
+        log.exception("Exception determining tag to use for network %s: ", network)
+    return None
+
+
 def sonarr_series_to_tvdb_dict(sonarr_series):
     series = {}
     try:
