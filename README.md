@@ -96,3 +96,62 @@ Script to add new TV series & movies to Sonarr/Radarr based on Trakt lists.
   }
 }
 ```
+
+
+# Usage
+
+## Help
+
+```
+Usage: python3 traktarr.py movies --help
+Usage: python3 traktarr.py shows --help
+```
+
+
+## Movies
+
+```
+Usage: python3 traktarr.py movies [OPTIONS]
+
+  Add new movies to Radarr.
+
+Options:
+  -t, --list-type [anticipated|trending|popular]
+                                  Trakt list to process.  [required]
+  -l, --add-limit INTEGER         Limit number of movies added to Radarr.
+                                  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Radarr.
+                                  [default: 2.5]
+  --no-search                     Disable search when adding movies to Radarr.
+  --help                          Show this message and exit.
+```
+
+
+## TV Shows
+
+```
+Usage: python3 traktarr.py shows [OPTIONS]
+
+  Add new series to Sonarr.
+
+Options:
+  -t, --list-type [anticipated|trending|popular]
+                                  Trakt list to process.  [required]
+  -l, --add-limit INTEGER         Limit number of series added to Sonarr.
+                                  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
+                                  [default: 2.5]
+  --no-search                     Disable search when adding series to Sonarr.
+  --help                          Show this message and exit.
+```
+
+## Example
+
+```
+python3 traktarr.py movies --list-type anticipated --add-limit 10
+
+```
+
+```
+python3 traktarr.py movies --list-type popular --add-limit 2
+```
