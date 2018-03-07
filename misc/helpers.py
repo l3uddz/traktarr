@@ -133,7 +133,7 @@ def trakt_blacklisted_show_runtime(show, lowest_runtime):
             blacklisted = True
         elif int(show['show']['runtime']) < lowest_runtime:
             log.debug("%s was blacklisted because it had a runtime of: %d", show['show']['title'],
-                      show['movie']['runtime'])
+                      show['show']['runtime'])
             blacklisted = True
 
     except Exception:
