@@ -153,5 +153,5 @@ python3 traktarr.py movies -t anticipated -l 10
 ```
 
 ```
-python3 traktarr.py movies -t popular -l 2
+python3 traktarr.py shows -t popular -l 2
 ```
