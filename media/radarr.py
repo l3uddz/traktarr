@@ -98,9 +98,8 @@ class Radarr:
             if req.status_code == 201 and req.json()['tmdbId'] == movie_tmdbid:
                 log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
                 return True
-            elif req.status_code == 401:
-                log.error("Failed to add %s (%d), reason: %s", movie_title, movie_tmdbid,
-                          req.json()['errorMessage'] if '{' in req.text else "\n{}".format(req.text))
+            elif req.status_code == 409 and 'message' in req.text:
+                log.error("Failed to add %s (%d), reason: %s", movie_title, movie_tmdbid, req.json()['message'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", movie_title, movie_tmdbid, req.text)
