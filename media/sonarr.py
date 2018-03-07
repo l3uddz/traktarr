@@ -76,6 +76,27 @@ class Sonarr:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def get_tag_id(self, tag_name):
+        try:
+            # make request
+            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            log.debug("Request URL: %s", req.url)
+            log.debug("Request Response: %d", req.status_code)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                for tag in resp_json:
+                    if tag['label'].lower() == tag_name.lower():
+                        log.debug("Found id of %s tag: %d", tag_name, tag['id'])
+                        return tag['id']
+                    log.debug("Tag %s with id %d did not match %s", tag['label'], tag['id'], tag_name)
+            else:
+                log.error("Failed to retrieve all tags, request response: %d", req.status_code)
+        except Exception:
+            log.exception("Exception retrieving id of tag %s: ", tag_name)
+        return None
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def add_series(self, series_tvdbid, series_title, series_title_slug, profile_id, root_folder, search_missing=False):
         try:
             # generate payload
