@@ -95,9 +95,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
         log.info("Removed existing Sonarr series from Trakt series list, series left to process: %d",
                  len(processed_series_list))
 
+    # sort filtered series list by highest votes
+    sorted_series_list = sorted(processed_series_list, key=lambda k: k['show']['votes'], reverse=True)
+    log.info("Sorted series list to process by highest votes")
+
     # loop series_list
     log.info("Processing list now...")
-    for series in processed_series_list:
+    for series in sorted_series_list:
         try:
             # check if series passes out blacklist criteria inspection
             if not helpers.trakt_is_show_blacklisted(series, cfg.filters.shows):
@@ -184,7 +188,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     else:
         log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_movies_list))
 
-    # build filtered series list without series that exist in sonarr
+    # build filtered movie list without movies that exist in radarr
     processed_movies_list = helpers.radarr_remove_existing_movies(radarr_movie_list, trakt_movies_list)
     if not processed_movies_list:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
@@ -193,9 +197,13 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
         log.info("Removed existing Radarr movies from Trakt movies list, movies left to process: %d",
                  len(processed_movies_list))
 
+    # sort filtered movie list by highest votes
+    sorted_movies_list = sorted(processed_movies_list, key=lambda k: k['movie']['votes'], reverse=True)
+    log.info("Sorted movie list to process by highest votes")
+
     # loop movies
     log.info("Processing list now...")
-    for movie in processed_movies_list:
+    for movie in sorted_movies_list:
         try:
             # check if movie passes out blacklist criteria inspection
             if not helpers.trakt_is_movie_blacklisted(movie, cfg.filters.movies):
