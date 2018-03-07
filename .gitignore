@@ -31,5 +31,6 @@ __pycache__/
 
 # PyInstaller
 build/
+dist/
 *.manifest
 *.spec
