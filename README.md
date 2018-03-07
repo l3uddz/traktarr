@@ -1,5 +1,5 @@
 # Traktarr
-Script to add new TV series & movies to Sonarr/Radarr based on Trakt lists.
+Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
 
 # Requirements
 1. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
@@ -127,21 +127,21 @@ Options:
 ```
 
 
-## TV Shows
+## Shows
 
 ```
 Usage: python3 traktarr.py shows [OPTIONS]
 
-  Add new series to Sonarr.
+  Add new shows to Sonarr.
 
 Options:
   -t, --list-type [anticipated|trending|popular]
                                   Trakt list to process.  [required]
-  -l, --add-limit INTEGER         Limit number of series added to Sonarr.
+  -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
                                   [default: 0]
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
                                   [default: 2.5]
-  --no-search                     Disable search when adding series to Sonarr.
+  --no-search                     Disable search when adding shows to Sonarr.
   --help                          Show this message and exit.
 ```
 

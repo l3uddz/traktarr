@@ -13,12 +13,12 @@ def sonarr_series_to_tvdb_dict(sonarr_series):
     try:
         for tmp in sonarr_series:
             if 'tvdbId' not in tmp:
-                log.debug("Could not handle series: %s", tmp['title'])
+                log.debug("Could not handle show: %s", tmp['title'])
                 continue
             series[tmp['tvdbId']] = tmp
         return series
     except Exception:
-        log.exception("Exception processing sonarr series to tvdb dict: ")
+        log.exception("Exception processing Sonarr shows to TVDB dict: ")
     return None
 
 
@@ -47,11 +47,11 @@ def sonarr_remove_existing_series(sonarr_series, trakt_series):
 
             new_series_list.append(tmp)
 
-        log.debug("Filtered %d trakt shows to %d shows that weren't already in Sonarr", len(trakt_series),
+        log.debug("Filtered %d Trakt shows to %d shows that weren't already in Sonarr", len(trakt_series),
                   len(new_series_list))
         return new_series_list
     except Exception:
-        log.exception("Exception removing existing series from trakt list: ")
+        log.exception("Exception removing existing show from Trakt list: ")
     return None
 
 
@@ -173,7 +173,7 @@ def radarr_movies_to_tmdb_dict(radarr_movies):
             movies[tmp['tmdbId']] = tmp
         return movies
     except Exception:
-        log.exception("Exception processing radarr movies to tmdb dict: ")
+        log.exception("Exception processing Radarr movies to TMDB dict: ")
     return None
 
 
@@ -202,11 +202,11 @@ def radarr_remove_existing_movies(radarr_movies, trakt_movies):
 
             new_movies_list.append(tmp)
 
-        log.debug("Filtered %d trakt movies to %d movies that weren't already in Radarr", len(trakt_movies),
+        log.debug("Filtered %d Trakt movies to %d movies that weren't already in Radarr", len(trakt_movies),
                   len(new_movies_list))
         return new_movies_list
     except Exception:
-        log.exception("Exception removing existing movies from trakt list: ")
+        log.exception("Exception removing existing movies from Trakt list: ")
     return None
 
 

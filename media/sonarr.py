@@ -46,12 +46,12 @@ class Sonarr:
 
             if req.status_code == 200:
                 resp_json = req.json()
-                log.debug("Found %d series", len(resp_json))
+                log.debug("Found %d shows", len(resp_json))
                 return resp_json
             else:
-                log.error("Failed to retrieve all series, request response: %d", req.status_code)
+                log.error("Failed to retrieve all shows, request response: %d", req.status_code)
         except Exception:
-            log.exception("Exception retrieving series: ")
+            log.exception("Exception retrieving show: ")
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
@@ -105,5 +105,5 @@ class Sonarr:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", series_title, series_tvdbid, req.text)
                 return False
         except Exception:
-            log.exception("Exception adding series %s (%d): ", series_title, series_tvdbid)
+            log.exception("Exception adding show %s (%d): ", series_title, series_tvdbid)
         return None
