@@ -64,6 +64,7 @@ class Sonarr:
 
             if req.status_code == 200:
                 resp_json = req.json()
+                log.debug("Found %d quality profiles", len(resp_json))
                 for profile in resp_json:
                     if profile['name'].lower() == profile_name.lower():
                         log.debug("Found id of %s profile: %d", profile_name, profile['id'])
@@ -85,6 +86,7 @@ class Sonarr:
 
             if req.status_code == 200:
                 resp_json = req.json()
+                log.debug("Found %d tags", len(resp_json))
                 for tag in resp_json:
                     if tag['label'].lower() == tag_name.lower():
                         log.debug("Found id of %s tag: %d", tag_name, tag['id'])
