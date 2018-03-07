@@ -127,7 +127,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
         except Exception:
             log.exception("Exception while processing show %s: ", series['show']['title'])
 
-    log.info("Added %d new shows to Sonarr", added_shows)
+    log.info("Added %d new show(s) to Sonarr", added_shows)
 
 
 @app.command(help='Add new movies to Radarr.')
@@ -227,7 +227,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
         except Exception:
             log.exception("Exception while processing movie %s: ", movie['movie']['title'])
 
-    log.info("Added %d new movies to Radarr", added_movies)
+    log.info("Added %d new movie(s) to Radarr", added_movies)
 
 
 ############################################################
