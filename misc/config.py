@@ -16,7 +16,11 @@ base_config = {
         'url': 'http://localhost:8989',
         'api_key': '',
         'profile': 'HD-1080p',
-        'root_folder': '/tv/'
+        'root_folder': '/tv/',
+        'tags': {
+            'amzn': ['hbo', 'amc', 'usa network', 'tnt', 'starz', 'the cw', 'fxx', 'fox', 'abc', 'nbc', 'cbs', 'tbs',
+                     'amazon', 'syfy', 'cinemax']
+        }
     },
     'radarr': {
         'url': 'http://localhost:7878',
