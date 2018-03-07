@@ -46,12 +46,12 @@ class Sonarr:
 
             if req.status_code == 200:
                 resp_json = req.json()
-                log.debug("Found %d series", len(resp_json))
+                log.debug("Found %d shows", len(resp_json))
                 return resp_json
             else:
-                log.error("Failed to retrieve all series, request response: %d", req.status_code)
+                log.error("Failed to retrieve all shows, request response: %d", req.status_code)
         except Exception:
-            log.exception("Exception retrieving series: ")
+            log.exception("Exception retrieving show: ")
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
@@ -64,6 +64,7 @@ class Sonarr:
 
             if req.status_code == 200:
                 resp_json = req.json()
+                log.debug("Found %d quality profiles", len(resp_json))
                 for profile in resp_json:
                     if profile['name'].lower() == profile_name.lower():
                         log.debug("Found id of %s profile: %d", profile_name, profile['id'])
@@ -76,12 +77,57 @@ class Sonarr:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def add_series(self, series_tvdbid, series_title, series_title_slug, profile_id, root_folder, search_missing=False):
+    def get_tag_id(self, tag_name):
+        try:
+            # make request
+            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            log.debug("Request URL: %s", req.url)
+            log.debug("Request Response: %d", req.status_code)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                log.debug("Found %d tags", len(resp_json))
+                for tag in resp_json:
+                    if tag['label'].lower() == tag_name.lower():
+                        log.debug("Found id of %s tag: %d", tag_name, tag['id'])
+                        return tag['id']
+                    log.debug("Tag %s with id %d did not match %s", tag['label'], tag['id'], tag_name)
+            else:
+                log.error("Failed to retrieve all tags, request response: %d", req.status_code)
+        except Exception:
+            log.exception("Exception retrieving id of tag %s: ", tag_name)
+        return None
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def get_tags(self):
+        tags = {}
+        try:
+            # make request
+            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            log.debug("Request URL: %s", req.url)
+            log.debug("Request Response: %d", req.status_code)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                log.debug("Found %d tags", len(resp_json))
+                for tag in resp_json:
+                    tags[tag['label']] = tag['id']
+                return tags
+            else:
+                log.error("Failed to retrieve all tags, request response: %d", req.status_code)
+        except Exception:
+            log.exception("Exception retrieving tags: ")
+        return None
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def add_series(self, series_tvdbid, series_title, series_title_slug, profile_id, root_folder, tag_ids=None,
+                   search_missing=False):
         try:
             # generate payload
             payload = {
                 'tvdbId': series_tvdbid, 'title': series_title, 'titleSlug': series_title_slug,
-                'qualityProfileId': profile_id, 'images': [],
+                'qualityProfileId': profile_id, 'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
+                'images': [],
                 'seasons': [], 'seasonFolder': True,
                 'monitored': True, 'rootFolderPath': root_folder,
                 'addOptions': {'ignoreEpisodesWithFiles': False,
@@ -105,5 +151,5 @@ class Sonarr:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", series_title, series_tvdbid, req.text)
                 return False
         except Exception:
-            log.exception("Exception adding series %s (%d): ", series_title, series_tvdbid)
+            log.exception("Exception adding show %s (%d): ", series_title, series_tvdbid)
         return None
