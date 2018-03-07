@@ -96,6 +96,6 @@ def load_config():
 # dump/load config
 if build_config():
     print("Please edit the default configuration before running again!")
-    exit(0)
+    sys.exit(0)
 else:
     cfg = load_config()
