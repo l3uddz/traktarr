@@ -148,10 +148,10 @@ Options:
 ## Example
 
 ```
-python3 traktarr.py movies --list-type anticipated --add-limit 10
+python3 traktarr.py movies -t anticipated -l 10
 
 ```
 
 ```
-python3 traktarr.py movies --list-type popular --add-limit 2
+python3 traktarr.py movies -t popular -l 2
 ```
