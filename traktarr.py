@@ -275,14 +275,10 @@ def run(add_delay=2.5, no_search=False):
     while True:
         try:
             schedule.run_pending()
-        except KeyboardInterrupt:
-            log.info("Scheduled tasks are no longer being processed due to Ctrl + C")
-            break
         except Exception:
             log.exception("Unhandled exception occurred while processing scheduled tasks: ")
         else:
             time.sleep(1)
-    log.info("Automatic mode is now finished!")
 
 
 ############################################################
