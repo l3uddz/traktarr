@@ -53,7 +53,8 @@ base_config = {
             'interval': 24,
             'anticipated': 10,
             'trending': 2,
-            'popular': 3
+            'popular': 3,
+            'boxoffice': 10
         },
         'shows': {
             'interval': 72,
