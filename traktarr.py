@@ -253,11 +253,25 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
 # AUTOMATIC
 ############################################################
 
-def automatic_shows():
+def callback_automatic(data):
+    log.debug("Received callback data:\n%s", data)
+
+    # handle event
+    if data['event'] == 'add_movie':
+        log.info("Added movie: %s (%d)", data['movie']['title'], data['movie']['year'])
+    elif data['event'] == 'add_show':
+        log.info("Added show: %s (%d)", data['show']['title'], data['show']['year'])
+    else:
+        log.error("Unexpected callback:\n%s", data)
+
+    return
+
+
+def automatic_shows(add_delay=2.5, no_search=False):
     log.info("Running")
 
 
-def automatic_movies():
+def automatic_movies(add_delay=2.5, no_search=False):
     log.info("Running")
 
 
@@ -267,8 +281,8 @@ def automatic_movies():
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
 def run(add_delay=2.5, no_search=False):
     # add tasks to repeat
-    schedule.every(1).minutes.do(automatic_movies)
-    schedule.every(2).minutes.do(automatic_shows)
+    schedule.every(cfg.automatic.movies.interval).minutes.do(automatic_movies, add_delay, no_search)
+    schedule.every(cfg.automatic.shows.interval).minutes.do(automatic_shows, add_delay, no_search)
 
     # run schedule
     log.info("Automatic mode is now running...")
