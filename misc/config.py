@@ -47,6 +47,30 @@ base_config = {
             'blacklist_title_keywords': ['untitled', 'barbie'],
             'allowed_countries': ['us', 'gb', 'ca']
         }
+    },
+    'automatic': {
+        'movies': {
+            'interval': 24,
+            'anticipated': 10,
+            'trending': 2,
+            'popular': 3
+        },
+        'shows': {
+            'interval': 72,
+            'anticipated': 100,
+            'trending': 2,
+            'popular': 1
+        },
+        'notifications': {
+            'plex slack': {
+                'type': 'slack',
+                'webhook': 'http://'
+            },
+            'my pushover': {
+                'client_id': '....',
+                'client_secret': '....'
+            }
+        }
     }
 }
 cfg = None

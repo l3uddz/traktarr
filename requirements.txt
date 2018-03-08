@@ -1,4 +1,5 @@
+backoff==1.4.3
+schedule==0.4.3
 attrdict==2.0.0
 click==6.7
-backoff==1.4.3
 requests==2.18.4

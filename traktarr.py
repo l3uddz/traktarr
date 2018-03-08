@@ -2,6 +2,7 @@
 import time
 
 import click
+import schedule
 
 from media.radarr import Radarr
 from media.sonarr import Sonarr
@@ -20,6 +21,7 @@ log = logger.get_logger('traktarr')
 
 # Click
 @click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
+@click.version_option('1.0.0', prog_name='traktarr')
 def app():
     pass
 
@@ -143,6 +145,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     log.info("Added %d new show(s) to Sonarr", added_shows)
 
 
+############################################################
+# MOVIES
+############################################################
+
 @app.command(help='Add new movies to Radarr.')
 @click.option('--list-type', '-t', type=click.Choice(['anticipated', 'trending', 'popular']),
               help='Trakt list to process.', required=True)
@@ -241,6 +247,42 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
             log.exception("Exception while processing movie %s: ", movie['movie']['title'])
 
     log.info("Added %d new movie(s) to Radarr", added_movies)
+
+
+############################################################
+# AUTOMATIC
+############################################################
+
+def automatic_shows():
+    log.info("Running")
+
+
+def automatic_movies():
+    log.info("Running")
+
+
+@app.command(help='Run in automatic mode.')
+@click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
+              show_default=True)
+@click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
+def run(add_delay=2.5, no_search=False):
+    # add tasks to repeat
+    schedule.every(1).minutes.do(automatic_movies)
+    schedule.every(2).minutes.do(automatic_shows)
+
+    # run schedule
+    log.info("Automatic mode is now running...")
+    while True:
+        try:
+            schedule.run_pending()
+        except KeyboardInterrupt:
+            log.info("Scheduled tasks are no longer being processed due to Ctrl + C")
+            break
+        except Exception:
+            log.exception("Unhandled exception occurred while processing scheduled tasks: ")
+        else:
+            time.sleep(1)
+    log.info("Automatic mode is now finished!")
 
 
 ############################################################

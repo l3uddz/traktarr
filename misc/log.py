@@ -18,6 +18,7 @@ class Logger:
 
         # disable bloat loggers
         logging.getLogger('urllib3').setLevel(logging.ERROR)
+        logging.getLogger('schedule').setLevel(logging.ERROR)
 
         # init console_logger
         self.console_handler = logging.StreamHandler(sys.stdout)
