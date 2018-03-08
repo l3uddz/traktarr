@@ -349,7 +349,7 @@ class Trakt:
                 if req.status_code == 200:
                     resp_json = req.json()
 
-                    # process list so it conforms to standard we expect ( e.g. {"show": {.....}} )
+                    # process list so it conforms to standard we expect ( e.g. {"movie": {.....}} )
                     for movie in resp_json:
                         if movie not in processed_movies:
                             processed_movies.append({'movie': movie})
@@ -376,4 +376,59 @@ class Trakt:
             return None
         except Exception:
             log.exception("Exception retrieving popular movies: ")
+        return None
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def get_boxoffice_movies(self, limit=1000, languages=None):
+        try:
+            processed_movies = []
+
+            if languages is None:
+                languages = ['en']
+
+            # generate payload
+            payload = {'extended': 'full', 'limit': limit, 'page': 1}
+            if languages:
+                payload['languages'] = ','.join(languages)
+
+            # make request
+            while True:
+                req = requests.get('https://api.trakt.tv/movies/boxoffice', params=payload, headers=self.headers,
+                                   timeout=30)
+                log.debug("Request URL: %s", req.url)
+                log.debug("Request Payload: %s", payload)
+                log.debug("Response Code: %d", req.status_code)
+                log.debug("Response Page: %d of %d", payload['page'],
+                          0 if 'X-Pagination-Page-Count' not in req.headers else int(
+                              req.headers['X-Pagination-Page-Count']))
+
+                if req.status_code == 200:
+                    resp_json = req.json()
+
+                    for movie in resp_json:
+                        if movie not in processed_movies:
+                            processed_movies.append(movie)
+
+                    # check if we have fetched the last page, break if so
+                    if 'X-Pagination-Page-Count' not in req.headers or not int(req.headers['X-Pagination-Page-Count']):
+                        log.debug("There was no more pages to retrieve")
+                        break
+                    elif payload['page'] >= int(req.headers['X-Pagination-Page-Count']):
+                        log.debug("There are no more pages to retrieve results from")
+                        break
+                    else:
+                        log.info("There are %d pages left to retrieve results from",
+                                 int(req.headers['X-Pagination-Page-Count']) - payload['page'])
+                        payload['page'] += 1
+
+                else:
+                    log.error("Failed to retrieve boxoffice movies, request response: %d", req.status_code)
+                    break
+
+            if len(processed_movies):
+                log.debug("Found %d boxoffice movies", len(processed_movies))
+                return processed_movies
+            return None
+        except Exception:
+            log.exception("Exception retrieving boxoffice movies: ")
         return None

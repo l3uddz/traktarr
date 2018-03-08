@@ -150,7 +150,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
 ############################################################
 
 @app.command(help='Add new movies to Radarr.')
-@click.option('--list-type', '-t', type=click.Choice(['anticipated', 'trending', 'popular']),
+@click.option('--list-type', '-t', type=click.Choice(['anticipated', 'trending', 'popular', 'boxoffice']),
               help='Trakt list to process.', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
@@ -198,6 +198,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
         trakt_movies_list = trakt.get_trending_movies()
     elif list_type.lower() == 'popular':
         trakt_movies_list = trakt.get_popular_movies()
+    elif list_type.lower() == 'boxoffice':
+        trakt_movies_list = trakt.get_boxoffice_movies()
     else:
         log.error("Aborting due to unknown Trakt list type")
         return
