@@ -64,13 +64,15 @@ base_config = {
         }
     },
     'notifications': {
-        'plex slack': {
-            'type': 'slack',
-            'webhook': 'http://'
+        'verbose': False,
+        'my slack': {
+            'service': 'slack',
+            'webhook_url': ''
         },
         'my pushover': {
-            'client_id': '....',
-            'client_secret': '....'
+            'service': 'pushover',
+            'app_token': '',
+            'user_token': ''
         }
     }
 }

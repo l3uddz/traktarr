@@ -17,6 +17,7 @@ class Logger:
         self.root_logger.setLevel(log_level)
 
         # disable bloat loggers
+        logging.getLogger("requests").setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.ERROR)
         logging.getLogger('schedule').setLevel(logging.ERROR)
 
