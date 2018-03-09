@@ -340,7 +340,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                                          notifications=notifications)
             if added_shows is None:
                 log.error("Failed adding shows from Trakt's %s list", list_type)
-                time.sleep(15)
+                time.sleep(10)
                 continue
             total_shows_added += added_shows
 
@@ -348,7 +348,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
             log.info("Added %d shows from Trakt's %s list", added_shows, list_type)
 
             # sleep
-            time.sleep(15)
+            time.sleep(10)
 
         log.info("Finished, added %d shows in total to Sonarr", total_shows_added)
 
@@ -377,7 +377,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
                                            notifications=notifications)
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
-                time.sleep(15)
+                time.sleep(10)
                 continue
             total_movies_added += added_movies
 
@@ -385,7 +385,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
             log.info("Added %d movies from Trakt's %s list", added_movies, list_type)
 
             # sleep
-            time.sleep(15)
+            time.sleep(10)
 
         log.info("Finished, added %d movies in total to Radarr", total_movies_added)
 
