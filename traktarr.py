@@ -98,7 +98,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
 
     # build filtered series list without series that exist in sonarr
     processed_series_list = helpers.sonarr_remove_existing_series(sonarr_series_list, trakt_series_list)
-    if not processed_series_list:
+    if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         return
     else:
@@ -211,7 +211,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
 
     # build filtered movie list without movies that exist in radarr
     processed_movies_list = helpers.radarr_remove_existing_movies(radarr_movie_list, trakt_movies_list)
-    if not processed_movies_list:
+    if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
         return
     else:
@@ -270,11 +270,37 @@ def callback_automatic(data):
 
 
 def automatic_shows(add_delay=2.5, no_search=False):
-    log.info("Running")
+    try:
+        for list_type, type_amount in cfg.automatic.shows.items():
+            if list_type.lower() == 'interval':
+                continue
+            elif type_amount <= 0:
+                log.info("Skipped Trakt's %s shows list", list_type)
+                continue
+            else:
+                log.info("Adding %d shows from Trakt's %s list", type_amount, list_type)
+
+
+    except Exception:
+        log.exception("Exception while automatically adding shows: ")
+    return
 
 
 def automatic_movies(add_delay=2.5, no_search=False):
-    log.info("Running")
+    try:
+        for list_type, type_amount in cfg.automatic.movies.items():
+            if list_type.lower() == 'interval':
+                continue
+            elif type_amount <= 0:
+                log.info("Skipped Trakt's %s movies list", list_type)
+                continue
+            else:
+                log.info("Adding %d movies from Trakt's %s list", type_amount, list_type)
+
+
+    except Exception:
+        log.exception("Exception while automatically adding movies: ")
+    return
 
 
 @app.command(help='Run in automatic mode.')
