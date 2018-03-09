@@ -36,14 +36,17 @@ def app():
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
-def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
+@click.option('--notifications', is_flag=True, help='Send notifications.')
+def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=False):
     added_shows = 0
 
     # validate trakt api_key
     trakt = Trakt(cfg.trakt.api_key)
     if not trakt.validate_api_key():
         log.error("Aborting due to failure to validate Trakt API Key")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'reason': 'Failure to validate Trakt API Key'})
+        return None
     else:
         log.info("Validated Trakt API Key")
 
@@ -51,7 +54,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     sonarr = Sonarr(cfg.sonarr.url, cfg.sonarr.api_key)
     if not sonarr.validate_api_key():
         log.error("Aborting due to failure to validate Sonarr URL / API Key")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'reason': 'Failure to validate Sonarr URL / API Key'})
+        return None
     else:
         log.info("Validated Sonarr URL & API Key")
 
@@ -59,7 +64,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     profile_id = sonarr.get_profile_id(cfg.sonarr.profile)
     if not profile_id or not profile_id > 0:
         log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.sonarr.profile)
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows',
+                             'reason': 'Failure to retrieve Sonarr Profile ID of %s' % cfg.sonarr.profile})
+        return None
     else:
         log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
 
@@ -67,7 +75,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     profile_tags = sonarr.get_tags()
     if profile_tags is None:
         log.error("Aborting due to failure to retrieve Tag ID's")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'reason': "Failure to retrieve Sonarr Tag ID's"})
+        return None
     else:
         log.info("Retrieved %d Tag ID's", len(profile_tags))
 
@@ -75,7 +85,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     sonarr_series_list = sonarr.get_series()
     if not sonarr_series_list:
         log.error("Aborting due to failure to retrieve Sonarr shows list")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'reason': 'Failure to retrieve Sonarr shows list'})
+        return None
     else:
         log.info("Retrieved Sonarr shows list, shows found: %d", len(sonarr_series_list))
 
@@ -89,10 +101,15 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
         trakt_series_list = trakt.get_popular_shows()
     else:
         log.error("Aborting due to unknown Trakt list type")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'reason': 'Failure to determine Trakt list type'})
+        return None
     if not trakt_series_list:
         log.error("Aborting due to failure to retrieve Trakt %s shows list", list_type)
-        return
+        if notifications:
+            callback_notify(
+                {'event': 'abort', 'type': 'shows', 'reason': 'Failure to retrieve Trakt %s shows list' % list_type})
+        return None
     else:
         log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_series_list))
 
@@ -100,7 +117,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
     processed_series_list = helpers.sonarr_remove_existing_series(sonarr_series_list, trakt_series_list)
     if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows',
+                             'reason': 'Failure to remove existing Sonarr shows from retrieved Trakt %s shows list' % list_type
+                             })
+        return None
     else:
         log.info("Removed existing Sonarr shows from Trakt shows list, shows left to process: %d",
                  len(processed_series_list))
@@ -127,6 +148,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
                     log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'], use_tags)
+                    if notifications:
+                        callback_notify({'event': 'add_show', 'show': series['show']})
                     added_shows += 1
                 else:
                     log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
@@ -143,6 +166,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
             log.exception("Exception while processing show %s: ", series['show']['title'])
 
     log.info("Added %d new show(s) to Sonarr", added_shows)
+    return added_shows
 
 
 ############################################################
@@ -155,14 +179,17 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False):
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
-def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
+@click.option('--notifications', is_flag=True, help='Send notifications.')
+def movies(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=False):
     added_movies = 0
 
     # validate trakt api_key
     trakt = Trakt(cfg.trakt.api_key)
     if not trakt.validate_api_key():
         log.error("Aborting due to failure to validate Trakt API Key")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies', 'reason': 'Failure to validate Trakt API Key'})
+        return None
     else:
         log.info("Validated Trakt API Key")
 
@@ -170,7 +197,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     radarr = Radarr(cfg.radarr.url, cfg.radarr.api_key)
     if not radarr.validate_api_key():
         log.error("Aborting due to failure to validate Radarr URL / API Key")
-        return
+        if notifications:
+            callback_notify(
+                {'event': 'abort', 'type': 'movies', 'reason': 'Failure to validate Radarr URL / API Key'})
+        return None
     else:
         log.info("Validated Radarr URL & API Key")
 
@@ -178,7 +208,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     profile_id = radarr.get_profile_id(cfg.radarr.profile)
     if not profile_id or not profile_id > 0:
         log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.radarr.profile)
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies',
+                             'reason': 'Failure to retrieve Radarr Profile ID of %s' % cfg.radarr.profile})
+        return None
     else:
         log.info("Retrieved Profile ID for %s: %d", cfg.radarr.profile, profile_id)
 
@@ -186,7 +219,9 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     radarr_movie_list = radarr.get_movies()
     if not radarr_movie_list:
         log.error("Aborting due to failure to retrieve Radarr movies list")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies', 'reason': 'Failure to retrieve Radarr movies list'})
+        return None
     else:
         log.info("Retrieved Radarr movies list, movies found: %d", len(radarr_movie_list))
 
@@ -202,10 +237,15 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
         trakt_movies_list = trakt.get_boxoffice_movies()
     else:
         log.error("Aborting due to unknown Trakt list type")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies', 'reason': 'Failure to determine Trakt list type'})
+        return None
     if not trakt_movies_list:
         log.error("Aborting due to failure to retrieve Trakt %s movies list", list_type)
-        return
+        if notifications:
+            callback_notify(
+                {'event': 'abort', 'type': 'movies', 'reason': 'Failure to retrieve Trakt %s movies list' % list_type})
+        return None
     else:
         log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_movies_list))
 
@@ -213,7 +253,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
     processed_movies_list = helpers.radarr_remove_existing_movies(radarr_movie_list, trakt_movies_list)
     if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
-        return
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies',
+                             'reason': 'Failure to remove existing Radarr movies from retrieved '
+                                       'Trakt %s movies list' % list_type})
+        return None
     else:
         log.info("Removed existing Radarr movies from Trakt movies list, movies left to process: %d",
                  len(processed_movies_list))
@@ -234,6 +278,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
                 if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
                                     movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
                     log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
+                    if notifications:
+                        callback_notify({'event': 'add_movie', 'movie': movie['movie']})
                     added_movies += 1
                 else:
                     log.error("FAILED adding %s (%d)", movie['movie']['title'], movie['movie']['year'])
@@ -249,28 +295,36 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False):
             log.exception("Exception while processing movie %s: ", movie['movie']['title'])
 
     log.info("Added %d new movie(s) to Radarr", added_movies)
+    return added_movies
 
 
 ############################################################
 # AUTOMATIC
 ############################################################
 
-def callback_automatic(data):
-    log.debug("Received callback data:\n%s", data)
+def callback_notify(data):
+    log.debug("Received callback data: %s", data)
 
     # handle event
     if data['event'] == 'add_movie':
         log.info("Added movie: %s (%d)", data['movie']['title'], data['movie']['year'])
+        return
     elif data['event'] == 'add_show':
         log.info("Added show: %s (%d)", data['show']['title'], data['show']['year'])
+        return
+    elif data['event'] == 'abort':
+        log.error("Error while adding %s due to: %s", data['type'], data['reason'])
+        return
     else:
-        log.error("Unexpected callback:\n%s", data)
-
+        log.error("Unexpected callback: %s", data)
     return
 
 
-def automatic_shows(add_delay=2.5, no_search=False):
+def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
+    total_shows_added = 0
     try:
+        log.info("Started")
+
         for list_type, type_amount in cfg.automatic.shows.items():
             if list_type.lower() == 'interval':
                 continue
@@ -280,14 +334,34 @@ def automatic_shows(add_delay=2.5, no_search=False):
             else:
                 log.info("Adding %d shows from Trakt's %s list", type_amount, list_type)
 
+            # run shows
+            added_shows = shows.callback(list_type=list_type, add_limit=type_amount,
+                                         add_delay=add_delay, no_search=no_search,
+                                         notifications=notifications)
+            if added_shows is None:
+                log.error("Failed adding shows from Trakt's %s list", list_type)
+                time.sleep(15)
+                continue
+            total_shows_added += added_shows
+
+            # send notification
+            log.info("Added %d shows from Trakt's %s list", added_shows, list_type)
+
+            # sleep
+            time.sleep(15)
+
+        log.info("Finished, added %d shows in total to Sonarr", total_shows_added)
 
     except Exception:
         log.exception("Exception while automatically adding shows: ")
     return
 
 
-def automatic_movies(add_delay=2.5, no_search=False):
+def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
+    total_movies_added = 0
     try:
+        log.info("Started")
+
         for list_type, type_amount in cfg.automatic.movies.items():
             if list_type.lower() == 'interval':
                 continue
@@ -297,6 +371,23 @@ def automatic_movies(add_delay=2.5, no_search=False):
             else:
                 log.info("Adding %d movies from Trakt's %s list", type_amount, list_type)
 
+            # run movies
+            added_movies = movies.callback(list_type=list_type, add_limit=type_amount,
+                                           add_delay=add_delay, no_search=no_search,
+                                           notifications=notifications)
+            if added_movies is None:
+                log.error("Failed adding movies from Trakt's %s list", list_type)
+                time.sleep(15)
+                continue
+            total_movies_added += added_movies
+
+            # send notification
+            log.info("Added %d movies from Trakt's %s list", added_movies, list_type)
+
+            # sleep
+            time.sleep(15)
+
+        log.info("Finished, added %d movies in total to Radarr", total_movies_added)
 
     except Exception:
         log.exception("Exception while automatically adding movies: ")
@@ -307,10 +398,12 @@ def automatic_movies(add_delay=2.5, no_search=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
               show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
-def run(add_delay=2.5, no_search=False):
+@click.option('--no-notifications', is_flag=True, help="Disable notifications.")
+def run(add_delay=2.5, no_search=False, no_notifications=False):
     # add tasks to repeat
-    schedule.every(cfg.automatic.movies.interval).minutes.do(automatic_movies, add_delay, no_search)
-    schedule.every(cfg.automatic.shows.interval).minutes.do(automatic_shows, add_delay, no_search)
+    schedule.every(cfg.automatic.movies.interval).minutes.do(automatic_movies, add_delay, no_search,
+                                                             not no_notifications)
+    schedule.every(cfg.automatic.shows.interval).minutes.do(automatic_shows, add_delay, no_search, not no_notifications)
 
     # run schedule
     log.info("Automatic mode is now running...")
