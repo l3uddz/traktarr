@@ -61,16 +61,16 @@ base_config = {
             'anticipated': 100,
             'trending': 2,
             'popular': 1
+        }
+    },
+    'notifications': {
+        'plex slack': {
+            'type': 'slack',
+            'webhook': 'http://'
         },
-        'notifications': {
-            'plex slack': {
-                'type': 'slack',
-                'webhook': 'http://'
-            },
-            'my pushover': {
-                'client_id': '....',
-                'client_secret': '....'
-            }
+        'my pushover': {
+            'client_id': '....',
+            'client_secret': '....'
         }
     }
 }
