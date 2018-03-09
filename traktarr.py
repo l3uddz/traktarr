@@ -370,10 +370,10 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
             # sleep
             time.sleep(10)
 
-        log.info("Finished, added %d shows total to Sonarr", total_shows_added)
+        log.info("Finished, added %d shows total to Sonarr!", total_shows_added)
         # send notification
         if notifications:
-            notify.send(message="Added %d shows total to Sonarr" % total_shows_added)
+            notify.send(message="Added %d shows total to Sonarr!" % total_shows_added)
 
     except Exception:
         log.exception("Exception while automatically adding shows: ")
@@ -411,10 +411,10 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
             # sleep
             time.sleep(10)
 
-        log.info("Finished, added %d movies total to Radarr", total_movies_added)
+        log.info("Finished, added %d movies total to Radarr!", total_movies_added)
         # send notification
         if notifications:
-            notify.send(message="Added %d movies total to Radarr" % total_movies_added)
+            notify.send(message="Added %d movies total to Radarr!" % total_movies_added)
 
     except Exception:
         log.exception("Exception while automatically adding movies: ")
