@@ -370,7 +370,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
             # sleep
             time.sleep(10)
 
-        log.info("Added %d shows total to Sonarr", total_shows_added)
+        log.info("Finished, added %d shows total to Sonarr", total_shows_added)
         # send notification
         if notifications:
             notify.send(message="Added %d shows total to Sonarr" % total_shows_added)
@@ -411,7 +411,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
             # sleep
             time.sleep(10)
 
-        log.info("Added %d movies total to Radarr", total_movies_added)
+        log.info("Finished, added %d movies total to Radarr", total_movies_added)
         # send notification
         if notifications:
             notify.send(message="Added %d movies total to Radarr" % total_movies_added)
@@ -428,9 +428,9 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
 def run(add_delay=2.5, no_search=False, no_notifications=False):
     # add tasks to repeat
-    schedule.every(cfg.automatic.movies.interval).minutes.do(automatic_movies, add_delay, no_search,
-                                                             not no_notifications)
-    schedule.every(cfg.automatic.shows.interval).minutes.do(automatic_shows, add_delay, no_search, not no_notifications)
+    schedule.every(cfg.automatic.movies.interval).hours.do(automatic_movies, add_delay, no_search,
+                                                           not no_notifications)
+    schedule.every(cfg.automatic.shows.interval).hours.do(automatic_shows, add_delay, no_search, not no_notifications)
 
     # run schedule
     log.info("Automatic mode is now running...")
