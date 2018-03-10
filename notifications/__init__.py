@@ -49,6 +49,6 @@ class Notifications:
                 if chosen_service and service.NAME.lower() != chosen_service:
                     continue
                 elif service.send(**kwargs):
-                    log.info("Sent notification with %s", service.NAME)
+                    log.debug("Sent notification with %s", service.NAME)
         except Exception:
             log.exception("Exception sending notification, kwargs=%r: ", kwargs)
