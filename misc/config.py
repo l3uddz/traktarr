@@ -66,7 +66,7 @@ base_config = {
         }
     },
     'notifications': {
-        'verbose': False,
+        'verbose': True,
         'my slack': {
             'service': 'slack',
             'webhook_url': ''
