@@ -1,3 +1,5 @@
+import time
+
 import backoff
 import requests
 
@@ -84,6 +86,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve anticipated shows, request response: %d", req.status_code)
@@ -139,6 +142,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve trending shows, request response: %d", req.status_code)
@@ -195,6 +199,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve popular shows, request response: %d", req.status_code)
@@ -254,6 +259,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve anticipated movies, request response: %d", req.status_code)
@@ -309,6 +315,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve trending movies, request response: %d", req.status_code)
@@ -365,6 +372,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve popular movies, request response: %d", req.status_code)
@@ -420,6 +428,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from",
                                  int(req.headers['X-Pagination-Page-Count']) - payload['page'])
                         payload['page'] += 1
+                        time.sleep(5)
 
                 else:
                     log.error("Failed to retrieve boxoffice movies, request response: %d", req.status_code)
