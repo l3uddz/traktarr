@@ -38,12 +38,14 @@ base_config = {
                                      'fox sports'],
             'allowed_countries': ['us', 'gb', 'ca'],
             'blacklisted_min_runtime': 15,
-            'blacklisted_min_year': 2000
+            'blacklisted_min_year': 2000,
+            'blacklisted_max_year': 2019
         },
         'movies': {
             'blacklisted_genres': ['documentary', 'music'],
             'blacklisted_min_runtime': 60,
             'blacklisted_min_year': 2000,
+            'blacklisted_max_year': 2019,
             'blacklist_title_keywords': ['untitled', 'barbie'],
             'allowed_countries': ['us', 'gb', 'ca']
         }
