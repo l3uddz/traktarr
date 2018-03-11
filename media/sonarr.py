@@ -144,8 +144,9 @@ class Sonarr:
             if req.status_code == 201 and req.json()['tvdbId'] == series_tvdbid:
                 log.debug("Successfully added %s (%d)", series_title, series_tvdbid)
                 return True
-            elif req.status_code == 401 and 'errorMessage' in req.text:
-                log.error("Failed to add %s (%d), reason: %s", series_title, series_tvdbid, req.json()['errorMessage'])
+            elif 'json' in req.headers['Content-Type'].lower() and 'errorMessage' in req.text:
+                log.error("Failed to add %s (%d) - status_code: %d, reason: %s", series_title, series_tvdbid,
+                          req.status_code, req.json()['errorMessage'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", series_title, series_tvdbid, req.text)

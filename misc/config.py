@@ -19,7 +19,7 @@ base_config = {
         'root_folder': '/tv/',
         'tags': {
             'amzn': ['hbo', 'amc', 'usa network', 'tnt', 'starz', 'the cw', 'fx', 'fox', 'abc', 'nbc', 'cbs', 'tbs',
-                     'amazon', 'syfy', 'cinemax']
+                     'amazon', 'syfy', 'cinemax', 'bravo', 'showtime']
         }
     },
     'radarr': {
@@ -38,14 +38,43 @@ base_config = {
                                      'fox sports'],
             'allowed_countries': ['us', 'gb', 'ca'],
             'blacklisted_min_runtime': 15,
-            'blacklisted_min_year': 2000
+            'blacklisted_min_year': 2000,
+            'blacklisted_max_year': 2019
         },
         'movies': {
             'blacklisted_genres': ['documentary', 'music'],
             'blacklisted_min_runtime': 60,
             'blacklisted_min_year': 2000,
+            'blacklisted_max_year': 2019,
             'blacklist_title_keywords': ['untitled', 'barbie'],
             'allowed_countries': ['us', 'gb', 'ca']
+        }
+    },
+    'automatic': {
+        'movies': {
+            'interval': 24,
+            'anticipated': 10,
+            'trending': 2,
+            'popular': 3,
+            'boxoffice': 10
+        },
+        'shows': {
+            'interval': 72,
+            'anticipated': 100,
+            'trending': 2,
+            'popular': 1
+        }
+    },
+    'notifications': {
+        'verbose': True,
+        'my slack': {
+            'service': 'slack',
+            'webhook_url': ''
+        },
+        'my pushover': {
+            'service': 'pushover',
+            'app_token': '',
+            'user_token': ''
         }
     }
 }
