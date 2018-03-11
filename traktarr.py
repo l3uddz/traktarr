@@ -176,6 +176,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=
             log.exception("Exception while processing show %s: ", series['show']['title'])
 
     log.info("Added %d new show(s) to Sonarr", added_shows)
+
+    # send notification
+    if notifications:
+        notify.send(message="Added %d shows from Trakt's %s list" % (added_shows, list_type))
+
     return added_shows
 
 
@@ -310,6 +315,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications
             log.exception("Exception while processing movie %s: ", movie['movie']['title'])
 
     log.info("Added %d new movie(s) to Radarr", added_movies)
+
+    # send notification
+    if notifications:
+        notify.send(message="Added %d movies from Trakt's %s list" % (added_movies, list_type))
+
     return added_movies
 
 
@@ -363,10 +373,6 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                 continue
             total_shows_added += added_shows
 
-            # send notification
-            if notifications and not cfg.notifications.verbose:
-                notify.send(message="Added %d shows from Trakt's %s list" % (added_shows, list_type))
-
             # sleep
             time.sleep(10)
 
@@ -403,10 +409,6 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
                 time.sleep(10)
                 continue
             total_movies_added += added_movies
-
-            # send notification
-            if notifications and not cfg.notifications.verbose:
-                notify.send(message="Added %d movies from Trakt's %s list" % (added_movies, list_type))
 
             # sleep
             time.sleep(10)
