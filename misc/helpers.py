@@ -85,7 +85,7 @@ def trakt_blacklisted_show_genre(show, genres):
     return blacklisted
 
 
-def trakt_blacklisted_show_year(show, earliest_year):
+def trakt_blacklisted_show_year(show, earliest_year, latest_year):
     blacklisted = False
     try:
         year = misc_str.get_year_from_timestamp(show['show']['first_aired'])
@@ -93,11 +93,11 @@ def trakt_blacklisted_show_year(show, earliest_year):
             log.debug("%s was blacklisted due to having an unknown first_aired date", show['show']['title'])
             blacklisted = True
         else:
-            if year < earliest_year:
+            if year < earliest_year or year > latest_year:
                 log.debug("%s was blacklisted because it first aired in: %d", show['show']['title'], year)
                 blacklisted = True
     except Exception:
-        log.exception("Exception determining if show is before earliest_year %s:", show)
+        log.exception("Exception determining if show is within min_year and max_year range %s:", show)
     return blacklisted
 
 
@@ -156,7 +156,8 @@ def trakt_blacklisted_show_runtime(show, lowest_runtime):
 def trakt_is_show_blacklisted(show, blacklist_settings):
     blacklisted = False
     try:
-        if trakt_blacklisted_show_year(show, blacklist_settings.blacklisted_min_year):
+        if trakt_blacklisted_show_year(show, blacklist_settings.blacklisted_min_year,
+                                       blacklist_settings.blacklisted_max_year):
             blacklisted = True
         if trakt_blacklisted_show_country(show, blacklist_settings.allowed_countries):
             blacklisted = True
@@ -240,7 +241,7 @@ def trakt_blacklisted_movie_genre(movie, genres):
     return blacklisted
 
 
-def trakt_blacklisted_movie_year(movie, earliest_year):
+def trakt_blacklisted_movie_year(movie, earliest_year, latest_year):
     blacklisted = False
     try:
         year = movie['movie']['year']
@@ -248,11 +249,11 @@ def trakt_blacklisted_movie_year(movie, earliest_year):
             log.debug("%s was blacklisted due to having an unknown year", movie['movie']['title'])
             blacklisted = True
         else:
-            if int(year) < earliest_year:
+            if int(year) < earliest_year or int(year) > latest_year:
                 log.debug("%s was blacklisted because it's year is: %d", movie['movie']['title'], int(year))
                 blacklisted = True
     except Exception:
-        log.exception("Exception determining if movie is before earliest_year %s:", movie)
+        log.exception("Exception determining if movie is within min_year and max_year ranger %s:", movie)
     return blacklisted
 
 
@@ -312,7 +313,8 @@ def trakt_is_movie_blacklisted(movie, blacklist_settings):
     try:
         if trakt_blacklisted_movie_title(movie, blacklist_settings.blacklist_title_keywords):
             blacklisted = True
-        if trakt_blacklisted_movie_year(movie, blacklist_settings.blacklisted_min_year):
+        if trakt_blacklisted_movie_year(movie, blacklist_settings.blacklisted_min_year,
+                                        blacklist_settings.blacklisted_max_year):
             blacklisted = True
         if trakt_blacklisted_movie_country(movie, blacklist_settings.allowed_countries):
             blacklisted = True

@@ -13,3 +13,16 @@ def get_year_from_timestamp(timestamp):
     except Exception:
         log.exception("Exception parsing year from %s: ", timestamp)
     return int(year) if str(year).isdigit() else 0
+
+
+def is_ascii(string):
+    try:
+        string.encode('ascii')
+    except UnicodeEncodeError:
+        return False
+    except UnicodeDecodeError:
+        return False
+    except Exception:
+        log.exception(u"Exception checking if %r was ascii: ", string)
+        return False
+    return True
