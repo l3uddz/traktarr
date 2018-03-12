@@ -157,13 +157,14 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
-                    log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'], use_tags)
+                    log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
+                             helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
                     log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
-                              use_tags)
+                              helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
                 if add_limit and added_shows >= add_limit:

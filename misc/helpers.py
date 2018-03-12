@@ -10,13 +10,29 @@ log = logger.get_logger(__name__)
 
 def sonarr_series_tag_id_from_network(profile_tags, network_tags, network):
     try:
+        tags = []
         for tag_name, tag_networks in network_tags.items():
             for tag_network in tag_networks:
                 if tag_network.lower() in network.lower() and tag_name.lower() in profile_tags:
                     log.debug("Using %s tag for network: %s", tag_name, network)
-                    return [profile_tags[tag_name.lower()]]
+                    tags.append(profile_tags[tag_name.lower()])
+        if tags:
+            return tags
     except Exception:
         log.exception("Exception determining tag to use for network %s: ", network)
+    return None
+
+
+def sonarr_readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
+    try:
+        tags = []
+        for tag_name, tag_id in profile_tag_ids.items():
+            if tag_id in chosen_tag_ids:
+                tags.append(tag_name)
+        if tags:
+            return tags
+    except Exception:
+        log.exception("Exception building readable tag name list from ids %s: ", chosen_tag_ids)
     return None
 
 
