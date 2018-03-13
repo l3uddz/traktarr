@@ -4,7 +4,7 @@ import sys
 
 from attrdict import AttrDict
 
-config_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.json')
+config_path = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), 'config.json')
 base_config = {
     'core': {
         'debug': False
