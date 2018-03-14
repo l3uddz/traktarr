@@ -66,16 +66,7 @@ base_config = {
         }
     },
     'notifications': {
-        'verbose': True,
-        'my slack': {
-            'service': 'slack',
-            'webhook_url': ''
-        },
-        'my pushover': {
-            'service': 'pushover',
-            'app_token': '',
-            'user_token': ''
-        }
+        'verbose': True
     }
 }
 cfg = None
@@ -122,6 +113,27 @@ def load_config():
         return AttrConfig(json.load(fp))
 
 
+def upgrade_settings(defaults, current):
+    upgraded = False
+    res = current.copy()
+    for k, v in defaults.items():
+        if k not in current:
+            res[k] = v
+            upgraded = True
+            print("Added config option: %s" % k)
+
+        if hasattr(v, 'items'):
+            if k in current:
+                sub_upgrade, res[k] = upgrade_settings(v, current[k])
+                if sub_upgrade:
+                    upgraded = True
+            else:
+                res[k] = v
+                upgraded = True
+
+    return upgraded, AttrConfig(res)
+
+
 ############################################################
 # LOAD CFG
 ############################################################
@@ -131,4 +143,9 @@ if build_config():
     print("Please edit the default configuration before running again!")
     sys.exit(0)
 else:
-    cfg = load_config()
+    tmp = load_config()
+    upgraded, cfg = upgrade_settings(base_config, tmp)
+    if upgraded:
+        dump_config()
+        print("New config options were added, adjust and restart!")
+        sys.exit(0)
