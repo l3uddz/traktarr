@@ -18,8 +18,6 @@ base_config = {
         'profile': 'HD-1080p',
         'root_folder': '/tv/',
         'tags': {
-            'amzn': ['hbo', 'amc', 'usa network', 'tnt', 'starz', 'the cw', 'fx', 'fox', 'abc', 'nbc', 'cbs', 'tbs',
-                     'amazon', 'syfy', 'cinemax', 'bravo', 'showtime']
         }
     },
     'radarr': {
