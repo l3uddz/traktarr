@@ -169,6 +169,22 @@ def trakt_blacklisted_show_runtime(show, lowest_runtime):
     return blacklisted
 
 
+def trakt_blacklisted_show_id(show, blacklisted_ids):
+    blacklisted = False
+    try:
+        if not show['show']['ids']['tvdb'] or not isinstance(show['show']['ids']['tvdb'], int):
+            log.debug("%s was blacklisted because it had an invalid tvdb id", show['show']['title'])
+            blacklisted = True
+        elif show['show']['ids']['tvdb'] in blacklisted_ids:
+            log.debug("%s was blacklisted because it had a blacklisted tvdb id of: %d", show['show']['title'],
+                      show['show']['ids']['tvdb'])
+            blacklisted = True
+
+    except Exception:
+        log.exception("Exception determining if show had a blacklisted tvdb id %s: ", show)
+    return blacklisted
+
+
 def trakt_is_show_blacklisted(show, blacklist_settings):
     blacklisted = False
     try:
@@ -182,6 +198,8 @@ def trakt_is_show_blacklisted(show, blacklist_settings):
         if trakt_blacklisted_show_network(show, blacklist_settings.blacklisted_networks):
             blacklisted = True
         if trakt_blacklisted_show_runtime(show, blacklist_settings.blacklisted_min_runtime):
+            blacklisted = True
+        if trakt_blacklisted_show_id(show, blacklist_settings.blacklisted_tvdb_ids):
             blacklisted = True
     except Exception:
         log.exception("Exception determining if show was blacklisted %s: ", show)
@@ -324,6 +342,22 @@ def trakt_blacklisted_movie_runtime(movie, lowest_runtime):
     return blacklisted
 
 
+def trakt_blacklisted_movie_id(movie, blacklisted_ids):
+    blacklisted = False
+    try:
+        if not movie['movie']['ids']['tmdb'] or not isinstance(movie['movie']['ids']['tmdb'], int):
+            log.debug("%s was blacklisted because it had an invalid tmdb id", movie['movie']['title'])
+            blacklisted = True
+        elif movie['movie']['ids']['tmdb'] in blacklisted_ids:
+            log.debug("%s was blacklisted because it had a blacklisted tmdb id of: %d", movie['movie']['title'],
+                      movie['movie']['ids']['tmdb'])
+            blacklisted = True
+
+    except Exception:
+        log.exception("Exception determining if show had a blacklisted tmdb id %s: ", movie)
+    return blacklisted
+
+
 def trakt_is_movie_blacklisted(movie, blacklist_settings):
     blacklisted = False
     try:
@@ -337,6 +371,8 @@ def trakt_is_movie_blacklisted(movie, blacklist_settings):
         if trakt_blacklisted_movie_genre(movie, blacklist_settings.blacklisted_genres):
             blacklisted = True
         if trakt_blacklisted_movie_runtime(movie, blacklist_settings.blacklisted_min_runtime):
+            blacklisted = True
+        if trakt_blacklisted_movie_id(movie, blacklist_settings.blacklisted_tmdb_ids):
             blacklisted = True
     except Exception:
         log.exception("Exception determining if movie was blacklisted %s: ", movie)
