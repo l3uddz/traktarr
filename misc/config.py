@@ -37,7 +37,8 @@ base_config = {
             'allowed_countries': ['us', 'gb', 'ca'],
             'blacklisted_min_runtime': 15,
             'blacklisted_min_year': 2000,
-            'blacklisted_max_year': 2019
+            'blacklisted_max_year': 2019,
+            'blacklisted_tvdb_ids': [],
         },
         'movies': {
             'blacklisted_genres': ['documentary', 'music'],
@@ -45,6 +46,7 @@ base_config = {
             'blacklisted_min_year': 2000,
             'blacklisted_max_year': 2019,
             'blacklist_title_keywords': ['untitled', 'barbie'],
+            'blacklisted_tmdb_ids': [],
             'allowed_countries': ['us', 'gb', 'ca']
         }
     },
