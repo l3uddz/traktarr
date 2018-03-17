@@ -60,7 +60,7 @@ base_config = {
         },
         'shows': {
             'interval': 72,
-            'anticipated': 100,
+            'anticipated': 10,
             'trending': 2,
             'popular': 1
         }
