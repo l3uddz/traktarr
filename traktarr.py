@@ -147,7 +147,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, no
         try:
             # check if genre matches genre supplied via argument
             if genre and genre.lower() not in series['show']['genres']:
-                log.debug("Skipping: %s because it was not from %s genre", series['show']['title'], genre)
+                log.debug("Skipping: %s because it was not from %s genre", series['show']['title'], genre.lower())
                 continue
 
             # check if series passes out blacklist criteria inspection
@@ -300,7 +300,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, n
         try:
             # check if genre matches genre supplied via argument
             if genre and genre.lower() not in movie['movie']['genres']:
-                log.debug("Skipping: %s because it was not from %s genre", movie['movie']['title'], genre)
+                log.debug("Skipping: %s because it was not from %s genre", movie['movie']['title'], genre.lower())
                 continue
 
             # check if movie passes out blacklist criteria inspection
