@@ -41,7 +41,7 @@ base_config = {
             'blacklisted_tvdb_ids': [],
         },
         'movies': {
-            'blacklisted_genres': ['documentary', 'music'],
+            'blacklisted_genres': ['documentary', 'music', 'animation'],
             'blacklisted_min_runtime': 60,
             'blacklisted_min_year': 2000,
             'blacklisted_max_year': 2019,
