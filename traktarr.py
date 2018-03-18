@@ -25,7 +25,7 @@ notify = Notifications()
 
 # Click
 @click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
-@click.version_option('1.1.0', prog_name='traktarr')
+@click.version_option('1.1.1', prog_name='traktarr')
 def app():
     pass
 
@@ -39,9 +39,10 @@ def app():
               help='Trakt list to process.', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
+@click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=False):
+def shows(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, notifications=False):
     added_shows = 0
 
     # validate trakt api_key
@@ -144,6 +145,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=
     log.info("Processing list now...")
     for series in sorted_series_list:
         try:
+            # check if genre matches genre supplied via argument
+            if genre and genre.lower() not in series['show']['genres']:
+                log.debug("Skipping: %s because it was not from %s genre", series['show']['title'], genre)
+                continue
+
             # check if series passes out blacklist criteria inspection
             if not helpers.trakt_is_show_blacklisted(series, cfg.filters.shows):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
@@ -194,9 +200,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=
               help='Trakt list to process.', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
+@click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-def movies(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications=False):
+def movies(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, notifications=False):
     added_movies = 0
 
     # validate trakt api_key
@@ -291,6 +298,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, no_search=False, notifications
     log.info("Processing list now...")
     for movie in sorted_movies_list:
         try:
+            # check if genre matches genre supplied via argument
+            if genre and genre.lower() not in movie['movie']['genres']:
+                log.debug("Skipping: %s because it was not from %s genre", movie['movie']['title'], genre)
+                continue
+
             # check if movie passes out blacklist criteria inspection
             if not helpers.trakt_is_movie_blacklisted(movie, cfg.filters.movies):
                 log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
