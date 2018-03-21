@@ -20,6 +20,21 @@ Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
 
 ```
 {
+  "automatic": {
+    "movies": {
+      "anticipated": 10,
+      "boxoffice": 10,
+      "interval": 24,
+      "popular": 3,
+      "trending": 2
+    },
+    "shows": {
+      "anticipated": 10,
+      "interval": 72,
+      "popular": 1,
+      "trending": 2
+    }
+  },
   "core": {
     "debug": false
   },
@@ -36,10 +51,13 @@ Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
       ],
       "blacklisted_genres": [
         "documentary",
-        "music"
+        "music",
+        "animation"
       ],
+      "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 60,
-      "blacklisted_min_year": 2000
+      "blacklisted_min_year": 2000,
+      "blacklisted_tmdb_ids": []
     },
     "shows": {
       "allowed_countries": [
@@ -59,6 +77,7 @@ Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
         "documentary",
         "special-interest"
       ],
+      "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 15,
       "blacklisted_min_year": 2000,
       "blacklisted_networks": [
@@ -76,8 +95,12 @@ Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
         "espn",
         "yahoo!",
         "fox sports"
-      ]
+      ],
+      "blacklisted_tvdb_ids": []
     }
+  },
+  "notifications": {
+    "verbose": true
   },
   "radarr": {
     "api_key": "",
@@ -89,6 +112,7 @@ Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
     "api_key": "",
     "profile": "HD-1080p",
     "root_folder": "/tv/",
+    "tags": {},
     "url": "http://localhost:8989"
   },
   "trakt": {
