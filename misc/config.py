@@ -52,16 +52,16 @@ base_config = {
     },
     'automatic': {
         'movies': {
-            'interval': 24,
-            'anticipated': 10,
-            'trending': 2,
+            'interval': 20,
+            'anticipated': 3,
+            'trending': 3,
             'popular': 3,
             'boxoffice': 10
         },
         'shows': {
-            'interval': 72,
+            'interval': 48,
             'anticipated': 10,
-            'trending': 2,
+            'trending': 1,
             'popular': 1
         }
     },
