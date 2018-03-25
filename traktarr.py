@@ -443,9 +443,12 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
 def run(add_delay=2.5, no_search=False, no_notifications=False):
     # add tasks to repeat
-    schedule.every(cfg.automatic.movies.interval).hours.do(automatic_movies, add_delay, no_search,
-                                                           not no_notifications)
-    schedule.every(cfg.automatic.shows.interval).hours.do(automatic_shows, add_delay, no_search, not no_notifications)
+    if cfg.automatic.movies.interval:
+        schedule.every(cfg.automatic.movies.interval).hours.do(automatic_movies, add_delay, no_search,
+                                                               not no_notifications)
+    if cfg.automatic.shows.interval:
+        schedule.every(cfg.automatic.shows.interval).hours.do(automatic_shows, add_delay, no_search,
+                                                              not no_notifications)
 
     # run schedule
     log.info("Automatic mode is now running...")
