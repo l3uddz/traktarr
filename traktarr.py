@@ -40,10 +40,19 @@ def app():
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
+@click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-def shows(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, notifications=False):
+def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False):
     added_shows = 0
+
+    # remove genre from shows blacklisted_genres if supplied
+    if genre and genre in cfg.filters.shows.blacklisted_genres:
+        cfg['filters']['shows']['blacklisted_genres'].remove(genre)
+
+    # replace sonarr root_folder if folder is supplied
+    if folder:
+        cfg['sonarr']['root_folder'] = folder
 
     # validate trakt api_key
     trakt = Trakt(cfg.trakt.api_key)
@@ -201,10 +210,19 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, no
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
+@click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-def movies(list_type, add_limit=0, add_delay=2.5, genre=None, no_search=False, notifications=False):
+def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False):
     added_movies = 0
+
+    # remove genre from movies blacklisted_genres if supplied
+    if genre and genre in cfg.filters.movies.blacklisted_genres:
+        cfg['filters']['movies']['blacklisted_genres'].remove(genre)
+
+    # replace radarr root_folder if folder is supplied
+    if folder:
+        cfg['radarr']['root_folder'] = folder
 
     # validate trakt api_key
     trakt = Trakt(cfg.trakt.api_key)
