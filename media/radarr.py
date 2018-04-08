@@ -95,7 +95,7 @@ class Radarr:
             log.debug("Request Payload: %s", payload)
             log.debug("Request Response: %d", req.status_code)
 
-            if req.status_code == 201 and req.json()['tmdbId'] == movie_tmdbid:
+            if (req.status_code == 201 or req.status_code == 200) and req.json()['tmdbId'] == movie_tmdbid:
                 log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
                 return True
             elif 'json' in req.headers['Content-Type'].lower() and 'message' in req.text:

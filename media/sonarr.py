@@ -141,7 +141,7 @@ class Sonarr:
             log.debug("Request Payload: %s", payload)
             log.debug("Request Response: %d", req.status_code)
 
-            if req.status_code == 201 and req.json()['tvdbId'] == series_tvdbid:
+            if (req.status_code == 201 or req.status_code == 200) and req.json()['tvdbId'] == series_tvdbid:
                 log.debug("Successfully added %s (%d)", series_title, series_tvdbid)
                 return True
             elif 'json' in req.headers['Content-Type'].lower() and 'errorMessage' in req.text:
