@@ -25,7 +25,7 @@ notify = Notifications()
 
 # Click
 @click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
-@click.version_option('1.1.1', prog_name='traktarr')
+@click.version_option('1.1.2', prog_name='traktarr')
 def app():
     pass
 
