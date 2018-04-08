@@ -25,6 +25,9 @@ def sonarr_series_tag_id_from_network(profile_tags, network_tags, network):
 
 def sonarr_readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
     try:
+        if not chosen_tag_ids:
+            return None
+        
         tags = []
         for tag_name, tag_id in profile_tag_ids.items():
             if tag_id in chosen_tag_ids:
