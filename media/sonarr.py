@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 import backoff
 import requests
 
+from misc import helpers
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -141,14 +142,18 @@ class Sonarr:
             log.debug("Request Payload: %s", payload)
             log.debug("Request Response Code: %d", req.status_code)
             log.debug("Request Response Text:\n%s", req.text)
-            
-            if (req.status_code == 201 or req.status_code == 200) and 'json' in req.headers['Content-Type'].lower() \
-                    and req.json()['tvdbId'] == series_tvdbid:
+
+            response_json = None
+            if 'json' in req.headers['Content-Type'].lower():
+                response_json = helpers.get_response_dict(req.json())
+
+            if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tvdbId' in response_json) \
+                    and response_json['tvdbId'] == series_tvdbid:
                 log.debug("Successfully added %s (%d)", series_title, series_tvdbid)
                 return True
-            elif 'json' in req.headers['Content-Type'].lower() and 'errorMessage' in req.text:
+            elif response_json and 'errorMessage' in response_json:
                 log.error("Failed to add %s (%d) - status_code: %d, reason: %s", series_title, series_tvdbid,
-                          req.status_code, req.json()['errorMessage'])
+                          req.status_code, response_json['errorMessage'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", series_title, series_tvdbid, req.text)

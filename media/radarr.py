@@ -4,6 +4,7 @@ import backoff
 import requests
 
 from misc.log import logger
+from misc import helpers
 
 log = logger.get_logger(__name__)
 
@@ -96,13 +97,17 @@ class Radarr:
             log.debug("Request Response Code: %d", req.status_code)
             log.debug("Request Response Text:\n%s", req.text)
 
-            if (req.status_code == 201 or req.status_code == 200) and 'json' in req.headers['Content-Type'].lower() \
-                    and req.json()['tmdbId'] == movie_tmdbid:
+            response_json = None
+            if 'json' in req.headers['Content-Type'].lower():
+                response_json = helpers.get_response_dict(req.json())
+
+            if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tmdbId' in response_json) \
+                    and response_json['tmdbId'] == movie_tmdbid:
                 log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
                 return True
-            elif 'json' in req.headers['Content-Type'].lower() and 'message' in req.text:
+            elif response_json and 'message' in response_json:
                 log.error("Failed to add %s (%d) - status_code: %d, reason: %s", movie_title, movie_tmdbid,
-                          req.status_code, req.json()['message'])
+                          req.status_code, response_json['message'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", movie_title, movie_tmdbid, req.text)
