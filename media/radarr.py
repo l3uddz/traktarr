@@ -93,9 +93,11 @@ class Radarr:
             req = requests.post(urljoin(self.server_url, 'api/movie'), json=payload, headers=self.headers, timeout=30)
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
-            log.debug("Request Response: %d", req.status_code)
+            log.debug("Request Response Code: %d", req.status_code)
+            log.debug("Request Response Text:\n%s", req.text)
 
-            if (req.status_code == 201 or req.status_code == 200) and req.json()['tmdbId'] == movie_tmdbid:
+            if (req.status_code == 201 or req.status_code == 200) and 'json' in req.headers['Content-Type'].lower() \
+                    and req.json()['tmdbId'] == movie_tmdbid:
                 log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
                 return True
             elif 'json' in req.headers['Content-Type'].lower() and 'message' in req.text:

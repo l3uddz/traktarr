@@ -139,9 +139,11 @@ class Sonarr:
             req = requests.post(urljoin(self.server_url, 'api/series'), json=payload, headers=self.headers, timeout=30)
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
-            log.debug("Request Response: %d", req.status_code)
-
-            if (req.status_code == 201 or req.status_code == 200) and req.json()['tvdbId'] == series_tvdbid:
+            log.debug("Request Response Code: %d", req.status_code)
+            log.debug("Request Response Text:\n%s", req.text)
+            
+            if (req.status_code == 201 or req.status_code == 200) and 'json' in req.headers['Content-Type'].lower() \
+                    and req.json()['tvdbId'] == series_tvdbid:
                 log.debug("Successfully added %s (%d)", series_title, series_tvdbid)
                 return True
             elif 'json' in req.headers['Content-Type'].lower() and 'errorMessage' in req.text:
