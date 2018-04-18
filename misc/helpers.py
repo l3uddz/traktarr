@@ -27,7 +27,7 @@ def sonarr_readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
     try:
         if not chosen_tag_ids:
             return None
-        
+
         tags = []
         for tag_name, tag_id in profile_tag_ids.items():
             if tag_id in chosen_tag_ids:
@@ -380,3 +380,18 @@ def trakt_is_movie_blacklisted(movie, blacklist_settings):
     except Exception:
         log.exception("Exception determining if movie was blacklisted %s: ", movie)
     return blacklisted
+
+
+def get_response_dict(response):
+    found_response = None
+    try:
+        if isinstance(response, list):
+            found_response = response[0]
+        elif isinstance(response, dict):
+            found_response = response
+        else:
+            log.error("Unexpected response instance type of %s for %s", type(response).__name__, response)
+
+    except Exception:
+        log.exception("Exception determining response for %s: ", response)
+    return found_response
