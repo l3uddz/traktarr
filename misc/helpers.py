@@ -382,6 +382,11 @@ def trakt_is_movie_blacklisted(movie, blacklist_settings):
     return blacklisted
 
 
+############################################################
+# MISC 
+############################################################
+
+
 def get_response_dict(response):
     found_response = None
     try:
