@@ -145,7 +145,7 @@ class Sonarr:
 
             response_json = None
             if 'json' in req.headers['Content-Type'].lower():
-                response_json = helpers.get_response_dict(req.json())
+                response_json = helpers.get_response_dict(req.json(), 'tvdbId', series_tvdbid)
 
             if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tvdbId' in response_json) \
                     and response_json['tvdbId'] == series_tvdbid:

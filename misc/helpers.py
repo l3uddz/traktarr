@@ -387,11 +387,21 @@ def trakt_is_movie_blacklisted(movie, blacklist_settings):
 ############################################################
 
 
-def get_response_dict(response):
+def get_response_dict(response, key_field=None, key_value=None):
     found_response = None
     try:
         if isinstance(response, list):
-            found_response = response[0]
+            if not key_field or not key_value:
+                found_response = response[0]
+            else:
+                for result in response:
+                    if isinstance(result, dict) and key_field in result and result[key_field] == key_value:
+                        found_response = result
+                        break
+
+                if not found_response:
+                    log.error("Unable to find a result with key %s where the value is %s", key_field, key_value)
+
         elif isinstance(response, dict):
             found_response = response
         else:
