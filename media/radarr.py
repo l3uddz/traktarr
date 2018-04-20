@@ -27,7 +27,7 @@ class Radarr:
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=30)
+            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=60)
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -41,7 +41,7 @@ class Radarr:
     def get_movies(self):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/movie'), headers=self.headers, timeout=30)
+            req = requests.get(urljoin(self.server_url, 'api/movie'), headers=self.headers, timeout=60)
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -59,7 +59,7 @@ class Radarr:
     def get_profile_id(self, profile_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=30)
+            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=60)
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -82,16 +82,29 @@ class Radarr:
         try:
             # generate payload
             payload = {
-                'tmdbId': movie_tmdbid, 'title': movie_title, 'year': movie_year,
-                'qualityProfileId': profile_id, 'images': [],
-                'monitored': True, 'rootFolderPath': root_folder,
-                'minimumAvailability': 'released', 'titleSlug': movie_title_slug,
-                'addOptions': {'ignoreEpisodesWithFiles': False, 'ignoreEpisodesWithoutFiles': False,
-                               'searchForMovie': search_missing}
+                'tmdbId': movie_tmdbid,
+                'title': movie_title,
+                'year': movie_year,
+                'qualityProfileId': profile_id,
+                'images': [],
+                'monitored': True,
+                'rootFolderPath': root_folder,
+                'minimumAvailability': 'released',
+                'titleSlug': movie_title_slug,
+                'addOptions': {
+                    'ignoreEpisodesWithFiles': False,
+                    'ignoreEpisodesWithoutFiles': False,
+                    'searchForMovie': search_missing
+                }
             }
 
             # make request
-            req = requests.post(urljoin(self.server_url, 'api/movie'), json=payload, headers=self.headers, timeout=30)
+            req = requests.post(
+                urljoin(self.server_url, 'api/movie'),
+                headers=self.headers,
+                json=payload,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
             log.debug("Request Response Code: %d", req.status_code)
