@@ -1,8 +1,10 @@
-import backoff
-import requests
 import os.path
 
+import backoff
+import requests
+
 from misc import helpers
+from misc import str as misc_str
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -25,7 +27,8 @@ class Sonarr:
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(os.path.join(self.server_url, 'api/system/status'), headers=self.headers, timeout=60)
+            req = requests.get(os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
+                               headers=self.headers, timeout=60)
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -40,7 +43,7 @@ class Sonarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/series'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/series'),
                 headers=self.headers,
                 timeout=60
             )
@@ -62,7 +65,7 @@ class Sonarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/profile'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
                 headers=self.headers,
                 timeout=60
             )
@@ -88,7 +91,7 @@ class Sonarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/tag'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
                 headers=self.headers,
                 timeout=60
             )
@@ -115,7 +118,7 @@ class Sonarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/tag'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
                 headers=self.headers,
                 timeout=60
             )
@@ -159,7 +162,7 @@ class Sonarr:
 
             # make request
             req = requests.post(
-                os.path.join(self.server_url, 'api/series'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/series'),
                 headers=self.headers,
                 json=payload,
                 timeout=60

@@ -1,9 +1,11 @@
-import backoff
-import requests
 import os.path
 
-from misc.log import logger
+import backoff
+import requests
+
 from misc import helpers
+from misc import str as misc_str
+from misc.log import logger
 
 log = logger.get_logger(__name__)
 
@@ -27,7 +29,7 @@ class Radarr:
         try:
             # request system status to validate api_key
             req = requests.get(
-                os.path.join(self.server_url, 'api/system/status'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
                 headers=self.headers,
                 timeout=60
             )
@@ -45,7 +47,7 @@ class Radarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/movie'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
                 headers=self.headers,
                 timeout=60
             )
@@ -67,7 +69,7 @@ class Radarr:
         try:
             # make request
             req = requests.get(
-                os.path.join(self.server_url, 'api/profile'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
                 headers=self.headers,
                 timeout=60
             )
@@ -111,7 +113,7 @@ class Radarr:
 
             # make request
             req = requests.post(
-                os.path.join(self.server_url, 'api/movie'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
                 headers=self.headers,
                 json=payload,
                 timeout=60

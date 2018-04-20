@@ -26,3 +26,10 @@ def is_ascii(string):
         log.exception(u"Exception checking if %r was ascii: ", string)
         return False
     return True
+
+
+def ensure_endswith(data, endswith_key):
+    if not data.strip().endswith(endswith_key):
+        return "%s%s" % (data.strip(), endswith_key)
+    else:
+        return data
