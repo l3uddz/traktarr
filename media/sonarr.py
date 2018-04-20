@@ -1,7 +1,6 @@
-from urllib.parse import urljoin
-
 import backoff
 import requests
+import os.path
 
 from misc import helpers
 from misc.log import logger
@@ -20,14 +19,13 @@ class Sonarr:
         self.server_url = server_url
         self.api_key = api_key
         self.headers = {
-            'Content-Type': 'application/json',
             'X-Api-Key': self.api_key,
         }
 
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=30)
+            req = requests.get(os.path.join(self.server_url, 'api/system/status'), headers=self.headers, timeout=60)
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -41,7 +39,11 @@ class Sonarr:
     def get_series(self):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/series'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/series'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -59,7 +61,11 @@ class Sonarr:
     def get_profile_id(self, profile_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/profile'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -81,7 +87,11 @@ class Sonarr:
     def get_tag_id(self, tag_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/tag'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -104,7 +114,11 @@ class Sonarr:
         tags = {}
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/tag'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -126,18 +140,30 @@ class Sonarr:
         try:
             # generate payload
             payload = {
-                'tvdbId': series_tvdbid, 'title': series_title, 'titleSlug': series_title_slug,
-                'qualityProfileId': profile_id, 'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
+                'tvdbId': series_tvdbid,
+                'title': series_title,
+                'titleSlug': series_title_slug,
+                'qualityProfileId': profile_id,
+                'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
                 'images': [],
-                'seasons': [], 'seasonFolder': True,
-                'monitored': True, 'rootFolderPath': root_folder,
-                'addOptions': {'ignoreEpisodesWithFiles': False,
-                               'ignoreEpisodesWithoutFiles': False,
-                               'searchForMissingEpisodes': search_missing}
+                'seasons': [],
+                'seasonFolder': True,
+                'monitored': True,
+                'rootFolderPath': root_folder,
+                'addOptions': {
+                    'ignoreEpisodesWithFiles': False,
+                    'ignoreEpisodesWithoutFiles': False,
+                    'searchForMissingEpisodes': search_missing
+                }
             }
 
             # make request
-            req = requests.post(urljoin(self.server_url, 'api/series'), json=payload, headers=self.headers, timeout=30)
+            req = requests.post(
+                os.path.join(self.server_url, 'api/series'),
+                headers=self.headers,
+                json=payload,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
             log.debug("Request Response Code: %d", req.status_code)

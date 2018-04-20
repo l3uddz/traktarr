@@ -1,0 +1,23 @@
+# Git
+.git
+
+# Systemd files
+systemd
+
+# Logs
+*.log*
+
+# Configs
+*.json
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__
+*.py[cod]
+*$py.class
+*.pyc
+
+# Pyenv
+**/.python-version
+
+# User-specific stuff:
+.idea

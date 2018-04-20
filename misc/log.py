@@ -3,7 +3,7 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 
-from misc.config import cfg
+from misc.config import Config
 
 
 class Logger:
@@ -49,4 +49,5 @@ class Logger:
         return self.root_logger.getChild(name)
 
 
-logger = Logger('activity.log', logging.DEBUG if cfg.core.debug else logging.INFO)
+# Default logger
+logger = Logger(Config().logfile, logging.DEBUG if Config().cfg.core.debug else logging.INFO)
