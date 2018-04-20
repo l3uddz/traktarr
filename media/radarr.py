@@ -1,7 +1,6 @@
-from urllib.parse import urljoin
-
 import backoff
 import requests
+import os.path
 
 from misc.log import logger
 from misc import helpers
@@ -27,7 +26,11 @@ class Radarr:
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=60)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/system/status'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -41,7 +44,11 @@ class Radarr:
     def get_movies(self):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/movie'), headers=self.headers, timeout=60)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/movie'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -59,7 +66,11 @@ class Radarr:
     def get_profile_id(self, profile_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=60)
+            req = requests.get(
+                os.path.join(self.server_url, 'api/profile'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -100,7 +111,7 @@ class Radarr:
 
             # make request
             req = requests.post(
-                urljoin(self.server_url, 'api/movie'),
+                os.path.join(self.server_url, 'api/movie'),
                 headers=self.headers,
                 json=payload,
                 timeout=60
