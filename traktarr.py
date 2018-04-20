@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os.path
+import sys
 import time
 
 import click
@@ -22,7 +23,7 @@ notify = None
     type=click.Path(file_okay=True, dir_okay=False),
     help='Configuration file',
     show_default=True,
-    default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+    default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "config.json")
 )
 @click.option(
     '--logfile',
@@ -30,7 +31,7 @@ notify = None
     type=click.Path(file_okay=True, dir_okay=False),
     help='Log file',
     show_default=True,
-    default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "activity.log")
+    default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "activity.log")
 )
 def app(config, logfile):
     # Setup global variables
