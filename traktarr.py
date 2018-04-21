@@ -1,33 +1,56 @@
 #!/usr/bin/env python3
+import os.path
+import sys
 import time
 
 import click
 import schedule
 
-from media.radarr import Radarr
-from media.sonarr import Sonarr
-from media.trakt import Trakt
-from misc import helpers
-from misc.config import cfg
-from misc.log import logger
-from notifications import Notifications
-
 ############################################################
 # INIT
 ############################################################
-
-# Logging
-log = logger.get_logger('traktarr')
-
-# Notifications
-notify = Notifications()
+cfg = None
+log = None
+notify = None
 
 
 # Click
 @click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
-@click.version_option('1.1.2', prog_name='traktarr')
-def app():
-    pass
+@click.version_option('1.1.3', prog_name='traktarr')
+@click.option(
+    '--config',
+    envvar='TRAKTARR_CONFIG',
+    type=click.Path(file_okay=True, dir_okay=False),
+    help='Configuration file',
+    show_default=True,
+    default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "config.json")
+)
+@click.option(
+    '--logfile',
+    envvar='TRAKTARR_LOGFILE',
+    type=click.Path(file_okay=True, dir_okay=False),
+    help='Log file',
+    show_default=True,
+    default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "activity.log")
+)
+def app(config, logfile):
+    # Setup global variables
+    global cfg, log, notify
+
+    # Load config
+    from misc.config import Config
+    cfg = Config(config_path=config, logfile=logfile).cfg
+
+    # Load logger
+    from misc.log import logger
+    log = logger.get_logger('traktarr')
+
+    # Load notifications
+    from notifications import Notifications
+    notify = Notifications()
+
+    # Notifications
+    init_notifications()
 
 
 ############################################################
@@ -44,6 +67,10 @@ def app():
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False):
+    from media.sonarr import Sonarr
+    from media.trakt import Trakt
+    from misc import helpers
+
     added_shows = 0
 
     # remove genre from shows blacklisted_genres if supplied
@@ -214,6 +241,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False):
+    from media.radarr import Radarr
+    from media.trakt import Trakt
+    from misc import helpers
+
     added_movies = 0
 
     # remove genre from movies blacklisted_genres if supplied
@@ -500,5 +531,4 @@ def init_notifications():
 ############################################################
 
 if __name__ == "__main__":
-    init_notifications()
     app()

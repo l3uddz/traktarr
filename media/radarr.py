@@ -1,8 +1,10 @@
-from urllib.parse import urljoin
+import os.path
 
 import backoff
 import requests
 
+from misc import helpers
+from misc import str as misc_str
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -26,7 +28,11 @@ class Radarr:
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -40,7 +46,11 @@ class Radarr:
     def get_movies(self):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/movie'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -58,7 +68,11 @@ class Radarr:
     def get_profile_id(self, profile_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -81,26 +95,45 @@ class Radarr:
         try:
             # generate payload
             payload = {
-                'tmdbId': movie_tmdbid, 'title': movie_title, 'year': movie_year,
-                'qualityProfileId': profile_id, 'images': [],
-                'monitored': True, 'rootFolderPath': root_folder,
-                'minimumAvailability': 'released', 'titleSlug': movie_title_slug,
-                'addOptions': {'ignoreEpisodesWithFiles': False, 'ignoreEpisodesWithoutFiles': False,
-                               'searchForMovie': search_missing}
+                'tmdbId': movie_tmdbid,
+                'title': movie_title,
+                'year': movie_year,
+                'qualityProfileId': profile_id,
+                'images': [],
+                'monitored': True,
+                'rootFolderPath': root_folder,
+                'minimumAvailability': 'released',
+                'titleSlug': movie_title_slug,
+                'addOptions': {
+                    'ignoreEpisodesWithFiles': False,
+                    'ignoreEpisodesWithoutFiles': False,
+                    'searchForMovie': search_missing
+                }
             }
 
             # make request
-            req = requests.post(urljoin(self.server_url, 'api/movie'), json=payload, headers=self.headers, timeout=30)
+            req = requests.post(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
+                headers=self.headers,
+                json=payload,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
-            log.debug("Request Response: %d", req.status_code)
+            log.debug("Request Response Code: %d", req.status_code)
+            log.debug("Request Response Text:\n%s", req.text)
 
-            if (req.status_code == 201 or req.status_code == 200) and req.json()['tmdbId'] == movie_tmdbid:
+            response_json = None
+            if 'json' in req.headers['Content-Type'].lower():
+                response_json = helpers.get_response_dict(req.json(), 'tmdbId', movie_tmdbid)
+
+            if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tmdbId' in response_json) \
+                    and response_json['tmdbId'] == movie_tmdbid:
                 log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
                 return True
-            elif 'json' in req.headers['Content-Type'].lower() and 'message' in req.text:
+            elif response_json and 'message' in response_json:
                 log.error("Failed to add %s (%d) - status_code: %d, reason: %s", movie_title, movie_tmdbid,
-                          req.status_code, req.json()['message'])
+                          req.status_code, response_json['message'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", movie_title, movie_tmdbid, req.text)
