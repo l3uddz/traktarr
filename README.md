@@ -460,8 +460,10 @@ Usage: traktarr [OPTIONS] COMMAND [ARGS]...
   Add new shows & movies to Sonarr/Radarr from Trakt lists.
 
 Options:
-  --version  Show the version and exit.
-  --help     Show this message and exit.
+  --version       Show the version and exit.
+  --config PATH   Configuration file  [default: /opt/traktarr/config.json]
+  --logfile PATH  Log file  [default: /opt/traktarr/activity.log]
+  --help          Show this message and exit.
 
 Commands:
   movies  Add new movies to Radarr.
