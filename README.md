@@ -138,14 +138,14 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
     "api_key": "",
     "profile": "HD-1080p",
     "root_folder": "/movies/",
-    "url": "http://localhost:7878"
+    "url": "http://localhost:7878/"
   },
   "sonarr": {
     "api_key": "",
     "profile": "HD-1080p",
     "root_folder": "/tv/",
     "tags": {},
-    "url": "http://localhost:8989"
+    "url": "http://localhost:8989/"
   },
   "trakt": {
     "api_key": ""

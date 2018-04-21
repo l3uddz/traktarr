@@ -29,8 +29,12 @@ class Trakt:
             payload = {'extended': 'full', 'limit': 1000}
 
             # make request
-            req = requests.get('https://api.trakt.tv/shows/anticipated', params=payload, headers=self.headers,
-                               timeout=30)
+            req = requests.get(
+                'https://api.trakt.tv/shows/anticipated',
+                headers=self.headers,
+                params=payload,
+                timeout=30
+            )
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200:
@@ -59,8 +63,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/shows/anticipated', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/shows/anticipated',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -115,8 +123,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/shows/trending', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/shows/trending',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -171,8 +183,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/shows/popular', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/shows/popular',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -232,8 +248,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/movies/anticipated', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/movies/anticipated',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -288,8 +308,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/movies/trending', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/movies/trending',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -344,8 +368,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/movies/popular', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/movies/popular',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -401,8 +429,12 @@ class Trakt:
 
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/movies/boxoffice', params=payload, headers=self.headers,
-                                   timeout=30)
+                req = requests.get(
+                    'https://api.trakt.tv/movies/boxoffice',
+                    headers=self.headers,
+                    params=payload,
+                    timeout=30
+                )
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)

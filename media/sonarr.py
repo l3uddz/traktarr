@@ -1,8 +1,10 @@
-from urllib.parse import urljoin
+import os.path
 
 import backoff
 import requests
 
+from misc import helpers
+from misc import str as misc_str
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -19,14 +21,14 @@ class Sonarr:
         self.server_url = server_url
         self.api_key = api_key
         self.headers = {
-            'Content-Type': 'application/json',
             'X-Api-Key': self.api_key,
         }
 
     def validate_api_key(self):
         try:
             # request system status to validate api_key
-            req = requests.get(urljoin(self.server_url, 'api/system/status'), headers=self.headers, timeout=30)
+            req = requests.get(os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
+                               headers=self.headers, timeout=60)
             log.debug("Request Response: %d", req.status_code)
 
             if req.status_code == 200 and 'version' in req.json():
@@ -40,7 +42,11 @@ class Sonarr:
     def get_series(self):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/series'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/series'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -58,7 +64,11 @@ class Sonarr:
     def get_profile_id(self, profile_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/profile'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -80,7 +90,11 @@ class Sonarr:
     def get_tag_id(self, tag_name):
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -103,7 +117,11 @@ class Sonarr:
         tags = {}
         try:
             # make request
-            req = requests.get(urljoin(self.server_url, 'api/tag'), headers=self.headers, timeout=30)
+            req = requests.get(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
+                headers=self.headers,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
 
@@ -125,28 +143,46 @@ class Sonarr:
         try:
             # generate payload
             payload = {
-                'tvdbId': series_tvdbid, 'title': series_title, 'titleSlug': series_title_slug,
-                'qualityProfileId': profile_id, 'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
+                'tvdbId': series_tvdbid,
+                'title': series_title,
+                'titleSlug': series_title_slug,
+                'qualityProfileId': profile_id,
+                'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
                 'images': [],
-                'seasons': [], 'seasonFolder': True,
-                'monitored': True, 'rootFolderPath': root_folder,
-                'addOptions': {'ignoreEpisodesWithFiles': False,
-                               'ignoreEpisodesWithoutFiles': False,
-                               'searchForMissingEpisodes': search_missing}
+                'seasons': [],
+                'seasonFolder': True,
+                'monitored': True,
+                'rootFolderPath': root_folder,
+                'addOptions': {
+                    'ignoreEpisodesWithFiles': False,
+                    'ignoreEpisodesWithoutFiles': False,
+                    'searchForMissingEpisodes': search_missing
+                }
             }
 
             # make request
-            req = requests.post(urljoin(self.server_url, 'api/series'), json=payload, headers=self.headers, timeout=30)
+            req = requests.post(
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/series'),
+                headers=self.headers,
+                json=payload,
+                timeout=60
+            )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
-            log.debug("Request Response: %d", req.status_code)
+            log.debug("Request Response Code: %d", req.status_code)
+            log.debug("Request Response Text:\n%s", req.text)
 
-            if (req.status_code == 201 or req.status_code == 200) and req.json()['tvdbId'] == series_tvdbid:
+            response_json = None
+            if 'json' in req.headers['Content-Type'].lower():
+                response_json = helpers.get_response_dict(req.json(), 'tvdbId', series_tvdbid)
+
+            if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tvdbId' in response_json) \
+                    and response_json['tvdbId'] == series_tvdbid:
                 log.debug("Successfully added %s (%d)", series_title, series_tvdbid)
                 return True
-            elif 'json' in req.headers['Content-Type'].lower() and 'errorMessage' in req.text:
+            elif response_json and 'errorMessage' in response_json:
                 log.error("Failed to add %s (%d) - status_code: %d, reason: %s", series_title, series_tvdbid,
-                          req.status_code, req.json()['errorMessage'])
+                          req.status_code, response_json['errorMessage'])
                 return False
             else:
                 log.error("Failed to add %s (%d), unexpected response:\n%s", series_title, series_tvdbid, req.text)
