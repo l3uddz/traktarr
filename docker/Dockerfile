@@ -11,6 +11,8 @@ ENV \
   TRAKTARR_CONFIG=/config/config.json \
   TRAKTARR_LOGFILE=/config/traktarr.log
 
+COPY . /${APP_DIR}
+
 RUN \
   echo "** BRANCH: ${BRANCH} COMMIT: ${COMMIT} **" && \
   echo "** Upgrade all packages **" && \
