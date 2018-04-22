@@ -1,23 +1,42 @@
-# Git
-.git
+# User-specific stuff:
+.idea
 
-# Systemd files
-systemd
+## File-based project format:
+*.iws
 
-# Logs
-*.log*
-
-# Configs
-*.json
+# IntelliJ
+/out/
 
 # Byte-compiled / optimized / DLL files
-**/__pycache__
+__pycache__/
 *.py[cod]
 *$py.class
 *.pyc
 
+# logs
+*.log*
+
+# databases
+*.db
+
+# configs
+*.cfg
+*.json
+
+# generators
+*.bat
+
 # Pyenv
 **/.python-version
 
-# User-specific stuff:
-.idea
+# PyInstaller
+build/
+dist/
+*.manifest
+*.spec
+
+# Git
+.git
+
+# Systemd
+systemd
