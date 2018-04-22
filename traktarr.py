@@ -493,21 +493,32 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 def run(add_delay=2.5, no_search=False, no_notifications=False):
     # add tasks to repeat
     if cfg.automatic.movies.interval:
-        schedule.every(cfg.automatic.movies.interval).hours.do(automatic_movies, add_delay, no_search,
-                                                               not no_notifications)
+        schedule.every(cfg.automatic.movies.interval).hours.do(
+            automatic_movies,
+            add_delay,
+            no_search,
+            not no_notifications
+        )
+
     if cfg.automatic.shows.interval:
-        schedule.every(cfg.automatic.shows.interval).hours.do(automatic_shows, add_delay, no_search,
-                                                              not no_notifications)
+        schedule.every(cfg.automatic.shows.interval).hours.do(
+            automatic_shows,
+            add_delay,
+            no_search,
+            not no_notifications
+        )
 
     # run schedule
     log.info("Automatic mode is now running...")
     while True:
         try:
+            # Sleep until next run
+            time.sleep(schedule.idle_seconds())
+            # Check jobs to run
             schedule.run_pending()
-        except Exception:
-            log.exception("Unhandled exception occurred while processing scheduled tasks: ")
-        else:
-            time.sleep(1)
+
+        except Exception as e:
+            log.exception("Unhandled exception occurred while processing scheduled tasks: %s", e)
 
 
 ############################################################
