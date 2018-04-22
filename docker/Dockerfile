@@ -1,22 +1,22 @@
 FROM python:3.6-alpine3.7
 
+# Arguments for build tracking
+ARG BRANCH=
+ARG COMMIT=
+
 ENV \
-  # App directory
   APP_DIR=traktarr \
-  # Branch to clone
-  BRANCH=master \
-  # Config file
+  BRANCH=${BRANCH} \
+  COMMIT=${COMMIT} \
   TRAKTARR_CONFIG=/config/config.json \
-  # Log file
   TRAKTARR_LOGFILE=/config/traktarr.log
 
+COPY . /${APP_DIR}
+
 RUN \
+  echo "** BRANCH: ${BRANCH} COMMIT: ${COMMIT} **" && \
   echo "** Upgrade all packages **" && \
   apk --no-cache -U upgrade && \
-  echo "** Install OS dependencies **" && \
-  apk --no-cache -U add git && \
-  echo "** Get Traktarr **" && \
-  git clone --depth 1 --branch ${BRANCH} https://github.com/l3uddz/traktarr.git /${APP_DIR} && \
   echo "** Install PIP dependencies **" && \
   pip install --no-cache-dir --upgrade pip setuptools && \
   pip install --no-cache-dir --upgrade -r /${APP_DIR}/requirements.txt
