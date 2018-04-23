@@ -517,12 +517,13 @@ def run(add_delay=2.5, no_search=False, no_notifications=False):
         try:
             # Sleep until next run
             log.info("Next job at %s", schedule.next_run())
-            time.sleep(schedule.idle_seconds())
+            time.sleep(schedule.idle_seconds() or 0)
             # Check jobs to run
             schedule.run_pending()
 
         except Exception as e:
             log.exception("Unhandled exception occurred while processing scheduled tasks: %s", e)
+            time.sleep(1)
 
 
 ############################################################
