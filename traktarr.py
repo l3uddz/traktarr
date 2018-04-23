@@ -491,14 +491,18 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
 def run(add_delay=2.5, no_search=False, no_notifications=False):
-    # add tasks to repeat
+    log.info("Automatic mode is now running...")
+
+    # Add tasks to schedule and do first run
     if cfg.automatic.movies.interval:
         schedule.every(cfg.automatic.movies.interval).hours.do(
             automatic_movies,
             add_delay,
             no_search,
             not no_notifications
-        )
+        ).run()
+        # Sleep between tasks
+        time.sleep(add_delay)
 
     if cfg.automatic.shows.interval:
         schedule.every(cfg.automatic.shows.interval).hours.do(
@@ -506,13 +510,13 @@ def run(add_delay=2.5, no_search=False, no_notifications=False):
             add_delay,
             no_search,
             not no_notifications
-        )
+        ).run()
 
-    # run schedule
-    log.info("Automatic mode is now running...")
+    # Enter running schedule
     while True:
         try:
             # Sleep until next run
+            log.info("Next job at %s", schedule.next_run())
             time.sleep(schedule.idle_seconds())
             # Check jobs to run
             schedule.run_pending()
