@@ -70,7 +70,8 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
       ],
       "blacklist_title_keywords": [
         "untitled",
-        "barbie"
+        "barbie",
+        "ufc"
       ],
       "blacklisted_genres": [
         "documentary",
@@ -520,7 +521,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-## Example
+## Examples
 
 
 ```
