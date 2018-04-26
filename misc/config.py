@@ -33,7 +33,6 @@ class AttrConfig(AttrDict):
 
 
 class Config(object, metaclass=Singleton):
-
     base_config = {
         'core': {
             'debug': False
@@ -150,36 +149,55 @@ class Config(object, metaclass=Singleton):
         with open(self.config_path, 'r') as fp:
             return AttrConfig(json.load(fp))
 
+    def __inner_upgrade(self, settings1, settings2, key=None, overwrite=False):
+        sub_upgraded = False
+        merged = settings2.copy()
+
+        # print(settings1)
+        # print(settings2)
+        # print(overwrite)
+        # print("_______________")
+
+        if isinstance(settings1, dict):
+            for k, v in settings1.items():
+                # missing k
+                if k not in settings2:
+                    merged[k] = v
+                    sub_upgraded = True
+                    if not key:
+                        print("Added %r config option: %s" % (str(k), str(v)))
+                    else:
+                        print("Added %r to config option %r: %s" % (str(k), str(key), str(v)))
+                    continue
+
+                # iterate children
+                if isinstance(v, dict) or isinstance(v, list):
+                    merged[k], did_upgrade = self.__inner_upgrade(settings1[k], settings2[k], key=k,
+                                                                  overwrite=overwrite)
+                    sub_upgraded = did_upgrade if did_upgrade else sub_upgraded
+                elif settings1[k] != settings2[k] and overwrite:
+                    merged = settings1
+                    sub_upgraded = True
+        elif isinstance(settings1, list) and key:
+            for v in settings1:
+                if v not in settings2:
+                    merged.append(v)
+                    sub_upgraded = True
+                    print("Added to config option %r: %s" % (str(key), str(v)))
+                    continue
+
+        return merged, sub_upgraded
+
     def upgrade_settings(self, currents):
-        upgraded = False
+        upgraded_settings, upgraded = self.__inner_upgrade(self.base_config, currents)
+        return AttrConfig(upgraded_settings), upgraded
 
-        def inner_upgrade(default, current, key=None):
-            sub_upgraded = False
-            merged = current.copy()
-            if isinstance(default, dict):
-                for k, v in default.items():
-                    # missing k
-                    if k not in current:
-                        merged[k] = v
-                        sub_upgraded = True
-                        if not key:
-                            print("Added %r config option: %s" % (str(k), str(v)))
-                        else:
-                            print("Added %r to config option %r: %s" % (str(k), str(key), str(v)))
-                        continue
-                    # iterate children
-                    if isinstance(v, dict) or isinstance(v, list):
-                        merged[k], did_upgrade = inner_upgrade(default[k], current[k], key=k)
-                        sub_upgraded = did_upgrade if did_upgrade else sub_upgraded
+    def merge_settings(self, settings_to_merge):
+        upgraded_settings, upgraded = self.__inner_upgrade(settings_to_merge, self.conf, overwrite=True)
 
-            elif isinstance(default, list) and key:
-                for v in default:
-                    if v not in current:
-                        merged.append(v)
-                        sub_upgraded = True
-                        print("Added to config option %r: %s" % (str(key), str(v)))
-                        continue
-            return merged, sub_upgraded
+        self.conf = upgraded_settings
 
-        upgraded_settings, upgraded = inner_upgrade(self.base_config, currents)
+        if upgraded:
+            self.dump_config()
+
         return AttrConfig(upgraded_settings), upgraded
