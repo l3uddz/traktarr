@@ -8,6 +8,8 @@ Trakt lists currently supported:
 - popular
 - trending
 
+Furthermore, watchlist and other types of list from multiple users are supported.
+
 # Requirements
 
 1. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
@@ -28,7 +30,38 @@ Install Traktarr to be run with `traktarr` command.
 7. `traktarr` - run once to generate a default a config.json file.
 8. `nano config.json` - edit preferences.
 
-## 2. Setup Schedule
+## 2. Authenticate Trakt (optional)
+
+If you want to acces private lists (watchlists or other user lists),
+you'll need to authenticate Traktarr to access your personal lists.
+
+1. Create an Trakt application by going [here](https://trakt.tv/oauth/applications/new)
+2. Enter a name for your application; for example `Traktarr`
+3. Enter `urn:ietf:wg:oauth:2.0:oob` in the Redirecht uri field.
+4. Click "Save app"
+5. Open the Traktarr configuration file `config.json` and insert the
+Client ID in the api_key and the Client Secret in the api_secret. Like this:
+```
+    {
+        "trakt": {
+            "api_key": "my_client_id",
+            "api_secret": "my_client_secret_key"
+        }
+    }
+```
+
+Repeat the following steps for every user you want to authenticate:
+1. Run `traktarr trakt_authenticate` (from the installation path)
+2. Go to https://trakt.tv/activate.
+3. Enter the code you see in your terminal
+4. Click continue
+5. If you're not loggedin to Trakt, login noe
+6. Accept
+
+You've now authenticated the user.
+You can repeat this process for as many users as you want.
+
+## 3. Setup Schedule
 
 To have Traktarr get Movies and Shows for you automatically, on set interval.
 
@@ -52,13 +85,25 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
       "boxoffice": 10,
       "interval": 24,
       "popular": 3,
-      "trending": 2
+      "trending": 2,
+      "watchlist": {
+        "username": 10
+      },
+      "my-custom-list" {
+        "username": 10
+      }
     },
     "shows": {
       "anticipated": 10,
       "interval": 48,
       "popular": 1,
-      "trending": 2
+      "trending": 2,
+      "watchlist": {
+        "username": 10
+      },
+      "my-custom-list" {
+        "username": 10
+      }
     }
   },
   "filters": {
@@ -149,7 +194,8 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
     "url": "http://localhost:8989/"
   },
   "trakt": {
-    "api_key": ""
+    "api_key": "",
+    "api_secret": ""
   }
 }
 ```
@@ -179,13 +225,33 @@ Movies can be run on a separate schedule from Shows.
     "boxoffice": 10,
     "interval": 24,
     "popular": 3,
-    "trending": 2
+    "trending": 2,
+    "watchlist": {
+        "user1": 10
+        "user2": 10
+    },
+    "my-custom-list": {
+        "user1": 10
+    },
+    "another-custom-list": {
+        "user2": 10
+    }
   },
   "shows": {
     "anticipated": 10,
     "interval": 48,
     "popular": 1,
-    "trending": 2
+    "trending": 2,
+    "watchlist": {
+        "user1": 10
+        "user2": 10
+    },
+    "my-custom-list": {
+        "user1": 10
+    },
+    "another-custom-list": {
+        "user2": 10
+    }
   }
 },
 ```
@@ -193,6 +259,10 @@ Movies can be run on a separate schedule from Shows.
 `interval` - specify how often (in hours) to run Traktarr task.
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - specify how many items from each Trakt list to find.
+
+`watchlist` - add every user you want to fetch items from and specify how many items to fetch
+
+You can add every (private) list you want by adding the list key.
 
 ## Filters
 
@@ -437,14 +507,7 @@ Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain n
 
 `api_key` - Fill in your Trakt API key (_Client ID_).
 
-
-How to get a Trakt API Key:
-  - Go to https://trakt.tv/oauth/applications/new
-  - Fill in:
-    - Name: `Traktarr`
-    - Redirect uri: `https://google.com`
-  - Click `Save App`
-  - Retrieve the _Client ID_.
+`api_secret` - Fill in your Trakt Secret key (_Client Scret_)
 
 # Usage
 
@@ -467,9 +530,10 @@ Options:
   --help          Show this message and exit.
 
 Commands:
-  movies  Add new movies to Radarr.
-  run     Run in automatic mode.
-  shows   Add new shows to Sonarr.
+  movies                Add new movies to Radarr.
+  run                   Run in automatic mode.
+  shows                 Add new shows to Sonarr.
+  trakt_authentication  Authenticate Traktrarr to index your personal...
   ```
 
 
@@ -486,8 +550,9 @@ Usage: traktarr movies [OPTIONS]
   Add new movies to Radarr.
 
 Options:
-  -t, --list-type [anticipated|trending|popular|boxoffice]
-                                  Trakt list to process.  [required]
+  -t, --list-type TEXT            Trakt list to process. For example, anticipated,
+                                  trending, popular, boxoffice, watchlist or any
+                                  other user list  [required]
   -l, --add-limit INTEGER         Limit number of movies added to Radarr.
                                   [default: 0]
   -d, --add-delay FLOAT           Seconds between each add request to Radarr.
@@ -496,6 +561,8 @@ Options:
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
+  --user TEXT                     Specify which user to use for the personal Trakt
+                                  lists. Default: first user in the config
   --help                          Show this message and exit.
 ```
 
@@ -508,8 +575,9 @@ Usage: traktarr shows [OPTIONS]
   Add new shows to Sonarr.
 
 Options:
-  -t, --list-type [anticipated|trending|popular]
-                                  Trakt list to process.  [required]
+  -t, --list-type TEXT            Trakt list to process. For example, anticipated,
+                                  trending, popular, watchlist or any other user
+                                  list  [required]
   -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
                                   [default: 0]
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
@@ -518,6 +586,8 @@ Options:
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
   --no-search                     Disable search when adding shows to Sonarr.
   --notifications                 Send notifications.
+  --user TEXT                     Specify which user to use for the personal Trakt
+                                  lists. Default: first user in the config
   --help                          Show this message and exit.
 ```
 
