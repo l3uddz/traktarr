@@ -8,7 +8,7 @@ Trakt lists currently supported:
 - popular
 - trending
 
-Furthermore, watchlist and other types of list from multiple users are supported.
+Furthermore, watchlists and custom list from multiple users are supported.
 
 # Requirements
 
@@ -30,10 +30,7 @@ Install Traktarr to be run with `traktarr` command.
 7. `traktarr` - run once to generate a default a config.json file.
 8. `nano config.json` - edit preferences.
 
-## 2. Authenticate Trakt (optional)
-
-If you want to acces private lists (watchlists or other user lists),
-you'll need to authenticate Traktarr to access your personal lists.
+## 2. Create app authentication
 
 1. Create an Trakt application by going [here](https://trakt.tv/oauth/applications/new)
 2. Enter a name for your application; for example `Traktarr`
@@ -50,6 +47,10 @@ Client ID in the api_key and the Client Secret in the api_secret. Like this:
     }
 ```
 
+## 3. Authenticate users (optional)
+
+If you want to be able to access private lists, you have to authentcate that user.
+
 Repeat the following steps for every user you want to authenticate:
 1. Run `traktarr trakt_authenticate` (from the installation path)
 2. Go to https://trakt.tv/activate.
@@ -61,7 +62,7 @@ Repeat the following steps for every user you want to authenticate:
 You've now authenticated the user.
 You can repeat this process for as many users as you want.
 
-## 3. Setup Schedule
+## 4. Setup Schedule
 
 To have Traktarr get Movies and Shows for you automatically, on set interval.
 
@@ -74,6 +75,8 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
 
 # Configuration
 
+Here is some default configuration you can use.
+
 ```json
 {
   "core": {
@@ -85,25 +88,13 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
       "boxoffice": 10,
       "interval": 24,
       "popular": 3,
-      "trending": 2,
-      "watchlist": {
-        "username": 10
-      },
-      "my-custom-list" {
-        "username": 10
-      }
+      "trending": 2
     },
     "shows": {
       "anticipated": 10,
       "interval": 48,
       "popular": 1,
-      "trending": 2,
-      "watchlist": {
-        "username": 10
-      },
-      "my-custom-list" {
-        "username": 10
-      }
+      "trending": 2
     }
   },
   "filters": {
@@ -201,6 +192,22 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
 ```
 
 
+## Watchlist
+
+Traktarr can fetch the watchlist for as many users as you like.
+You'll have to authenticate every user from whome you want to fetch the watchlist,
+by following the steps described [here]((#authenticate-users-optional)).
+
+When all users are authenticated you can fetch their watchlist either
+with the automatic task or with the manual commands (see examples below).
+
+## Other custom user lists
+
+Traktarr can also fetch any number of other custom lists.
+
+If the custom list is private, you'll have to authenticate a user that is allowed to
+access that list by following the steps described [here]((#authenticate-users-optional)).
+
 ## Core
 
 ```json
@@ -226,32 +233,16 @@ Movies can be run on a separate schedule from Shows.
     "interval": 24,
     "popular": 3,
     "trending": 2,
-    "watchlist": {
-        "user1": 10
-        "user2": 10
-    },
-    "my-custom-list": {
-        "user1": 10
-    },
-    "another-custom-list": {
-        "user2": 10
-    }
+    "watchlist": {},
+    "lists": {}
   },
   "shows": {
     "anticipated": 10,
     "interval": 48,
     "popular": 1,
     "trending": 2,
-    "watchlist": {
-        "user1": 10
-        "user2": 10
-    },
-    "my-custom-list": {
-        "user1": 10
-    },
-    "another-custom-list": {
-        "user2": 10
-    }
+    "watchlist": {},
+    "lists": {}
   }
 },
 ```
@@ -260,9 +251,106 @@ Movies can be run on a separate schedule from Shows.
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - specify how many items from each Trakt list to find.
 
-`watchlist` - add every user you want to fetch items from and specify how many items to fetch
+`watchlist` - specify which watchlists to fetch (see explanation below)
 
-You can add every (private) list you want by adding the list key.
+`lists` - specify which custom lists to fetch (see explanation below)
+
+### Watchlist
+
+The watchlist task can be scheduled with a differtent item limit for every user.
+For every user you've to add: `"username": limit` to the watchlist key. For example:
+
+```json
+"automatic": {
+  "movies": {
+    "watchlist": {
+        "user1": 10,
+        "user2": 5
+    }
+  },
+  "shows": {
+    "watchlist": {
+        "user1": 2,
+        "user3": 1
+    }
+  }
+},
+```
+
+Of course you can combine this with running the other list types as well.
+
+### Custom lists
+
+You can also schedule any number of public or private custom lists.
+For both public and private lsits you'll need the url to that list.
+You can copy this url from the address bar in you browser when viewing
+the list on Trakt.
+
+Public lists can be added by specifying the url and the item limit like this:
+
+```json
+"automatic": {
+  "movies": {
+    "lists": {
+        "https://trakt.tv/users/rkerwin/lists/top-100-movies": 10
+    }
+  },
+  "shows": {
+    "lists": {
+        "https://trakt.tv/users/claireaa/lists/top-100-tv-shows-of-all-time-ign": 10
+    }
+  }
+},
+```
+
+Private lists can be added in two ways:
+
+1. If there is only one authenticated user to Traktarr, you can add
+the private list just like any other public list:
+
+```json
+"automatic": {
+  "movies": {
+    "lists": {
+        "https://trakt.tv/users/user/lists/my-private-movies-list": 10
+    }
+  },
+  "shows": {
+    "lists": {
+        "https://trakt.tv/users/user/lists/my-private-shows-list": 10
+    }
+  }
+},
+```
+
+2. If there are multiple authenticated users to Traktarr, you'll need
+to specify with which user Traktarr should authenticate when fetching
+the list. The user should have acces to the list (either own the list,
+or friends with the owner of the list and the list is specified to be
+shared with friends)
+_Note that the specified user has to be authenticated_
+
+```json
+"automatic": {
+  "movies": {
+    "lists": {
+        "https://trakt.tv/users/user/lists/my-private-movies-list": {
+            "authenticate_as": "user2",
+            "limit": 10
+        }
+    }
+  },
+  "shows": {
+    "lists": {
+        "https://trakt.tv/users/user/lists/my-private-shows-list": {
+            "authenticate_as": "user2",
+            "limit": 10
+        }
+    }
+  }
+},
+```
+
 
 ## Filters
 
@@ -501,13 +589,17 @@ Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain n
 
 ```json
 "trakt": {
-  "api_key": ""
+  "api_key": "",
+  "api_scret": ""
 }
 ```
 
 `api_key` - Fill in your Trakt API key (_Client ID_).
 
 `api_secret` - Fill in your Trakt Secret key (_Client Scret_)
+
+_Note that when users authenticate to Traktarr, their token information
+will be added to this._
 
 # Usage
 
@@ -552,7 +644,7 @@ Usage: traktarr movies [OPTIONS]
 Options:
   -t, --list-type TEXT            Trakt list to process. For example, anticipated,
                                   trending, popular, boxoffice, watchlist or any
-                                  other user list  [required]
+                                  URL to a list  [required]
   -l, --add-limit INTEGER         Limit number of movies added to Radarr.
                                   [default: 0]
   -d, --add-delay FLOAT           Seconds between each add request to Radarr.
@@ -561,9 +653,9 @@ Options:
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
-  --user TEXT                     Specify which user to use for the personal Trakt
-                                  lists. Default: first user in the config
-  --help                          Show this message and exit.
+  --authencate-user TEXT          Specify which user to authenticate with to
+                                  retrieve Trakt lists. Default: first user in the
+                                  config
 ```
 
 
@@ -576,7 +668,7 @@ Usage: traktarr shows [OPTIONS]
 
 Options:
   -t, --list-type TEXT            Trakt list to process. For example, anticipated,
-                                  trending, popular, watchlist or any other user
+                                  trending, popular, watchlist or any URL to a
                                   list  [required]
   -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
                                   [default: 0]
@@ -586,19 +678,39 @@ Options:
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
   --no-search                     Disable search when adding shows to Sonarr.
   --notifications                 Send notifications.
-  --user TEXT                     Specify which user to use for the personal Trakt
-                                  lists. Default: first user in the config
+  --authencate-user TEXT          Specify which user to authenticate with to
+                                  retrieve Trakt lists. Default: first user in the
+                                  config
   --help                          Show this message and exit.
 ```
 
 ## Examples
 
-
+- Fetch boxoffice movies labeld with the comedy genere, limit to 10 items and send notifications
 ```
 traktarr movies -t boxoffice -g comedy -l 10 --notifications
-
 ```
 
+
+- Fetch popular shows, limit to 2 items and don't start the search in Sonarr
 ```
 traktarr shows -t popular -l 2 --no-search
+```
+
+- Fetch all shows from the watchlist from user1
+
+```
+traktarr shows -t watchlist --authenticate-user user1
+```
+
+- Fetch all movies from the public https://trakt.tv/users/rkerwin/lists/top-100-movies list
+
+```
+traktarr shows -t https://trakt.tv/users/rkerwin/lists/top-100-movies
+```
+
+- Fetch all movies from the private https://trakt.tv/users/user1/lists/private-movies-list list
+
+```
+traktarr shows -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
 ```

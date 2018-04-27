@@ -75,7 +75,7 @@ def trakt_authentication():
 
 @app.command(help='Add new shows to Sonarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, watchlist or any other user list',
+              help='Trakt list to process. For example, anticipated, trending, popular, watchlist or any URL to a list',
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
@@ -83,10 +83,10 @@ def trakt_authentication():
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-@click.option('--user',
-              help='Specify which user to use for the personal Trakt lists. Default: first user in the config')
+@click.option('--authenticate-user',
+              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
 def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-          user=None):
+          authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from misc import helpers
@@ -165,9 +165,15 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
     elif list_type.lower() == 'popular':
         trakt_series_list = trakt.get_popular_shows()
     elif list_type.lower() == 'watchlist':
-        trakt_series_list = trakt.get_watchlist_shows(user)
+        trakt_series_list = trakt.get_watchlist_shows(authenticate_user)
+    elif list_type.lower() == 'lists':
+        trakt_series_list = trakt.get_user_list_shows(list_type, authenticate_user)
     else:
-        trakt_series_list = trakt.get_user_list_shows(list_type, user)
+        log.error("Aborting due to unknown Trakt list type")
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
+                             'reason': 'Failure to determine Trakt list type'})
+        return None
 
     if not trakt_series_list:
         log.error("Aborting due to failure to retrieve Trakt %s shows list", list_type)
@@ -252,7 +258,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 
 @app.command(help='Add new movies to Radarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist or any other user list',
+              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist or any URL to a list',
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
@@ -260,10 +266,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
-@click.option('--user',
-              help='Specify which user to use for the personal Trakt lists. Default: first user in the config')
+@click.option('--authenticate-user',
+              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
 def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-           user=None):
+           authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from misc import helpers
@@ -334,9 +340,15 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
     elif list_type.lower() == 'boxoffice':
         trakt_movies_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'watchlist':
-        trakt_movies_list = trakt.get_watchlist_shows(user)
+        trakt_movies_list = trakt.get_watchlist_movies(authenticate_user)
+    elif list_type.lower() == 'lists':
+        trakt_movies_list = trakt.get_user_list_movies(list_type, authenticate_user)
     else:
-        trakt_movies_list = trakt.get_user_list_shows(list_type, user)
+        log.error("Aborting due to unknown Trakt list type")
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
+                             'reason': 'Failure to determine Trakt list type'})
+        return None
 
     if not trakt_movies_list:
         log.error("Aborting due to failure to retrieve Trakt %s movies list", list_type)
@@ -441,34 +453,49 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
         log.info("Started")
 
         for list_type, value in cfg.automatic.shows.items():
+            added_shows = None
+
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() not in Trakt.non_user_lists:
-                type_amount = value
+            if list_type.lower() in Trakt.non_user_lists:
+                limit = value
 
-                if type_amount <= 0:
+                if limit <= 0:
                     log.info("Skipped Trakt's %s shows list", list_type)
                     continue
                 else:
-                    log.info("Adding %d shows from Trakt's %s list", type_amount, list_type)
+                    log.info("Adding %d shows from Trakt's %s list", limit, list_type)
 
                 # run shows
-                added_shows = shows.callback(list_type=list_type, add_limit=type_amount,
+                added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                              add_delay=add_delay, no_search=no_search,
                                              notifications=notifications)
-            else:
-                for user, type_amount in value:
-                    if type_amount <= 0:
-                        log.info("Skipped Trakt's %s for &s", list_type, user)
+            elif list_type.lower() == 'watchlist':
+                for authenticate_user, limit in value.items():
+                    if limit <= 0:
+                        log.info("Skipped Trakt's %s for %s", list_type, authenticate_user)
                         continue
                     else:
-                        log.info("Adding %d shows from the %s from &s", type_amount, list_type, user)
+                        log.info("Adding %d shows from the %s from %s", limit, list_type, authenticate_user)
 
                     # run shows
-                    added_shows = shows.callback(list_type=list_type, add_limit=type_amount,
+                    added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
-                                                 notifications=notifications, user=user)
+                                                 notifications=notifications, authenticate_user=authenticate_user)
+            elif list_type.lower() == 'lists':
+                for list, v in value.items():
+                    if isinstance(v, dict):
+                        authenticate_user = v['authenticate_user']
+                        limit = v['limit']
+                    else:
+                        authenticate_user = None
+                        limit = v
+
+                    # run shows
+                    added_shows = shows.callback(list_type=list_type, add_limit=limit,
+                                                 add_delay=add_delay, no_search=no_search,
+                                                 notifications=notifications, authenticate_user=authenticate_user)
 
             if added_shows is None:
                 log.error("Failed adding shows from Trakt's %s list", list_type)
@@ -497,34 +524,49 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
         log.info("Started")
 
         for list_type, value in cfg.automatic.movies.items():
+            added_movies = None
+
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() not in Trakt.non_user_lists:
-                type_amount = value
+            if list_type.lower() in Trakt.non_user_lists:
+                limit = value
 
-                if type_amount <= 0:
+                if limit <= 0:
                     log.info("Skipped Trakt's %s movies list", list_type)
                     continue
                 else:
-                    log.info("Adding %d movies from Trakt's %s list", type_amount, list_type)
+                    log.info("Adding %d movies from Trakt's %s list", limit, list_type)
 
                 # run movies
-                added_movies = movies.callback(list_type=list_type, add_limit=type_amount,
-                                             add_delay=add_delay, no_search=no_search,
-                                             notifications=notifications)
-            else:
-                for user, type_amount in value:
-                    if type_amount <= 0:
-                        log.info("Skipped Trakt's %s for &s", list_type, user)
+                added_movies = movies.callback(list_type=list_type, add_limit=limit,
+                                               add_delay=add_delay, no_search=no_search,
+                                               notifications=notifications)
+            elif list_type.lower() == 'watchlist':
+                for authenticate_user, limit in value.items():
+                    if limit <= 0:
+                        log.info("Skipped Trakt's %s for %s", list_type, authenticate_user)
                         continue
                     else:
-                        log.info("Adding %d movies from the %s from &s", type_amount, list_type, user)
+                        log.info("Adding %d movies from the %s from %s", limit, list_type, authenticate_user)
 
                     # run movies
-                    added_movies = movies.callback(list_type=list_type, add_limit=type_amount,
-                                                 add_delay=add_delay, no_search=no_search,
-                                                 notifications=notifications, user=user)
+                    added_movies = movies.callback(list_type=list_type, add_limit=limit,
+                                                   add_delay=add_delay, no_search=no_search,
+                                                   notifications=notifications, authenticate_user=authenticate_user)
+            elif list_type.lower() == 'lists':
+                for list, v in value.items():
+                    if isinstance(v, dict):
+                        authenticate_user = v['authenticate_user']
+                        limit = v['limit']
+                    else:
+                        authenticate_user = None
+                        limit = v
+
+                    # run shows
+                    added_movies = movies.callback(list_type=list, add_limit=limit,
+                                                   add_delay=add_delay, no_search=no_search,
+                                                   notifications=notifications, authenticate_user=authenticate_user)
 
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
