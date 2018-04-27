@@ -368,12 +368,12 @@ class Trakt:
 
                     exit()
                 else:
-                    log.error("Failed to retrieve shows on watchlist from %s, request response: %d", user,
+                    log.error("Failed to retrieve shows on %s from %s, request response: %d", list_key, list_user,
                               req.status_code)
                     break
 
             if len(processed_shows):
-                log.debug("Found %d shows on watchlist from %s", len(processed_shows), user)
+                log.debug("Found %d shows on %s from %s", len(processed_shows), list_key, list_user)
 
                 return processed_shows
             return None
