@@ -161,9 +161,7 @@ class Trakt:
     def oauth_headers(self, user):
         headers = self.headers
 
-        if user is None or user not in self.cfg['trakt'].keys():
-            log.debug('No authenticated user corresponds to "%s", so the first user in the config to authenticated.', user)
-
+        if user is None:
             users = self.cfg['trakt']
             
             if 'api_key' in users.keys():
@@ -172,7 +170,20 @@ class Trakt:
             if 'api_secret' in users.keys():
                 users.pop('api_secret')
 
-            user = list(users.keys())[0]
+            if len(users) > 0:
+                user = list(users.keys())[0]
+
+                log.debug('No user provided, so default to the first user in the config (%s)', user)
+        elif user not in self.cfg['trakt'].keys():
+            log.error('The user %s you specified to use for authentication is not authenticated yet. Authenticate the user first, before you use it to retrieve lists.', user)
+
+            exit()
+
+        # If there is no default user, try without authentication
+        if user is None:
+            log.info('Using no authentication')
+
+            return headers, user
 
         token_information = self.cfg['trakt'][user]
         # Check if the acces_token for the user is expired
@@ -188,7 +199,7 @@ class Trakt:
 
         headers['Authorization'] = 'Bearer ' + token_information['access_token']
 
-        return headers
+        return headers, user
 
     ############################################################
     # Shows
@@ -255,7 +266,7 @@ class Trakt:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_watchlist_shows(self, user=None, limit=1000, languages=None):
+    def get_watchlist_shows(self, authenticate_user=None, limit=1000, languages=None):
         try:
             processed_shows = []
 
@@ -269,10 +280,12 @@ class Trakt:
 
             # make request
             while True:
+                headers, authenticate_user = self.oauth_headers(authenticate_user)
+
                 req = requests.get('https://api.trakt.tv/sync/watchlist/shows', params=payload,
-                                   headers=self.oauth_headers(user),
+                                   headers=headers,
                                    timeout=30)
-                log.debug("Request User: %s", user)
+                log.debug("Request User: %s", authenticate_user)
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -304,12 +317,12 @@ class Trakt:
 
                     exit()
                 else:
-                    log.error("Failed to retrieve shows on watchlist from %s, request response: %d", user,
+                    log.error("Failed to retrieve shows on watchlist from %s, request response: %d", authenticate_user,
                               req.status_code)
                     break
 
             if len(processed_shows):
-                log.debug("Found %d shows on watchlist from %s", len(processed_shows), user)
+                log.debug("Found %d shows on watchlist from %s", len(processed_shows), authenticate_user)
 
                 return processed_shows
             return None
@@ -318,7 +331,7 @@ class Trakt:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_user_list_shows(self, list_id, user=None, limit=1000, languages=None):
+    def get_user_list_shows(self, list_url, authenticate_user=None, limit=1000, languages=None):
         try:
             processed_shows = []
 
@@ -330,13 +343,26 @@ class Trakt:
             if languages:
                 payload['languages'] = ','.join(languages)
 
+            try:
+                import re
+                list_user = re.search('\/users\/([^/]*)', list_url).group(1)
+                list_key = re.search('\/lists\/([^/]*)', list_url).group(1)
+            except:
+                log.error('The URL "%s" is not in the correct format', list_url)
+
+                exit()
+
+            log.debug('Fetching %s from %s', list_key, list_user)
+
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/users/' + user + '/lists/' + list_id + '/items/shows',
+                headers, authenticate_user = self.oauth_headers(authenticate_user)
+
+                req = requests.get('https://api.trakt.tv/users/' + list_user + '/lists/' + list_key + '/items/shows',
                                    params=payload,
-                                   headers=self.oauth_headers(user),
+                                   headers=headers,
                                    timeout=30)
-                log.debug("Request User: %s", user)
+                log.debug("Request User: %s", authenticate_user)
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -748,7 +774,7 @@ class Trakt:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_watchlist_movies(self, user=None, limit=1000, languages=None):
+    def get_watchlist_movies(self, authenticate_user=None, limit=1000, languages=None):
         try:
             processed_movies = []
 
@@ -762,10 +788,12 @@ class Trakt:
 
             # make request
             while True:
+                headers, authenticate_user = self.oauth_headers(authenticate_user)
+
                 req = requests.get('https://api.trakt.tv/sync/watchlist/movies', params=payload,
-                                   headers=self.oauth_headers(user),
+                                   headers=headers,
                                    timeout=30)
-                log.debug("Request User: %s", user)
+                log.debug("Request User: %s", authenticate_user)
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -797,12 +825,12 @@ class Trakt:
 
                     exit()
                 else:
-                    log.error("Failed to retrieve movies on watchlist from %s, request response: %d", user,
+                    log.error("Failed to retrieve movies on watchlist from %s, request response: %d", authenticate_user,
                               req.status_code)
                     break
 
             if len(processed_movies):
-                log.debug("Found %d movies on watchlist from %s", len(processed_movies), user)
+                log.debug("Found %d movies on watchlist from %s", len(processed_movies), authenticate_user)
 
                 return processed_movies
             return None
@@ -811,7 +839,7 @@ class Trakt:
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_user_list_movies(self, list_id, user=None, limit=1000, languages=None):
+    def get_user_list_movies(self, list_url, authenticate_user=None, limit=1000, languages=None):
         try:
             processed_movies = []
 
@@ -823,13 +851,24 @@ class Trakt:
             if languages:
                 payload['languages'] = ','.join(languages)
 
+            try:
+                import re
+                list_user = re.search('\/users\/([^/]*)', list_url).group(1)
+                list_key = re.search('\/lists\/([^/]*)', list_url).group(1)
+            except:
+                log.error('The URL "%s" is not in the correct format', list_url)
+
+            log.debug('Fetching %s from %s', list_key, list_user)
+
             # make request
             while True:
-                req = requests.get('https://api.trakt.tv/users/' + user + '/lists/' + list_id + '/items/movies',
+                headers, authenticate_user = self.oauth_headers(authenticate_user)
+
+                req = requests.get('https://api.trakt.tv/users/' + list_user + '/lists/' + list_key + '/items/movies',
                                    params=payload,
-                                   headers=self.oauth_headers(user),
+                                   headers=headers,
                                    timeout=30)
-                log.debug("Request User: %s", user)
+                log.debug("Request User: %s", authenticate_user)
                 log.debug("Request URL: %s", req.url)
                 log.debug("Request Payload: %s", payload)
                 log.debug("Response Code: %d", req.status_code)
@@ -861,12 +900,12 @@ class Trakt:
 
                     exit()
                 else:
-                    log.error("Failed to retrieve movies on watchlist from %s, request response: %d", user,
+                    log.error("Failed to retrieve movies on watchlist from %s, request response: %d", authenticate_user,
                               req.status_code)
                     break
 
             if len(processed_movies):
-                log.debug("Found %d movies on watchlist from %s", len(processed_movies), user)
+                log.debug("Found %d movies on watchlist from %s", len(processed_movies), authenticate_user)
 
                 return processed_movies
             return None
