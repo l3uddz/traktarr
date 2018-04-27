@@ -161,9 +161,11 @@ class Trakt:
     def oauth_headers(self, user):
         headers = self.headers
 
-        if user is None:
-            users = self.cfg['trakt']
+        if user is None or user not in self.cfg['trakt'].keys():
+            log.debug('No authenticated user corresponds to "%s", so the first user in the config to authenticated.', user)
 
+            users = self.cfg['trakt']
+            
             if 'api_key' in users.keys():
                 users.pop('api_key')
 
