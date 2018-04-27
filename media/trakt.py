@@ -163,8 +163,12 @@ class Trakt:
 
         if user is None:
             users = self.cfg['trakt']
-            users.pop('api_key')
-            users.pop('api_secret')
+
+            if 'api_key' in users.keys():
+                users.pop('api_key')
+
+            if 'api_secret' in users.keys():
+                users.pop('api_secret')
 
             user = list(users.keys())[0]
 
