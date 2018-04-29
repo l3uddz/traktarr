@@ -1,14 +1,27 @@
 # Traktarr
 Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
 
-Trakt lists currently supported:
-- anticipated
-- boxoffice
-- interval
-- popular
-- trending
+Types of Trakt lists supported:
 
-Furthermore, watchlists and custom list from multiple users are supported.
+- Official Trakt lists
+
+  - Trending
+  
+  - Popular
+  
+  - Anticipated
+  
+  - boxoffice
+  
+- Public lists
+
+- Private lists*
+
+  - Watchlist
+  
+  - Custom list(s)
+
+\* Support for multiple (authenticated) users.
 
 # Requirements
 
@@ -32,35 +45,43 @@ Install Traktarr to be run with `traktarr` command.
 
 ## 2. Create app authentication
 
-1. Create an Trakt application by going [here](https://trakt.tv/oauth/applications/new)
+1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
 2. Enter a name for your application; for example `Traktarr`
-3. Enter `urn:ietf:wg:oauth:2.0:oob` in the Redirecht uri field.
-4. Click "Save app"
-5. Open the Traktarr configuration file `config.json` and insert the
-Client ID in the api_key and the Client Secret in the api_secret. Like this:
-```
-    {
-        "trakt": {
-            "api_key": "my_client_id",
-            "api_secret": "my_client_secret_key"
-        }
-    }
-```
+3. Enter `urn:ietf:wg:oauth:2.0:oob` in the `Redirect uri` field.
+4. Click "SAVE APP".
+5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `api_key` and the Client Secret in the `api_secret`, like this:
 
-## 3. Authenticate users (optional)
+   ```
+       {
+           "trakt": {
+               "api_key": "my_client_id",
+               "api_secret": "my_client_secret_key"
+           }
+       }
+   ```
 
-If you want to be able to access private lists, you have to authentcate that user.
+## 3. Authenticate User(s) (optional)
+
+For reach user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
+
 
 Repeat the following steps for every user you want to authenticate:
-1. Run `traktarr trakt_authenticate` (from the installation path)
-2. Go to https://trakt.tv/activate.
-3. Enter the code you see in your terminal
-4. Click continue
-5. If you're not loggedin to Trakt, login noe
-6. Accept
+1. Run `traktarr trakt_authentication`
+1. You wil get the following prompt:
+
+   ```
+   2018-04-29 23:52:43,455 - INFO       - media.trakt                         - __oauth_request_device_code         - We're talking to Trakt to get your verification code. Please wait a moment...
+   2018-04-29 23:52:43,772 - INFO       - media.trakt                         - __oauth_request_device_code         - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
+   ```
+1. Go to https://trakt.tv/activate.
+1. Enter the code you see in your terminal.
+1. Click continue.
+1. If you are not logged in to Trakt, login now.
+1. Click "Accept".
+1. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
 
 You've now authenticated the user.
-You can repeat this process for as many users as you want.
+You can repeat this process for as many users as you like.
 
 ## 4. Setup Schedule
 
@@ -75,7 +96,7 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
 
 # Configuration
 
-Here is some default configuration you can use.
+## Sample Configuration
 
 ```json
 {
@@ -192,22 +213,6 @@ Here is some default configuration you can use.
 ```
 
 
-## Watchlist
-
-Traktarr can fetch the watchlist for as many users as you like.
-You'll have to authenticate every user from whome you want to fetch the watchlist,
-by following the steps described [here]((#authenticate-users-optional)).
-
-When all users are authenticated you can fetch their watchlist either
-with the automatic task or with the manual commands (see examples below).
-
-## Other custom user lists
-
-Traktarr can also fetch any number of other custom lists.
-
-If the custom list is private, you'll have to authenticate a user that is allowed to
-access that list by following the steps described [here]((#authenticate-users-optional)).
-
 ## Core
 
 ```json
@@ -255,10 +260,11 @@ Movies can be run on a separate schedule from Shows.
 
 `lists` - specify which custom lists to fetch (see explanation below)
 
-### Watchlist
+### Personal Watchlists
 
-The watchlist task can be scheduled with a differtent item limit for every user.
-For every user you've to add: `"username": limit` to the watchlist key. For example:
+The watchlist task can be scheduled with a differtent item limit for every (authenticated) user.*
+
+So for every user, you will add: `"username": limit` to the watchlist key. For example:
 
 ```json
 "automatic": {
@@ -279,14 +285,15 @@ For every user you've to add: `"username": limit` to the watchlist key. For exam
 
 Of course you can combine this with running the other list types as well.
 
-_Please note that every user from whome you fetch the watchlist should be authenticated._
+\*_Please note that every user, from whom you fetch the watchlist from, will need to be authenticated._
 
-### Custom lists
+### Custom Lists
 
 You can also schedule any number of public or private custom lists.
-For both public and private lsits you'll need the url to that list.
-You can copy this url from the address bar in you browser when viewing
-the list on Trakt.
+
+For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser. 
+
+#### Public Lists
 
 Public lists can be added by specifying the url and the item limit like this:
 
@@ -305,10 +312,12 @@ Public lists can be added by specifying the url and the item limit like this:
 },
 ```
 
+
+#### Private Lists
+
 Private lists can be added in two ways:
 
-1. If there is only one authenticated user to Traktarr, you can add
-the private list just like any other public list:
+1. If there is only one authenticated user, you can add the private list just like any other public list:
 
 ```json
 "automatic": {
@@ -325,12 +334,9 @@ the private list just like any other public list:
 },
 ```
 
-2. If there are multiple authenticated users to Traktarr, you'll need
-to specify with which user Traktarr should authenticate when fetching
-the list. The user should have acces to the list (either own the list,
-or friends with the owner of the list and the list is specified to be
-shared with friends)
-_Note that the specified user has to be authenticated_
+2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`. 
+
+_Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
 
 ```json
 "automatic": {
@@ -547,6 +553,8 @@ Sonarr configuration.
 
 To show how tags work, we will create a sample tag `AMZN` and assign it to certain networks.
 
+_Note: These are optional._
+
 ### Sonarr
 
 First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
@@ -559,7 +567,7 @@ Tags: AMZN
 
 ### Traktarr
 
-Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain networks.
+Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain networks. 
 
 ```json
 "tags": {
@@ -589,6 +597,8 @@ Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain n
 
 ## Trakt
 
+Trakt Authentication info: 
+
 ```json
 "trakt": {
   "api_key": "",
@@ -600,8 +610,6 @@ Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain n
 
 `api_secret` - Fill in your Trakt Secret key (_Client Scret_)
 
-_Note that when users authenticate to Traktarr, their token information
-will be added to this._
 
 # Usage
 
@@ -688,31 +696,32 @@ Options:
 
 ## Examples
 
-- Fetch boxoffice movies labeld with the comedy genere, limit to 10 items and send notifications
-```
-traktarr movies -t boxoffice -g comedy -l 10 --notifications
-```
+- Fetch boxoffice movies, labeled with the comedy genre, limited to 10 items, and send notifications:
+
+  ```
+  traktarr movies -t boxoffice -g comedy -l 10 --notifications
+  ```
 
 
-- Fetch popular shows, limit to 2 items and don't start the search in Sonarr
-```
-traktarr shows -t popular -l 2 --no-search
-```
+- Fetch popular shows, limited to 2 items, and don't start the search in Sonarr:
 
-- Fetch all shows from the watchlist from user1
+  ```
+  traktarr shows -t popular -l 2 --no-search
+  ```
 
-```
-traktarr shows -t watchlist --authenticate-user user1
-```
+- Fetch all shows from the watchlist of `user1`:
 
-- Fetch all movies from the public https://trakt.tv/users/rkerwin/lists/top-100-movies list
+  ```
+  traktarr shows -t watchlist --authenticate-user user1
+  ```
+- Fetch all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
 
-```
-traktarr shows -t https://trakt.tv/users/rkerwin/lists/top-100-movies
-```
+  ```
+  traktarr shows -t https://trakt.tv/users/rkerwin/lists/top-100-movies
+  ```
 
-- Fetch all movies from the private https://trakt.tv/users/user1/lists/private-movies-list list
+- Fetch all movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
 
-```
-traktarr shows -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
-```
+  ```
+  traktarr shows -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
+  ```
