@@ -62,7 +62,7 @@ Install Traktarr to be run with `traktarr` command.
 
 ## 3. Authenticate User(s) (optional)
 
-For reach user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
+For each user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
 
 
 Repeat the following steps for every user you want to authenticate:
