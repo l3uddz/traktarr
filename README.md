@@ -70,8 +70,8 @@ Repeat the following steps for every user you want to authenticate:
 2. You wil get the following prompt:
 
    ```
-   2018-04-29 23:52:43,455 - INFO       - media.trakt                         - __oauth_request_device_code         - We're talking to Trakt to get your verification code. Please wait a moment...
-   2018-04-29 23:52:43,772 - INFO       - media.trakt                         - __oauth_request_device_code         - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
+   INFO       - media.trakt                         - __oauth_request_device_code         - We're talking to Trakt to get your verification code. Please wait a moment...
+   INFO       - media.trakt                         - __oauth_request_device_code         - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
    ```
 3. Go to https://trakt.tv/activate.
 4. Enter the code you see in your terminal.
