@@ -702,7 +702,6 @@ Options:
   traktarr movies -t boxoffice -g comedy -l 10 --notifications
   ```
 
-
 - Fetch popular shows, limited to 2 items, and don't start the search in Sonarr:
 
   ```
@@ -714,14 +713,15 @@ Options:
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
+  
 - Fetch all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
 
   ```
-  traktarr shows -t https://trakt.tv/users/rkerwin/lists/top-100-movies
+  traktarr movies -t https://trakt.tv/users/rkerwin/lists/top-100-movies
   ```
 
 - Fetch all movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
 
   ```
-  traktarr shows -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
+  traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
