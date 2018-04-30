@@ -67,18 +67,18 @@ For each user you want to access the private lists for (i.e. watchlist and/or cu
 
 Repeat the following steps for every user you want to authenticate:
 1. Run `traktarr trakt_authentication`
-1. You wil get the following prompt:
+2. You wil get the following prompt:
 
    ```
    2018-04-29 23:52:43,455 - INFO       - media.trakt                         - __oauth_request_device_code         - We're talking to Trakt to get your verification code. Please wait a moment...
    2018-04-29 23:52:43,772 - INFO       - media.trakt                         - __oauth_request_device_code         - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
    ```
-1. Go to https://trakt.tv/activate.
-1. Enter the code you see in your terminal.
-1. Click continue.
-1. If you are not logged in to Trakt, login now.
-1. Click "Accept".
-1. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
+3. Go to https://trakt.tv/activate.
+4. Enter the code you see in your terminal.
+5. Click continue.
+6. If you are not logged in to Trakt, login now.
+7. Click "Accept".
+8. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
 
 You've now authenticated the user.
 You can repeat this process for as many users as you like.
