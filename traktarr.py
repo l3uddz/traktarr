@@ -166,14 +166,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
         trakt_series_list = trakt.get_popular_shows()
     elif list_type.lower() == 'watchlist':
         trakt_series_list = trakt.get_watchlist_shows(authenticate_user)
-    elif list_type.lower() == 'lists':
-        trakt_series_list = trakt.get_user_list_shows(list_type, authenticate_user)
     else:
-        log.error("Aborting due to unknown Trakt list type")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to determine Trakt list type'})
-        return None
+        trakt_series_list = trakt.get_user_list_shows(list_type, authenticate_user)
 
     if not trakt_series_list:
         log.error("Aborting due to failure to retrieve Trakt %s shows list", list_type)
@@ -341,14 +335,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
         trakt_movies_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'watchlist':
         trakt_movies_list = trakt.get_watchlist_movies(authenticate_user)
-    elif list_type.lower() == 'lists':
-        trakt_movies_list = trakt.get_user_list_movies(list_type, authenticate_user)
     else:
-        log.error("Aborting due to unknown Trakt list type")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                             'reason': 'Failure to determine Trakt list type'})
-        return None
+        trakt_movies_list = trakt.get_user_list_movies(list_type, authenticate_user)
 
     if not trakt_movies_list:
         log.error("Aborting due to failure to retrieve Trakt %s movies list", list_type)
@@ -493,7 +481,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                         limit = v
 
                     # run shows
-                    added_shows = shows.callback(list_type=list_type, add_limit=limit,
+                    added_shows = shows.callback(list_type=list, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
                                                  notifications=notifications, authenticate_user=authenticate_user)
 
