@@ -285,8 +285,6 @@ So for every user, you will add: `"username": limit` to the watchlist key. For e
 
 Of course you can combine this with running the other list types as well.
 
-\*_Please note that every user, from whom you fetch the watchlist from, will need to be authenticated._
-
 ### Custom Lists
 
 You can also schedule any number of public or private custom lists.
