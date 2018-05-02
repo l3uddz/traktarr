@@ -282,7 +282,8 @@ class Trakt:
             while True:
                 headers, authenticate_user = self.oauth_headers(authenticate_user)
 
-                req = requests.get('https://api.trakt.tv/sync/watchlist/shows', params=payload,
+                req = requests.get('https://api.trakt.tv/users/' + authenticate_user + '/watchlist/movies',
+                                   params=payload,
                                    headers=headers,
                                    timeout=30)
                 log.debug("Request User: %s", authenticate_user)
@@ -790,7 +791,8 @@ class Trakt:
             while True:
                 headers, authenticate_user = self.oauth_headers(authenticate_user)
 
-                req = requests.get('https://api.trakt.tv/sync/watchlist/movies', params=payload,
+                req = requests.get('https://api.trakt.tv/users/' + authenticate_user + '/watchlist/movies',
+                                   params=payload,
                                    headers=headers,
                                    timeout=30)
                 log.debug("Request User: %s", authenticate_user)
