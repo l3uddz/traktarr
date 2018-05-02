@@ -175,7 +175,9 @@ class Trakt:
 
                 log.debug('No user provided, so default to the first user in the config (%s)', user)
         elif user not in self.cfg['trakt'].keys():
-            log.error('The user %s you specified to use for authentication is not authenticated yet. Authenticate the user first, before you use it to retrieve lists.', user)
+            log.error(
+                'The user %s you specified to use for authentication is not authenticated yet. Authenticate the user first, before you use it to retrieve lists.',
+                user)
 
             exit()
 
@@ -405,7 +407,7 @@ class Trakt:
                 return processed_shows
             return None
         except Exception:
-            log.exception("Exception retrieving shows on watchlist")
+            log.exception("Exception retrieving shows on user list")
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
@@ -902,15 +904,16 @@ class Trakt:
 
                     exit()
                 else:
-                    log.error("Failed to retrieve movies on watchlist from %s, request response: %d", authenticate_user,
+                    log.error("Failed to retrieve movies on %s from %s, request response: %d", list_key,
+                              authenticate_user,
                               req.status_code)
                     break
 
             if len(processed_movies):
-                log.debug("Found %d movies on watchlist from %s", len(processed_movies), authenticate_user)
+                log.debug("Found %d movies on %s from %s", len(processed_movies), list_key, authenticate_user)
 
                 return processed_movies
             return None
         except Exception:
-            log.exception("Exception retrieving movies on watchlist")
+            log.exception("Exception retrieving movies on user list")
         return None
