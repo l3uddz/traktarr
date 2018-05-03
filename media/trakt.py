@@ -3,7 +3,7 @@ import time
 import backoff
 import requests
 
-from misc.helpers import backoff_handler
+from helpers.misc import backoff_handler
 from misc.log import logger
 
 log = logger.get_logger(__name__)

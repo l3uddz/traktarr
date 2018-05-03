@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 import backoff
 import requests
 
-from misc import helpers
-from misc import str as misc_str
-from misc.helpers import backoff_handler
+from helpers.misc import backoff_handler
+from helpers import str as misc_str
+from helpers import misc
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -120,7 +120,7 @@ class PVR(ABC):
 
             response_json = None
             if 'json' in req.headers['Content-Type'].lower():
-                response_json = helpers.get_response_dict(req.json(), identifier_field, identifier)
+                response_json = misc.get_response_dict(req.json(), identifier_field, identifier)
 
             if (req.status_code == 201 or req.status_code == 200) \
                     and (response_json and identifier_field in response_json) \
