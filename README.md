@@ -49,13 +49,13 @@ Install Traktarr to be run with `traktarr` command.
 2. Enter a name for your application; for example `Traktarr`
 3. Enter `urn:ietf:wg:oauth:2.0:oob` in the `Redirect uri` field.
 4. Click "SAVE APP".
-5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `api_key` and the Client Secret in the `api_secret`, like this:
+5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
 
    ```
        {
            "trakt": {
-               "api_key": "my_client_id",
-               "api_secret": "my_client_secret_key"
+               "client_id": "my_client_id",
+               "client_secret": "my_client_secret_key"
            }
        }
    ```
@@ -206,8 +206,8 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
     "url": "http://localhost:8989/"
   },
   "trakt": {
-    "api_key": "",
-    "api_secret": ""
+    "client_id": "",
+    "client_secret": ""
   }
 }
 ```
@@ -599,14 +599,14 @@ Trakt Authentication info:
 
 ```json
 "trakt": {
-  "api_key": "",
-  "api_scret": ""
+  "client_id": "",
+  "client_secret": ""
 }
 ```
 
-`api_key` - Fill in your Trakt API key (_Client ID_).
+`client_id` - Fill in your Trakt API key (_Client ID_).
 
-`api_secret` - Fill in your Trakt Secret key (_Client Scret_)
+`client_secret` - Fill in your Trakt Secret key (_Client Scret_)
 
 
 # Usage
