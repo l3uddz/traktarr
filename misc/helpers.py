@@ -410,3 +410,21 @@ def get_response_dict(response, key_field=None, key_value=None):
     except Exception:
         log.exception("Exception determining response for %s: ", response)
     return found_response
+
+
+def backoff_handler(details):
+    log.warning("Backing off {wait:0.1f} seconds afters {tries} tries "
+                "calling function {target} with args {args} and kwargs "
+                "{kwargs}".format(**details))
+
+
+def dict_merge(dct, merge_dct):
+    for k, v in merge_dct.items():
+        import collections
+
+        if k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.Mapping):
+            dict_merge(dct[k], merge_dct[k])
+        else:
+            dct[k] = merge_dct[k]
+
+    return dct

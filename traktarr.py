@@ -216,7 +216,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
         log.info("Retrieved %d Tag ID's", len(profile_tags))
 
     # get sonarr series list
-    sonarr_series_list = sonarr.get_series()
+    sonarr_series_list = sonarr.get_objects()
     if not sonarr_series_list:
         log.error("Aborting due to failure to retrieve Sonarr shows list")
         if notifications:
@@ -439,7 +439,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
         log.info("Retrieved Profile ID for %s: %d", cfg.radarr.profile, profile_id)
 
     # get radarr movies list
-    radarr_movie_list = radarr.get_movies()
+    radarr_movie_list = radarr.get_objects()
     if not radarr_movie_list:
         log.error("Aborting due to failure to retrieve Radarr movies list")
         if notifications:

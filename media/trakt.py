@@ -3,15 +3,10 @@ import time
 import backoff
 import requests
 
+from misc.helpers import backoff_handler
 from misc.log import logger
 
 log = logger.get_logger(__name__)
-
-
-def backoff_handler(details):
-    log.warning("Backing off {wait:0.1f} seconds afters {tries} tries "
-                "calling function {target} with args {args} and kwargs "
-                "{kwargs}".format(**details))
 
 
 class Trakt:
