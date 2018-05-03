@@ -80,7 +80,7 @@ def trakt_authentication():
 def show(show_id, folder=None, no_search=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import sonarr as sonarr_helper
 
     # replace sonarr root_folder if folder is supplied
     if folder:
@@ -128,17 +128,17 @@ def show(show_id, folder=None, no_search=False):
                  trakt_show['year'])
 
     # determine which tags to use when adding this series
-    use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+    use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
                                                          trakt_show['network'])
 
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
                          cfg.sonarr.root_folder, use_tags, not no_search):
         log.info("ADDED %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
-                 helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                 sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
     else:
         log.error("FAILED adding %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
-                  helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                  sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
     return
 
@@ -159,7 +159,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
           authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import sonarr as sonarr_helper
+    from helpers import trakt as trakt_helper
 
     added_shows = 0
 
@@ -250,7 +251,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
         log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_series_list))
 
     # build filtered series list without series that exist in sonarr
-    processed_series_list = helpers.sonarr_remove_existing_series(sonarr_series_list, trakt_series_list)
+    processed_series_list = sonarr_helper.remove_existing_series(sonarr_series_list, trakt_series_list)
     if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         if notifications:
@@ -276,26 +277,26 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
                 continue
 
             # check if series passes out blacklist criteria inspection
-            if not helpers.trakt_is_show_blacklisted(series, cfg.filters.shows):
+            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
 
                 # determine which tags to use when adding this series
-                use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
                                                                      series['show']['network'])
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
                     log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
-                             helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                             sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
                     log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
-                              helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                              sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
                 if add_limit and added_shows >= add_limit:
@@ -392,7 +393,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
            authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import radarr as radarr_helper
+    from helpers import trakt as trakt_helper
 
     added_movies = 0
 
@@ -475,7 +477,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
         log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_movies_list))
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list = helpers.radarr_remove_existing_movies(radarr_movie_list, trakt_movies_list)
+    processed_movies_list = radarr_helper.remove_existing_movies(radarr_movie_list, trakt_movies_list)
     if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
         if notifications:
@@ -501,7 +503,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
                 continue
 
             # check if movie passes out blacklist criteria inspection
-            if not helpers.trakt_is_movie_blacklisted(movie, cfg.filters.movies):
+            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies):
                 log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
