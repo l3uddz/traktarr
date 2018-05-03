@@ -19,17 +19,17 @@ class Trakt:
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.api_key = cfg.trakt.api_key
-        self.api_secret = cfg.trakt.api_secret
+        self.client_id = cfg.trakt.client_id
+        self.client_secret = cfg.trakt.client_secret
         self.headers = {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
-            'trakt-api-key': self.api_key
+            'trakt-api-key': self.client_id
         }
 
-    def validate_api_key(self):
+    def validate_client_id(self):
         try:
-            # request trending shows to determine if api_key is valid
+            # request trending shows to determine if client_id is valid
             payload = {'extended': 'full', 'limit': 1000}
 
             # make request
@@ -45,7 +45,7 @@ class Trakt:
                 return True
             return False
         except Exception:
-            log.exception("Exception validating api_key: ")
+            log.exception("Exception validating client_id: ")
         return False
 
     ############################################################
@@ -55,7 +55,7 @@ class Trakt:
     def __oauth_request_device_code(self):
         log.info("We're talking to Trakt to get your verification code. Please wait a moment...")
 
-        payload = {'client_id': self.api_key}
+        payload = {'client_id': self.client_id}
 
         # Request device code
         req = requests.post('https://api.trakt.tv/oauth/device/code', params=payload, headers=self.headers)
@@ -117,7 +117,7 @@ class Trakt:
             log.debug('Polling Trakt for the %sth time; %s seconds left', tries,
                       polling_expire - round(time.time() - polling_start))
 
-            payload = {'code': device_code, 'client_id': self.api_key, 'client_secret': self.api_secret,
+            payload = {'code': device_code, 'client_id': self.client_id, 'client_secret': self.client_secret,
                        'grant_type': 'authorization_code'}
 
             # Poll Trakt for access token
@@ -137,7 +137,7 @@ class Trakt:
     def __oauth_refresh_access_token(self, refresh_token):
         # TODO Doesn't work
 
-        payload = {'refresh_token': refresh_token, 'client_id': self.api_key, 'client_secret': self.api_secret,
+        payload = {'refresh_token': refresh_token, 'client_id': self.client_id, 'client_secret': self.client_secret,
                    'grant_type': 'refresh_token'}
 
         req = requests.post('https://api.trakt.tv/oauth/token', params=payload, headers=self.headers)
@@ -164,11 +164,11 @@ class Trakt:
         if user is None:
             users = self.cfg['trakt']
             
-            if 'api_key' in users.keys():
-                users.pop('api_key')
+            if 'client_id' in users.keys():
+                users.pop('client_id')
 
-            if 'api_secret' in users.keys():
-                users.pop('api_secret')
+            if 'client_secret' in users.keys():
+                users.pop('client_secret')
 
             if len(users) > 0:
                 user = list(users.keys())[0]
