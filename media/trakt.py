@@ -135,8 +135,6 @@ class Trakt:
         return False
 
     def __oauth_refresh_access_token(self, refresh_token):
-        # TODO Doesn't work
-
         payload = {'refresh_token': refresh_token, 'client_id': self.client_id, 'client_secret': self.client_secret,
                    'grant_type': 'refresh_token'}
 
