@@ -2,10 +2,10 @@ import os.path
 
 import backoff
 import requests
+from helpers.misc import backoff_handler, dict_merge
 
+from helpers import str as misc_str
 from media.pvr import PVR
-from misc import str as misc_str
-from misc.helpers import backoff_handler, dict_merge
 from misc.log import logger
 
 log = logger.get_logger(__name__)

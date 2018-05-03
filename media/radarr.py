@@ -1,7 +1,7 @@
 import backoff
 
+from helpers.misc import backoff_handler, dict_merge
 from media.pvr import PVR
-from misc.helpers import backoff_handler, dict_merge
 from misc.log import logger
 
 log = logger.get_logger(__name__)
