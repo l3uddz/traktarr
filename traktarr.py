@@ -101,9 +101,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
     if folder:
         cfg['sonarr']['root_folder'] = folder
 
-    # validate trakt api_key
+    # validate trakt client_id
     trakt = Trakt(cfg)
-    if not trakt.validate_api_key():
+    if not trakt.validate_client_id():
         log.error("Aborting due to failure to validate Trakt API Key")
         if notifications:
             callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
@@ -280,7 +280,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
 
     # validate trakt api_key
     trakt = Trakt(cfg)
-    if not trakt.validate_api_key():
+    if not trakt.validate_client_id():
         log.error("Aborting due to failure to validate Trakt API Key")
         if notifications:
             callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,

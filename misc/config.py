@@ -38,8 +38,8 @@ class Config(object, metaclass=Singleton):
             'debug': False
         },
         'trakt': {
-            'api_key': '',
-            'api_secret': ''
+            'client_id': '',
+            'client_secret': ''
         },
         'sonarr': {
             'url': 'http://localhost:8989/',
