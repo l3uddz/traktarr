@@ -57,7 +57,7 @@ def app(config, logfile):
 # Trakt OAuth
 ############################################################
 
-@app.command(help='Authenticate Traktarr to index your personal lists')
+@app.command(help='Authenticate traktarr.')
 def trakt_authentication():
     from media.trakt import Trakt
     trakt = Trakt(cfg)
