@@ -261,7 +261,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
-              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
+              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
 def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
            authenticate_user=None):
     from media.radarr import Radarr
