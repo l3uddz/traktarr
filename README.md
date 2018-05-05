@@ -1,4 +1,4 @@
-# Traktarr
+# traktarr
 Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
 
 Types of Trakt lists supported:
@@ -6,19 +6,19 @@ Types of Trakt lists supported:
 - Official Trakt lists
 
   - Trending
-  
+
   - Popular
-  
+
   - Anticipated
-  
+
   - boxoffice
-  
+
 - Public lists
 
 - Private lists*
 
   - Watchlist
-  
+
   - Custom list(s)
 
 \* Support for multiple (authenticated) users.
@@ -32,7 +32,7 @@ Types of Trakt lists supported:
 
 ## 1. Base Install
 
-Install Traktarr to be run with `traktarr` command.
+Install traktarr to be run with `traktarr` command.
 
 1. `cd /opt`
 2. `sudo git clone https://github.com/l3uddz/traktarr`
@@ -46,10 +46,10 @@ Install Traktarr to be run with `traktarr` command.
 ## 2. Create app authentication
 
 1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
-2. Enter a name for your application; for example `Traktarr`
+2. Enter a name for your application; for example `traktarr`
 3. Enter `urn:ietf:wg:oauth:2.0:oob` in the `Redirect uri` field.
 4. Click "SAVE APP".
-5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
+5. Open the traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
 
    ```
        {
@@ -82,16 +82,6 @@ Repeat the following steps for every user you want to authenticate:
 
 You've now authenticated the user.
 You can repeat this process for as many users as you like.
-
-## 4. Setup Schedule
-
-To have Traktarr get Movies and Shows for you automatically, on set interval.
-
-1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
-2. `sudo systemctl daemon-reload`
-3. `sudo systemctl enable traktarr.service`
-4. `sudo systemctl start traktarr.service`
-
 
 
 # Configuration
@@ -226,9 +216,11 @@ To have Traktarr get Movies and Shows for you automatically, on set interval.
 
 
 ## Automatic
-Used for automatic / scheduled Traktarr tasks.
+Used for automatic / scheduled traktarr tasks.
 
-Movies can be run on a separate schedule from Shows.
+Movies can be run on a separate schedule then from Shows.
+
+_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. manually (via CLI) only) - see [Usage](#usage) section.._
 
 ```json
 "automatic": {
@@ -252,7 +244,7 @@ Movies can be run on a separate schedule from Shows.
 },
 ```
 
-`interval` - specify how often (in hours) to run Traktarr task.
+`interval` - specify how often (in hours) to run traktarr task.
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - specify how many items from each Trakt list to find.
 
@@ -262,7 +254,8 @@ Movies can be run on a separate schedule from Shows.
 
 ### Personal Watchlists
 
-The watchlist task can be scheduled with a differtent item limit for every (authenticated) user.*
+The watchlist task can be scheduled with a differtent item limit for every (authenticated) user.
+
 
 So for every user, you will add: `"username": limit` to the watchlist key. For example:
 
@@ -289,7 +282,7 @@ Of course you can combine this with running the other list types as well.
 
 You can also schedule any number of public or private custom lists.
 
-For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser. 
+For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser.
 
 #### Public Lists
 
@@ -332,7 +325,7 @@ Private lists can be added in two ways:
 },
 ```
 
-2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`. 
+2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`.
 
 _Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
 
@@ -563,9 +556,9 @@ Must not contain:
 Tags: AMZN
 ```
 
-### Traktarr
+### traktarr
 
-Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain networks. 
+Finally, we will edit the traktarr config and assign the `AMZN` tag to certain networks.
 
 ```json
 "tags": {
@@ -595,7 +588,7 @@ Finally, we will edit the Traktarr config and assign the `AMZN` tag to certain n
 
 ## Trakt
 
-Trakt Authentication info: 
+Trakt Authentication info:
 
 ```json
 "trakt": {
@@ -611,8 +604,19 @@ Trakt Authentication info:
 
 # Usage
 
+## Automatic (Scheduled)
 
-## General
+To have traktarr get Movies and Shows for you automatically, on set interval.
+
+1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
+2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours.
+2. `sudo systemctl daemon-reload`
+3. `sudo systemctl enable traktarr.service`
+4. `sudo systemctl start traktarr.service`
+
+## Manual
+
+### General
 
 ```
 traktarr
@@ -633,11 +637,11 @@ Commands:
   movies                Add new movies to Radarr.
   run                   Run in automatic mode.
   shows                 Add new shows to Sonarr.
-  trakt_authentication  Authenticate Traktrarr to index your personal...
+  trakt_authentication  Authenticate traktarr.
   ```
 
 
-## Movies
+### Movies
 
 ```
 traktarr movies --help
@@ -663,11 +667,11 @@ Options:
   --notifications                 Send notifications.
   --authencate-user TEXT          Specify which user to authenticate with to
                                   retrieve Trakt lists. Default: first user in the
-                                  config
+                                  config.
 ```
 
 
-## Shows
+### Shows
 
 ```
 Usage: traktarr shows [OPTIONS]
@@ -688,7 +692,7 @@ Options:
   --notifications                 Send notifications.
   --authencate-user TEXT          Specify which user to authenticate with to
                                   retrieve Trakt lists. Default: first user in the
-                                  config
+                                  config.
   --help                          Show this message and exit.
 ```
 
@@ -711,7 +715,7 @@ Options:
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
-  
+
 - Fetch all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
 
   ```
