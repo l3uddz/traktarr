@@ -220,7 +220,7 @@ Used for automatic / scheduled traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
 
-_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. manually (via CLI) only) - see [Usage](#usage) section.._
+_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. via manual/CLI command only); see [Usage](#manual)._
 
 ```json
 "automatic": {
@@ -610,11 +610,11 @@ To have traktarr get Movies and Shows for you automatically, on set interval.
 
 1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
 2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours.
-2. `sudo systemctl daemon-reload`
-3. `sudo systemctl enable traktarr.service`
-4. `sudo systemctl start traktarr.service`
+3. `sudo systemctl daemon-reload`
+4. `sudo systemctl enable traktarr.service`
+5. `sudo systemctl start traktarr.service`
 
-## Manual
+## Manual (CLI)
 
 ### General
 
@@ -696,7 +696,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-## Examples
+## Examples (Manual)
 
 - Fetch boxoffice movies, labeled with the comedy genre, limited to 10 items, and send notifications:
 
