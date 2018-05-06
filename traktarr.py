@@ -15,7 +15,7 @@ notify = None
 
 
 # Click
-@click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt lists.')
+@click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt.')
 @click.version_option('1.1.3', prog_name='traktarr')
 @click.option(
     '--config',
@@ -73,8 +73,8 @@ def trakt_authentication():
 # SHOWS
 ############################################################
 
-@app.command(help='Add single show to Sonarr.')
-@click.option('--show_id', '-s', help='Trakt show_id.', required=True)
+@app.command(help='Add a single show to Sonarr.')
+@click.option('--show_id', '-id', help='Trakt show_id.', required=True)
 @click.option('--folder', '-f', default=None, help='Add show with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding show to Sonarr.')
 def show(show_id, folder=None, no_search=False):
@@ -143,7 +143,7 @@ def show(show_id, folder=None, no_search=False):
     return
 
 
-@app.command(help='Add new shows to Sonarr.')
+@app.command(help='Add multiple shows to Sonarr.')
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, watchlist or any URL to a list',
               required=True)
@@ -320,8 +320,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 # MOVIES
 ############################################################
 
-@app.command(help='Add single movie to Radarr.')
-@click.option('--movie_id', '-m', help='Trakt movie_id.', required=True)
+@app.command(help='Add a single movie to Radarr.')
+@click.option('--movie_id', '-id', help='Trakt movie_id.', required=True)
 @click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
 def movie(movie_id, folder=None, no_search=False):
@@ -375,7 +375,7 @@ def movie(movie_id, folder=None, no_search=False):
     return
 
 
-@app.command(help='Add new movies to Radarr.')
+@app.command(help='Add multiple movies to Radarr.')
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist '
                    'or any URL to a list',
