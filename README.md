@@ -1,9 +1,6 @@
 # traktarr
 Add new shows & movies to Sonarr/Radarr from Trakt.
 
-[![asciicast](https://asciinema.org/a/179974.png)](https://asciinema.org/a/179974)
-
-
 Types of Trakt lists supported:
 
 - Official Trakt lists
@@ -25,6 +22,9 @@ Types of Trakt lists supported:
   - Custom list(s)
 
 \* Support for multiple (authenticated) users.
+
+
+<script src="https://asciinema.org/a/14.js" id="asciicast-14" async></script>
 
 # Requirements
 
