@@ -1,5 +1,5 @@
 # traktarr
-Script to add new shows & movies to Sonarr/Radarr based on Trakt lists.
+Add new shows & movies to Sonarr/Radarr from Trakt.
 
 Types of Trakt lists supported:
 
@@ -70,8 +70,8 @@ Repeat the following steps for every user you want to authenticate:
 2. You wil get the following prompt:
 
    ```
-   INFO       - media.trakt                         - __oauth_request_device_code         - We're talking to Trakt to get your verification code. Please wait a moment...
-   INFO       - media.trakt                         - __oauth_request_device_code         - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
+   - We're talking to Trakt to get your verification code. Please wait a moment...
+   - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
    ```
 3. Go to https://trakt.tv/activate.
 4. Enter the code you see in your terminal.
@@ -220,7 +220,7 @@ Used for automatic / scheduled traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
 
-_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. via manual/CLI command only); see [Usage](#manual)._
+_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. via manual/CLI command only); see [Usage](#usage)._
 
 ```json
 "automatic": {
@@ -625,7 +625,7 @@ traktarr
 ```
 Usage: traktarr [OPTIONS] COMMAND [ARGS]...
 
-  Add new shows & movies to Sonarr/Radarr from Trakt lists.
+  Add new shows & movies to Sonarr/Radarr from Trakt.
 
 Options:
   --version       Show the version and exit.
@@ -634,14 +634,35 @@ Options:
   --help          Show this message and exit.
 
 Commands:
-  movies                Add new movies to Radarr.
+  movie                 Add a single movie to Radarr.
+  movies                Add multiple movies to Radarr.
   run                   Run in automatic mode.
-  shows                 Add new shows to Sonarr.
+  show                  Add a single show to Sonarr.
+  shows                 Add multiple shows to Sonarr.
   trakt_authentication  Authenticate traktarr.
   ```
 
+### Movie (Single Movie)
 
-### Movies
+```
+traktarr movie --help
+```
+
+```
+Usage: traktarr movie [OPTIONS]
+
+  Add a single movie to Radarr.
+
+Options:
+  -id, --movie_id TEXT  Trakt movie_id.  [required]
+  -f, --folder TEXT     Add movie with this root folder to Radarr.
+  --no-search           Disable search when adding movie to Radarr.
+  --help                Show this message and exit.
+```
+
+_Note: `-id` and `--movie_id` support both Trakt IDs and IMDB IDs._
+
+### Movies (Multiple Movies)
 
 ```
 traktarr movies --help
@@ -651,78 +672,116 @@ traktarr movies --help
 ```
 Usage: traktarr movies [OPTIONS]
 
-  Add new movies to Radarr.
+  Add multiple movies to Radarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example, anticipated,
-                                  trending, popular, boxoffice, watchlist or any
-                                  URL to a list  [required]
-  -l, --add-limit INTEGER         Limit number of movies added to Radarr.
-                                  [default: 0]
-  -d, --add-delay FLOAT           Seconds between each add request to Radarr.
-                                  [default: 2.5]
-  -g, --genre TEXT                Only add movies from this genre to Radarr.
-  -f, --folder TEXT               Add movies with this root folder to Radarr.
-  --no-search                     Disable search when adding movies to Radarr.
-  --notifications                 Send notifications.
-  --authencate-user TEXT          Specify which user to authenticate with to
-                                  retrieve Trakt lists. Default: first user in the
-                                  config.
+  -t, --list-type TEXT      Trakt list to process. For example, anticipated,
+                            trending, popular, boxoffice, watchlist or any URL
+                            to a list  [required]
+  -l, --add-limit INTEGER   Limit number of movies added to Radarr.  [default:
+                            0]
+  -d, --add-delay FLOAT     Seconds between each add request to Radarr.
+                            [default: 2.5]
+  -g, --genre TEXT          Only add movies from this genre to Radarr.
+  -f, --folder TEXT         Add movies with this root folder to Radarr.
+  --no-search               Disable search when adding movies to Radarr.
+  --notifications           Send notifications.
+  --authenticate-user TEXT  Specify which user to authenticate with to
+                            retrieve Trakt lists. Default: first user in the
+                            config.
+  --help                    Show this message and exit.
+```
+
+### Show (Single Show)
+
+```
+traktarr show --help
 ```
 
 
-### Shows
+```
+Usage: traktarr show [OPTIONS]
+
+  Add a single show to Sonarr.
+
+Options:
+  -id, --show_id TEXT  Trakt show_id.  [required]
+  -f, --folder TEXT    Add show with this root folder to Sonarr.
+  --no-search          Disable search when adding show to Sonarr.
+  --help               Show this message and exit.
+```
+
+_Note: `-id` and `--show_id` support both Trakt IDs and IMDB IDs._
+
+### Shows (Multiple Shows)
+
+```
+traktarr shows --help
+```
+
 
 ```
 Usage: traktarr shows [OPTIONS]
 
-  Add new shows to Sonarr.
+  Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example, anticipated,
-                                  trending, popular, watchlist or any URL to a
-                                  list  [required]
-  -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
-                                  [default: 0]
-  -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
-                                  [default: 2.5]
-  -g, --genre TEXT                Only add shows from this genre to Sonarr.
-  -f, --folder TEXT               Add shows with this root folder to Sonarr.
-  --no-search                     Disable search when adding shows to Sonarr.
-  --notifications                 Send notifications.
-  --authencate-user TEXT          Specify which user to authenticate with to
-                                  retrieve Trakt lists. Default: first user in the
-                                  config.
-  --help                          Show this message and exit.
+  -t, --list-type TEXT      Trakt list to process. For example, anticipated,
+                            trending, popular, watchlist or any URL to a list
+                            [required]
+  -l, --add-limit INTEGER   Limit number of shows added to Sonarr.  [default:
+                            0]
+  -d, --add-delay FLOAT     Seconds between each add request to Sonarr.
+                            [default: 2.5]
+  -g, --genre TEXT          Only add shows from this genre to Sonarr.
+  -f, --folder TEXT         Add shows with this root folder to Sonarr.
+  --no-search               Disable search when adding shows to Sonarr.
+  --notifications           Send notifications.
+  --authenticate-user TEXT  Specify which user to authenticate with to
+                            retrieve Trakt lists. Default: first user in the
+                            config
+  --help                    Show this message and exit.
 ```
 
 ## Examples (Manual)
 
-- Fetch boxoffice movies, labeled with the comedy genre, limited to 10 items, and send notifications:
+- Add the movie "Black Panther (2018)":
+
+  ```
+  traktarr movie -id black-panther-2018
+  ```
+
+- Add the show "The 100":
+
+  ```
+  traktarr show -id the-100
+  ```
+
+- Add boxoffice movies, labeled with the comedy genre, limited to 10 items, and send notifications:
 
   ```
   traktarr movies -t boxoffice -g comedy -l 10 --notifications
   ```
 
-- Fetch popular shows, limited to 2 items, and don't start the search in Sonarr:
+- Add popular shows, limited to 2 items, and don't start the search in Sonarr:
 
   ```
   traktarr shows -t popular -l 2 --no-search
   ```
 
-- Fetch all shows from the watchlist of `user1`:
+- Add all shows from the watchlist of `user1`:
 
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
 
-- Fetch all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
+- Add all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
 
   ```
   traktarr movies -t https://trakt.tv/users/rkerwin/lists/top-100-movies
   ```
 
-- Fetch all movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
+- Add all movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
 
   ```
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
