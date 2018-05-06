@@ -733,7 +733,7 @@ def run(add_delay=2.5, no_search=False, no_notifications=False):
         try:
             # Sleep until next run
             log.info("Next job at %s", schedule.next_run())
-            time.sleep(schedule.idle_seconds() or 0)
+            time.sleep(max(schedule.idle_seconds(), 0))
             # Check jobs to run
             schedule.run_pending()
 
@@ -764,13 +764,13 @@ def init_notifications():
 
 if __name__ == "__main__":
     print("""
-                                                             
-  ,--.                 ,--.     ,--.                         
-,-'  '-.,--.--. ,--,--.|  |,-.,-'  '-. ,--,--.,--.--.,--.--. 
-'-.  .-'|  .--'' ,-.  ||     /'-.  .-'' ,-.  ||  .--'|  .--' 
-  |  |  |  |   \ '-'  ||  \  \  |  |  \ '-'  ||  |   |  |    
-  `--'  `--'    `--`--'`--'`--' `--'   `--`--'`--'   `--'    
-                                                             
+
+  ,--.                 ,--.     ,--.
+,-'  '-.,--.--. ,--,--.|  |,-.,-'  '-. ,--,--.,--.--.,--.--.
+'-.  .-'|  .--'' ,-.  ||     /'-.  .-'' ,-.  ||  .--'|  .--'
+  |  |  |  |   \ '-'  ||  \  \  |  |  \ '-'  ||  |   |  |
+  `--'  `--'    `--`--'`--'`--' `--'   `--`--'`--'   `--'
+
 #########################################################################
 # Author:   l3uddz                                                      #
 # URL:      https://github.com/l3uddz/traktarr                          #
