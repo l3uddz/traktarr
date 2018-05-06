@@ -24,7 +24,12 @@ Types of Trakt lists supported:
 \* Support for multiple (authenticated) users.
 
 
-<script src="https://asciinema.org/a/14.js" id="asciicast-14" async></script>
+# Demo
+
+
+[![asciicast](assets/demo.gif)](https://asciinema.org/a/180044)
+
+Click to enlarge.
 
 # Requirements
 
