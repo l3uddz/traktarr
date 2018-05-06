@@ -161,7 +161,7 @@ class Trakt:
 
         if user is None:
             users = self.cfg['trakt']
-            
+
             if 'client_id' in users.keys():
                 users.pop('client_id')
 
@@ -174,7 +174,8 @@ class Trakt:
                 log.debug('No user provided, so default to the first user in the config (%s)', user)
         elif user not in self.cfg['trakt'].keys():
             log.error(
-                'The user %s you specified to use for authentication is not authenticated yet. Authenticate the user first, before you use it to retrieve lists.',
+                'The user %s you specified to use for authentication is not authenticated yet. '
+                'Authenticate the user first, before you use it to retrieve lists.',
                 user)
 
             exit()
@@ -204,6 +205,34 @@ class Trakt:
     ############################################################
     # Shows
     ############################################################
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def get_show(self, show_id):
+        try:
+            # generate payload
+            payload = {'extended': 'full'}
+
+            # make request
+            req = requests.get(
+                'https://api.trakt.tv/shows/%s' % str(show_id),
+                headers=self.headers,
+                params=payload,
+                timeout=30
+            )
+            log.debug("Request URL: %s", req.url)
+            log.debug("Request Payload: %s", payload)
+            log.debug("Response Code: %d", req.status_code)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                return resp_json
+            else:
+                log.error("Failed to retrieve show, request response: %d", req.status_code)
+                return None
+
+        except Exception:
+            log.exception("Exception retrieving show: ")
+        return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def get_anticipated_shows(self, limit=1000, languages=None):
@@ -532,6 +561,34 @@ class Trakt:
     ############################################################
     # Movies
     ############################################################
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def get_movie(self, movie_id):
+        try:
+            # generate payload
+            payload = {'extended': 'full'}
+
+            # make request
+            req = requests.get(
+                'https://api.trakt.tv/movies/%s' % str(movie_id),
+                headers=self.headers,
+                params=payload,
+                timeout=30
+            )
+            log.debug("Request URL: %s", req.url)
+            log.debug("Request Payload: %s", payload)
+            log.debug("Response Code: %d", req.status_code)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                return resp_json
+            else:
+                log.error("Failed to retrieve movie, request response: %d", req.status_code)
+                return None
+
+        except Exception:
+            log.exception("Exception retrieving movie: ")
+        return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def get_anticipated_movies(self, limit=1000, languages=None):

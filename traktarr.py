@@ -73,6 +73,76 @@ def trakt_authentication():
 # SHOWS
 ############################################################
 
+@app.command(help='Add single show to Sonarr.')
+@click.option('--show_id', '-s', help='Trakt show_id.', required=True)
+@click.option('--folder', '-f', default=None, help='Add show with this root folder to Sonarr.')
+@click.option('--no-search', is_flag=True, help='Disable search when adding show to Sonarr.')
+def show(show_id, folder=None, no_search=False):
+    from media.sonarr import Sonarr
+    from media.trakt import Trakt
+    from misc import helpers
+
+    # replace sonarr root_folder if folder is supplied
+    if folder:
+        cfg['sonarr']['root_folder'] = folder
+
+    # validate trakt api_key
+    trakt = Trakt(cfg)
+    if not trakt.validate_client_id():
+        log.error("Aborting due to failure to validate Trakt API Key")
+        return None
+    else:
+        log.info("Validated Trakt API Key")
+
+    # validate sonarr url & api_key
+    sonarr = Sonarr(cfg.sonarr.url, cfg.sonarr.api_key)
+    if not sonarr.validate_api_key():
+        log.error("Aborting due to failure to validate Sonarr URL / API Key")
+        return None
+    else:
+        log.info("Validated Sonarr URL & API Key")
+
+    # retrieve profile id for requested profile
+    profile_id = sonarr.get_profile_id(cfg.sonarr.profile)
+    if not profile_id or not profile_id > 0:
+        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.sonarr.profile)
+        return None
+    else:
+        log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
+
+    # retrieve profile tags
+    profile_tags = sonarr.get_tags()
+    if profile_tags is None:
+        log.error("Aborting due to failure to retrieve Tag ID's")
+    else:
+        log.info("Retrieved %d Tag ID's", len(profile_tags))
+
+    # get trakt show
+    trakt_show = trakt.get_show(show_id)
+
+    if not trakt_show:
+        log.error("Aborting due to failure to retrieve Trakt show")
+        return None
+    else:
+        log.info("Retrieved Trakt show information for %s: %s (%d)", show_id, trakt_show['title'],
+                 trakt_show['year'])
+
+    # determine which tags to use when adding this series
+    use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                                                         trakt_show['network'])
+
+    # add show to sonarr
+    if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
+                         cfg.sonarr.root_folder, use_tags, not no_search):
+        log.info("ADDED %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
+                 helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+    else:
+        log.error("FAILED adding %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
+                  helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+
+    return
+
+
 @app.command(help='Add new shows to Sonarr.')
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, watchlist or any URL to a list',
@@ -250,9 +320,65 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 # MOVIES
 ############################################################
 
+@app.command(help='Add single movie to Radarr.')
+@click.option('--movie_id', '-m', help='Trakt movie_id.', required=True)
+@click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
+@click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
+def movie(movie_id, folder=None, no_search=False):
+    from media.radarr import Radarr
+    from media.trakt import Trakt
+
+    # replace radarr root_folder if folder is supplied
+    if folder:
+        cfg['radarr']['root_folder'] = folder
+
+    # validate trakt api_key
+    trakt = Trakt(cfg)
+    if not trakt.validate_client_id():
+        log.error("Aborting due to failure to validate Trakt API Key")
+        return None
+    else:
+        log.info("Validated Trakt API Key")
+
+    # validate radarr url & api_key
+    radarr = Radarr(cfg.radarr.url, cfg.radarr.api_key)
+    if not radarr.validate_api_key():
+        log.error("Aborting due to failure to validate Radarr URL / API Key")
+        return None
+    else:
+        log.info("Validated Radarr URL & API Key")
+
+    # retrieve profile id for requested profile
+    profile_id = radarr.get_profile_id(cfg.radarr.profile)
+    if not profile_id or not profile_id > 0:
+        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.radarr.profile)
+    else:
+        log.info("Retrieved Profile ID for %s: %d", cfg.radarr.profile, profile_id)
+
+    # get trakt movie
+    trakt_movie = trakt.get_movie(movie_id)
+
+    if not trakt_movie:
+        log.error("Aborting due to failure to retrieve Trakt movie")
+        return None
+    else:
+        log.info("Retrieved Trakt movie information for %s: %s (%d)", movie_id, trakt_movie['title'],
+                 trakt_movie['year'])
+
+    # add movie to radarr
+    if radarr.add_movie(trakt_movie['ids']['tmdb'], trakt_movie['title'], trakt_movie['year'],
+                        trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
+        log.info("ADDED %s (%d)", trakt_movie['title'], trakt_movie['year'])
+    else:
+        log.error("FAILED adding %s (%d)", trakt_movie['title'], trakt_movie['year'])
+
+    return
+
+
 @app.command(help='Add new movies to Radarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist or any URL to a list',
+              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist '
+                   'or any URL to a list',
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
