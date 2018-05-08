@@ -26,10 +26,10 @@ Types of Trakt lists supported:
 
 # Demo
 
+Click to enlarge.
 
 [![asciicast](assets/demo.gif)](https://asciinema.org/a/180044)
 
-Click to enlarge.
 
 # Requirements
 
@@ -48,10 +48,10 @@ Install traktarr to be run with `traktarr` command.
 4. `cd traktarr`
 5. `sudo python3 -m pip install -r requirements.txt`
 6. `sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr`
-7. `traktarr` - run once to generate a default a config.json file.
+7. `traktarr` - run once to generate a sample a config.json file.
 8. `nano config.json` - edit preferences.
 
-## 2. Create app authentication
+## 2. Create a Trakt Application
 
 1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
 2. Enter a name for your application; for example `traktarr`
@@ -71,7 +71,6 @@ Install traktarr to be run with `traktarr` command.
 ## 3. Authenticate User(s) (optional)
 
 For each user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
-
 
 Repeat the following steps for every user you want to authenticate:
 1. Run `traktarr trakt_authentication`
@@ -188,7 +187,7 @@ You can repeat this process for as many users as you like.
       "service": "slack",
       "webhook_url": ""
     },
-    "verbose": true,
+    "verbose": true
   },
   "radarr": {
     "api_key": "",
@@ -392,7 +391,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `blacklist_title_keywords` - blacklist certain words in titles.
 
-`blacklisted_genres` - blacklist certain generes.
+`blacklisted_genres` - blacklist certain genres.
 
 `blacklisted_max_year` - blacklist release dates after specified year.
 
@@ -448,7 +447,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_countries` - allowed countries of origin.
 
-`blacklisted_genres` - blacklist certain generes.
+`blacklisted_genres` - blacklist certain genres.
 
 `blacklisted_max_year` - blacklist release dates after specified year.
 
@@ -463,9 +462,11 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ## Notifications
 
-Notification alerts during tasks.
+Notification alerts for traktarr tasks.
 
-Currently, only Pushover and Slack are supported. More will abe added later.
+_Note: Manual commands need the `--notifications` flag._
+
+Currently, only Pushover and Slack are supported. More will be added later.
 
 
 ```json
@@ -479,7 +480,7 @@ Currently, only Pushover and Slack are supported. More will abe added later.
     "service": "slack",
     "webhook_url": ""
   },
-  "verbose": true,
+  "verbose": true
 },
 ```
 
@@ -668,7 +669,7 @@ Options:
   --help                Show this message and exit.
 ```
 
-_Note: `-id` and `--movie_id` support both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
 
 ### Movies (Multiple Movies)
 
@@ -719,7 +720,8 @@ Options:
   --help               Show this message and exit.
 ```
 
-_Note: `-id` and `--show_id` support both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
+
 
 ### Shows (Multiple Shows)
 
