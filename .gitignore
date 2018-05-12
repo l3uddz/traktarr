@@ -29,6 +29,9 @@ __pycache__/
 # Pyenv
 **/.python-version
 
+# Venv
+venv/
+
 # PyInstaller
 build/
 dist/
