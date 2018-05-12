@@ -705,28 +705,34 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
               show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
+@click.option('--run-now', is_flag=True, help="Do a first run immediately without waiting.")
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
-def run(add_delay=2.5, no_search=False, no_notifications=False):
+def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
     log.info("Automatic mode is now running...")
 
-    # Add tasks to schedule and do first run
+    # Add tasks to schedule and do first run if enabled
     if cfg.automatic.movies.interval:
-        schedule.every(cfg.automatic.movies.interval).hours.do(
+        movie_schedule = schedule.every(cfg.automatic.movies.interval).hours.do(
             automatic_movies,
             add_delay,
             no_search,
             not no_notifications
-        ).run()
+        )
+        if run_now:
+            movie_schedule.run()
+
         # Sleep between tasks
         time.sleep(add_delay)
 
     if cfg.automatic.shows.interval:
-        schedule.every(cfg.automatic.shows.interval).hours.do(
+        shows_schedule = schedule.every(cfg.automatic.shows.interval).hours.do(
             automatic_shows,
             add_delay,
             no_search,
             not no_notifications
-        ).run()
+        )
+        if run_now:
+            shows_schedule.run()
 
     # Enter running schedule
     while True:
