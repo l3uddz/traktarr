@@ -32,7 +32,7 @@
 
 # traktarr
 
-traktarr uses trakt to add new shows into Sonarr and new movies into Radarr. 
+traktarr uses Trakt to add new shows into Sonarr and new movies into Radarr.
 
 Types of Trakt lists supported:
 
