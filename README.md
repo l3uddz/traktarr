@@ -1,5 +1,38 @@
+<!-- TOC depthFrom:1 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [traktarr](#traktarr)
+- [Demo](#demo)
+- [Requirements](#requirements)
+- [Installation](#installation)
+	- [1. Base Install](#1-base-install)
+	- [2. Create a Trakt Application](#2-create-a-trakt-application)
+	- [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
+- [Configuration](#configuration)
+	- [Sample Configuration](#sample-configuration)
+	- [Core](#core)
+	- [Automatic](#automatic)
+	- [Filters](#filters)
+	- [Notifications](#notifications)
+	- [Radarr](#radarr)
+	- [Sonarr](#sonarr)
+	- [Trakt](#trakt)
+- [Usage](#usage)
+	- [Automatic (Scheduled)](#automatic-scheduled)
+	- [Manual (CLI)](#manual-cli)
+	- [Examples (Manual)](#examples-manual)
+
+<!-- /TOC -->
+
+---
+
+ [![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+[![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
+[![Discord](https://img.shields.io/discord/381077432285003776.svg)](https://discord.gg/xmNYmSJ)
+
+
 # traktarr
-Add new shows & movies to Sonarr/Radarr from Trakt.
+
+traktarr uses trakt to add new shows into Sonarr and new movies into Radarr. 
 
 Types of Trakt lists supported:
 
@@ -33,8 +66,11 @@ Click to enlarge.
 
 # Requirements
 
-1. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
-2. requirements.txt modules (see below).
+1. Ubuntu/Debian
+
+2. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
+
+3. requirements.txt modules (see below).
 
 # Installation
 
@@ -43,20 +79,31 @@ Click to enlarge.
 Install traktarr to be run with `traktarr` command.
 
 1. `cd /opt`
+
 2. `sudo git clone https://github.com/l3uddz/traktarr`
+
 3. `sudo chown -R user:group traktarr` (run `id` to find your user / group)
+
 4. `cd traktarr`
+
 5. `sudo python3 -m pip install -r requirements.txt`
+
 6. `sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr`
+
 7. `traktarr` - run once to generate a sample a config.json file.
+
 8. `nano config.json` - edit preferences.
 
 ## 2. Create a Trakt Application
 
 1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
+
 2. Enter a name for your application; for example `traktarr`
+
 3. Enter `urn:ietf:wg:oauth:2.0:oob` in the `Redirect uri` field.
+
 4. Click "SAVE APP".
+
 5. Open the traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
 
    ```
@@ -73,7 +120,9 @@ Install traktarr to be run with `traktarr` command.
 For each user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
 
 Repeat the following steps for every user you want to authenticate:
+
 1. Run `traktarr trakt_authentication`
+
 2. You wil get the following prompt:
 
    ```
@@ -81,13 +130,19 @@ Repeat the following steps for every user you want to authenticate:
    - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
    ```
 3. Go to https://trakt.tv/activate.
+
 4. Enter the code you see in your terminal.
+
 5. Click continue.
+
 6. If you are not logged in to Trakt, login now.
+
 7. Click "Accept".
+
 8. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
 
 You've now authenticated the user.
+
 You can repeat this process for as many users as you like.
 
 
@@ -615,13 +670,40 @@ Trakt Authentication info:
 
 ## Automatic (Scheduled)
 
-To have traktarr get Movies and Shows for you automatically, on set interval.
+### Setup
+
+To have traktarr get Movies and Shows for you automatically, on set interval, do the following:
 
 1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
+
 2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours.
+
 3. `sudo systemctl daemon-reload`
+
 4. `sudo systemctl enable traktarr.service`
+
 5. `sudo systemctl start traktarr.service`
+
+### Customize
+
+You can customize how the scheduled traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
+
+```
+  -d, --add-delay FLOAT  Seconds between each add request to Sonarr / Radarr.
+                         [default: 2.5]
+  --no-search            Disable search when adding to Sonarr / Radarr.
+  --run-now              Do a first run immediately without waiting.
+  --no-notifications     Disable notifications.
+  --help                 Show this message and exit.
+```
+
+You can bring up the list, anytime, by running the following command:
+
+```
+traktarr run --help
+```
+
+\* Remember, other configuration options need to go into the `config.json` file under the `Automatic` section.
 
 ## Manual (CLI)
 
