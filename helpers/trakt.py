@@ -1,92 +1,10 @@
-from misc import str as misc_str
+from helpers import str as misc_str
 from misc.log import logger
 
 log = logger.get_logger(__name__)
 
 
-############################################################
-# SONARR
-############################################################
-
-def sonarr_series_tag_id_from_network(profile_tags, network_tags, network):
-    try:
-        tags = []
-        for tag_name, tag_networks in network_tags.items():
-            for tag_network in tag_networks:
-                if tag_network.lower() in network.lower() and tag_name.lower() in profile_tags:
-                    log.debug("Using %s tag for network: %s", tag_name, network)
-                    tags.append(profile_tags[tag_name.lower()])
-        if tags:
-            return tags
-    except Exception:
-        log.exception("Exception determining tag to use for network %s: ", network)
-    return None
-
-
-def sonarr_readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
-    try:
-        if not chosen_tag_ids:
-            return None
-
-        tags = []
-        for tag_name, tag_id in profile_tag_ids.items():
-            if tag_id in chosen_tag_ids:
-                tags.append(tag_name)
-        if tags:
-            return tags
-    except Exception:
-        log.exception("Exception building readable tag name list from ids %s: ", chosen_tag_ids)
-    return None
-
-
-def sonarr_series_to_tvdb_dict(sonarr_series):
-    series = {}
-    try:
-        for tmp in sonarr_series:
-            if 'tvdbId' not in tmp:
-                log.debug("Could not handle show: %s", tmp['title'])
-                continue
-            series[tmp['tvdbId']] = tmp
-        return series
-    except Exception:
-        log.exception("Exception processing Sonarr shows to TVDB dict: ")
-    return None
-
-
-def sonarr_remove_existing_series(sonarr_series, trakt_series):
-    new_series_list = []
-
-    if not sonarr_series or not trakt_series:
-        log.error("Inappropriate parameters were supplied")
-        return None
-
-    try:
-        # turn sonarr series result into a dict with tvdb id as keys
-        processed_series = sonarr_series_to_tvdb_dict(sonarr_series)
-        if not processed_series:
-            return None
-
-        # loop list adding to series that do not already exist
-        for tmp in trakt_series:
-            if 'show' not in tmp or 'ids' not in tmp['show'] or 'tvdb' not in tmp['show']['ids']:
-                log.debug("Skipping show because it did not have required fields: %s", tmp)
-                continue
-            # check if show exists in processed_series
-            if tmp['show']['ids']['tvdb'] in processed_series:
-                log.debug("Removing existing show: %s", tmp['show']['title'])
-                continue
-
-            new_series_list.append(tmp)
-
-        log.debug("Filtered %d Trakt shows to %d shows that weren't already in Sonarr", len(trakt_series),
-                  len(new_series_list))
-        return new_series_list
-    except Exception:
-        log.exception("Exception removing existing shows from Trakt list: ")
-    return None
-
-
-def trakt_blacklisted_show_genre(show, genres):
+def blacklisted_show_genre(show, genres):
     blacklisted = False
     try:
         if not show['show']['genres']:
@@ -104,7 +22,7 @@ def trakt_blacklisted_show_genre(show, genres):
     return blacklisted
 
 
-def trakt_blacklisted_show_year(show, earliest_year, latest_year):
+def blacklisted_show_year(show, earliest_year, latest_year):
     blacklisted = False
     try:
         year = misc_str.get_year_from_timestamp(show['show']['first_aired'])
@@ -120,7 +38,7 @@ def trakt_blacklisted_show_year(show, earliest_year, latest_year):
     return blacklisted
 
 
-def trakt_blacklisted_show_country(show, allowed_countries):
+def blacklisted_show_country(show, allowed_countries):
     blacklisted = False
     try:
         if not show['show']['country']:
@@ -137,7 +55,7 @@ def trakt_blacklisted_show_country(show, allowed_countries):
     return blacklisted
 
 
-def trakt_blacklisted_show_network(show, networks):
+def blacklisted_show_network(show, networks):
     blacklisted = False
     try:
         if not show['show']['network']:
@@ -156,7 +74,7 @@ def trakt_blacklisted_show_network(show, networks):
     return blacklisted
 
 
-def trakt_blacklisted_show_runtime(show, lowest_runtime):
+def blacklisted_show_runtime(show, lowest_runtime):
     blacklisted = False
     try:
         if not show['show']['runtime'] or not isinstance(show['show']['runtime'], int):
@@ -172,7 +90,7 @@ def trakt_blacklisted_show_runtime(show, lowest_runtime):
     return blacklisted
 
 
-def trakt_blacklisted_show_id(show, blacklisted_ids):
+def blacklisted_show_id(show, blacklisted_ids):
     blacklisted = False
     try:
         if not show['show']['ids']['tvdb'] or not isinstance(show['show']['ids']['tvdb'], int):
@@ -188,79 +106,28 @@ def trakt_blacklisted_show_id(show, blacklisted_ids):
     return blacklisted
 
 
-def trakt_is_show_blacklisted(show, blacklist_settings):
+def is_show_blacklisted(show, blacklist_settings):
     blacklisted = False
     try:
-        if trakt_blacklisted_show_year(show, blacklist_settings.blacklisted_min_year,
-                                       blacklist_settings.blacklisted_max_year):
+        if blacklisted_show_year(show, blacklist_settings.blacklisted_min_year,
+                                 blacklist_settings.blacklisted_max_year):
             blacklisted = True
-        if trakt_blacklisted_show_country(show, blacklist_settings.allowed_countries):
+        if blacklisted_show_country(show, blacklist_settings.allowed_countries):
             blacklisted = True
-        if trakt_blacklisted_show_genre(show, blacklist_settings.blacklisted_genres):
+        if blacklisted_show_genre(show, blacklist_settings.blacklisted_genres):
             blacklisted = True
-        if trakt_blacklisted_show_network(show, blacklist_settings.blacklisted_networks):
+        if blacklisted_show_network(show, blacklist_settings.blacklisted_networks):
             blacklisted = True
-        if trakt_blacklisted_show_runtime(show, blacklist_settings.blacklisted_min_runtime):
+        if blacklisted_show_runtime(show, blacklist_settings.blacklisted_min_runtime):
             blacklisted = True
-        if trakt_blacklisted_show_id(show, blacklist_settings.blacklisted_tvdb_ids):
+        if blacklisted_show_id(show, blacklist_settings.blacklisted_tvdb_ids):
             blacklisted = True
     except Exception:
         log.exception("Exception determining if show was blacklisted %s: ", show)
     return blacklisted
 
 
-############################################################
-# RADARR
-############################################################
-
-def radarr_movies_to_tmdb_dict(radarr_movies):
-    movies = {}
-    try:
-        for tmp in radarr_movies:
-            if 'tmdbId' not in tmp:
-                log.debug("Could not handle movie: %s", tmp['title'])
-                continue
-            movies[tmp['tmdbId']] = tmp
-        return movies
-    except Exception:
-        log.exception("Exception processing Radarr movies to TMDB dict: ")
-    return None
-
-
-def radarr_remove_existing_movies(radarr_movies, trakt_movies):
-    new_movies_list = []
-
-    if not radarr_movies or not trakt_movies:
-        log.error("Inappropriate parameters were supplied")
-        return None
-
-    try:
-        # turn radarr movies result into a dict with tmdb id as keys
-        processed_movies = radarr_movies_to_tmdb_dict(radarr_movies)
-        if not processed_movies:
-            return None
-
-        # loop list adding to movies that do not already exist
-        for tmp in trakt_movies:
-            if 'movie' not in tmp or 'ids' not in tmp['movie'] or 'tmdb' not in tmp['movie']['ids']:
-                log.debug("Skipping movie because it did not have required fields: %s", tmp)
-                continue
-            # check if movie exists in processed_movies
-            if tmp['movie']['ids']['tmdb'] in processed_movies:
-                log.debug("Removing existing movie: %s", tmp['movie']['title'])
-                continue
-
-            new_movies_list.append(tmp)
-
-        log.debug("Filtered %d Trakt movies to %d movies that weren't already in Radarr", len(trakt_movies),
-                  len(new_movies_list))
-        return new_movies_list
-    except Exception:
-        log.exception("Exception removing existing movies from Trakt list: ")
-    return None
-
-
-def trakt_blacklisted_movie_genre(movie, genres):
+def blacklisted_movie_genre(movie, genres):
     blacklisted = False
     try:
         if not movie['movie']['genres']:
@@ -278,7 +145,7 @@ def trakt_blacklisted_movie_genre(movie, genres):
     return blacklisted
 
 
-def trakt_blacklisted_movie_year(movie, earliest_year, latest_year):
+def blacklisted_movie_year(movie, earliest_year, latest_year):
     blacklisted = False
     try:
         year = movie['movie']['year']
@@ -294,7 +161,7 @@ def trakt_blacklisted_movie_year(movie, earliest_year, latest_year):
     return blacklisted
 
 
-def trakt_blacklisted_movie_country(movie, allowed_countries):
+def blacklisted_movie_country(movie, allowed_countries):
     blacklisted = False
     try:
         if not movie['movie']['country']:
@@ -311,7 +178,7 @@ def trakt_blacklisted_movie_country(movie, allowed_countries):
     return blacklisted
 
 
-def trakt_blacklisted_movie_title(movie, blacklisted_keywords):
+def blacklisted_movie_title(movie, blacklisted_keywords):
     blacklisted = False
     try:
         if not movie['movie']['title']:
@@ -329,7 +196,7 @@ def trakt_blacklisted_movie_title(movie, blacklisted_keywords):
     return blacklisted
 
 
-def trakt_blacklisted_movie_runtime(movie, lowest_runtime):
+def blacklisted_movie_runtime(movie, lowest_runtime):
     blacklisted = False
     try:
         if not movie['movie']['runtime'] or not isinstance(movie['movie']['runtime'], int):
@@ -345,7 +212,7 @@ def trakt_blacklisted_movie_runtime(movie, lowest_runtime):
     return blacklisted
 
 
-def trakt_blacklisted_movie_id(movie, blacklisted_ids):
+def blacklisted_movie_id(movie, blacklisted_ids):
     blacklisted = False
     try:
         if not movie['movie']['ids']['tmdb'] or not isinstance(movie['movie']['ids']['tmdb'], int):
@@ -361,52 +228,34 @@ def trakt_blacklisted_movie_id(movie, blacklisted_ids):
     return blacklisted
 
 
-def trakt_is_movie_blacklisted(movie, blacklist_settings):
+def is_movie_blacklisted(movie, blacklist_settings):
     blacklisted = False
     try:
-        if trakt_blacklisted_movie_title(movie, blacklist_settings.blacklist_title_keywords):
+        if blacklisted_movie_title(movie, blacklist_settings.blacklist_title_keywords):
             blacklisted = True
-        if trakt_blacklisted_movie_year(movie, blacklist_settings.blacklisted_min_year,
-                                        blacklist_settings.blacklisted_max_year):
+        if blacklisted_movie_year(movie, blacklist_settings.blacklisted_min_year,
+                                  blacklist_settings.blacklisted_max_year):
             blacklisted = True
-        if trakt_blacklisted_movie_country(movie, blacklist_settings.allowed_countries):
+        if blacklisted_movie_country(movie, blacklist_settings.allowed_countries):
             blacklisted = True
-        if trakt_blacklisted_movie_genre(movie, blacklist_settings.blacklisted_genres):
+        if blacklisted_movie_genre(movie, blacklist_settings.blacklisted_genres):
             blacklisted = True
-        if trakt_blacklisted_movie_runtime(movie, blacklist_settings.blacklisted_min_runtime):
+        if blacklisted_movie_runtime(movie, blacklist_settings.blacklisted_min_runtime):
             blacklisted = True
-        if trakt_blacklisted_movie_id(movie, blacklist_settings.blacklisted_tmdb_ids):
+        if blacklisted_movie_id(movie, blacklist_settings.blacklisted_tmdb_ids):
             blacklisted = True
     except Exception:
         log.exception("Exception determining if movie was blacklisted %s: ", movie)
     return blacklisted
 
 
-############################################################
-# MISC 
-############################################################
-
-
-def get_response_dict(response, key_field=None, key_value=None):
-    found_response = None
+def extract_list_user_and_key_from_url(list_url):
     try:
-        if isinstance(response, list):
-            if not key_field or not key_value:
-                found_response = response[0]
-            else:
-                for result in response:
-                    if isinstance(result, dict) and key_field in result and result[key_field] == key_value:
-                        found_response = result
-                        break
+        import re
+        list_user = re.search('\/users\/([^/]*)', list_url).group(1)
+        list_key = re.search('\/lists\/([^/]*)', list_url).group(1)
 
-                if not found_response:
-                    log.error("Unable to find a result with key %s where the value is %s", key_field, key_value)
-
-        elif isinstance(response, dict):
-            found_response = response
-        else:
-            log.error("Unexpected response instance type of %s for %s", type(response).__name__, response)
-
-    except Exception:
-        log.exception("Exception determining response for %s: ", response)
-    return found_response
+        return list_user, list_key
+    except:
+        log.error('The URL "%s" is not in the correct format', list_url)
+    exit()

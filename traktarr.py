@@ -62,11 +62,59 @@ def trakt_authentication():
     from media.trakt import Trakt
     trakt = Trakt(cfg)
 
-    response = trakt.oauth_authentication()
-
-    if response:
+    if trakt.oauth_authentication():
         log.info("Authentication information saved; please restart the application")
         exit()
+
+
+def validate_trakt(trakt, notifications):
+    if not trakt.validate_client_id():
+        log.error("Aborting due to failure to validate Trakt API Key")
+        if notifications:
+            callback_notify({'event': 'error', 'reason': 'Failure to validate Trakt API Key'})
+        exit()
+    else:
+        log.info("Validated Trakt API Key")
+
+
+def validate_pvr(pvr, type, notifications):
+    if not pvr.validate_api_key():
+        log.error("Aborting due to failure to validate %s URL / API Key", type)
+        if notifications:
+            callback_notify({'event': 'error', 'reason': 'Failure to validate %s URL / API Key' % type})
+        return None
+    else:
+        log.info("Validated %s URL & API Key", type)
+
+
+def get_profile_id(pvr, profile):
+    # retrieve profile id for requested profile
+    profile_id = pvr.get_profile_id(profile)
+    if not profile_id or not profile_id > 0:
+        log.error("Aborting due to failure to retrieve Profile ID for: %s", profile)
+        exit()
+    log.info("Retrieved Profile ID for %s: %d", profile, profile_id)
+    return profile_id
+
+
+def get_profile_tags(pvr):
+    profile_tags = pvr.get_tags()
+    if profile_tags is None:
+        log.error("Aborting due to failure to retrieve Tag ID's")
+        exit()
+    log.info("Retrieved %d Tag ID's", len(profile_tags))
+    return profile_tags
+
+
+def get_objects(pvr, type, notifications):
+    objects_list = pvr.get_objects()
+    if not objects_list:
+        log.error("Aborting due to failure to retrieve %s shows list", type)
+        if notifications:
+            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s shows list' % type})
+        exit()
+    log.info("Retrieved %s shows list, shows found: %d", type, len(objects_list))
+    return objects_list
 
 
 ############################################################
@@ -80,42 +128,20 @@ def trakt_authentication():
 def show(show_id, folder=None, no_search=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import sonarr as sonarr_helper
 
     # replace sonarr root_folder if folder is supplied
     if folder:
         cfg['sonarr']['root_folder'] = folder
 
-    # validate trakt api_key
     trakt = Trakt(cfg)
-    if not trakt.validate_client_id():
-        log.error("Aborting due to failure to validate Trakt API Key")
-        return None
-    else:
-        log.info("Validated Trakt API Key")
-
-    # validate sonarr url & api_key
     sonarr = Sonarr(cfg.sonarr.url, cfg.sonarr.api_key)
-    if not sonarr.validate_api_key():
-        log.error("Aborting due to failure to validate Sonarr URL / API Key")
-        return None
-    else:
-        log.info("Validated Sonarr URL & API Key")
 
-    # retrieve profile id for requested profile
-    profile_id = sonarr.get_profile_id(cfg.sonarr.profile)
-    if not profile_id or not profile_id > 0:
-        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.sonarr.profile)
-        return None
-    else:
-        log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
+    validate_trakt(trakt, False)
+    validate_pvr(sonarr, 'Sonarr', False)
 
-    # retrieve profile tags
-    profile_tags = sonarr.get_tags()
-    if profile_tags is None:
-        log.error("Aborting due to failure to retrieve Tag ID's")
-    else:
-        log.info("Retrieved %d Tag ID's", len(profile_tags))
+    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
+    profile_tags = get_profile_tags(sonarr)
 
     # get trakt show
     trakt_show = trakt.get_show(show_id)
@@ -128,17 +154,16 @@ def show(show_id, folder=None, no_search=False):
                  trakt_show['year'])
 
     # determine which tags to use when adding this series
-    use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
-                                                         trakt_show['network'])
+    use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
 
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
                          cfg.sonarr.root_folder, use_tags, not no_search):
         log.info("ADDED %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
-                 helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                 sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
     else:
         log.error("FAILED adding %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
-                  helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                  sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
     return
 
@@ -159,7 +184,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
           authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import sonarr as sonarr_helper
+    from helpers import trakt as trakt_helper
 
     added_shows = 0
 
@@ -173,73 +199,29 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 
     # validate trakt client_id
     trakt = Trakt(cfg)
-    if not trakt.validate_client_id():
-        log.error("Aborting due to failure to validate Trakt API Key")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to validate Trakt API Key'})
-        return None
-    else:
-        log.info("Validated Trakt API Key")
-
-    # validate sonarr url & api_key
     sonarr = Sonarr(cfg.sonarr.url, cfg.sonarr.api_key)
-    if not sonarr.validate_api_key():
-        log.error("Aborting due to failure to validate Sonarr URL / API Key")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to validate Sonarr URL / API Key'})
-        return None
-    else:
-        log.info("Validated Sonarr URL & API Key")
 
-    # retrieve profile id for requested profile
-    profile_id = sonarr.get_profile_id(cfg.sonarr.profile)
-    if not profile_id or not profile_id > 0:
-        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.sonarr.profile)
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to retrieve Sonarr Profile ID of %s' % cfg.sonarr.profile})
-        return None
-    else:
-        log.info("Retrieved Profile ID for %s: %d", cfg.sonarr.profile, profile_id)
+    validate_trakt(trakt, notifications)
+    validate_pvr(sonarr, 'Sonarr', notifications)
 
-    # retrieve profile tags
-    profile_tags = sonarr.get_tags()
-    if profile_tags is None:
-        log.error("Aborting due to failure to retrieve Tag ID's")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': "Failure to retrieve Sonarr Tag ID's"})
-        return None
-    else:
-        log.info("Retrieved %d Tag ID's", len(profile_tags))
+    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
+    profile_tags = get_profile_tags(sonarr)
 
-    # get sonarr series list
-    sonarr_series_list = sonarr.get_series()
-    if not sonarr_series_list:
-        log.error("Aborting due to failure to retrieve Sonarr shows list")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to retrieve Sonarr shows list'})
-        return None
-    else:
-        log.info("Retrieved Sonarr shows list, shows found: %d", len(sonarr_series_list))
+    pvr_objects_list = get_objects(sonarr, 'Sonarr', notifications)
 
     # get trakt series list
-    trakt_series_list = None
     if list_type.lower() == 'anticipated':
-        trakt_series_list = trakt.get_anticipated_shows()
+        trakt_objects_list = trakt.get_anticipated_shows()
     elif list_type.lower() == 'trending':
-        trakt_series_list = trakt.get_trending_shows()
+        trakt_objects_list = trakt.get_trending_shows()
     elif list_type.lower() == 'popular':
-        trakt_series_list = trakt.get_popular_shows()
+        trakt_objects_list = trakt.get_popular_shows()
     elif list_type.lower() == 'watchlist':
-        trakt_series_list = trakt.get_watchlist_shows(authenticate_user)
+        trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
     else:
-        trakt_series_list = trakt.get_user_list_shows(list_type, authenticate_user)
+        trakt_objects_list = trakt.get_user_list_shows(list_type, authenticate_user)
 
-    if not trakt_series_list:
+    if not trakt_objects_list:
         log.error("Aborting due to failure to retrieve Trakt %s shows list", list_type)
         if notifications:
             callback_notify(
@@ -247,10 +229,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
                  'reason': 'Failure to retrieve Trakt %s shows list' % list_type})
         return None
     else:
-        log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_series_list))
+        log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_objects_list))
 
     # build filtered series list without series that exist in sonarr
-    processed_series_list = helpers.sonarr_remove_existing_series(sonarr_series_list, trakt_series_list)
+    processed_series_list = sonarr_helper.remove_existing_series(pvr_objects_list, trakt_objects_list)
     if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         if notifications:
@@ -276,26 +258,26 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
                 continue
 
             # check if series passes out blacklist criteria inspection
-            if not helpers.trakt_is_show_blacklisted(series, cfg.filters.shows):
+            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
 
                 # determine which tags to use when adding this series
-                use_tags = helpers.sonarr_series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
-                                                                     series['show']['network'])
+                use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                                                                    series['show']['network'])
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
                     log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
-                             helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                             sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
                     log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
-                              helpers.sonarr_readable_tag_from_ids(profile_tags, use_tags))
+                              sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
                 if add_limit and added_shows >= add_limit:
@@ -334,26 +316,12 @@ def movie(movie_id, folder=None, no_search=False):
 
     # validate trakt api_key
     trakt = Trakt(cfg)
-    if not trakt.validate_client_id():
-        log.error("Aborting due to failure to validate Trakt API Key")
-        return None
-    else:
-        log.info("Validated Trakt API Key")
-
-    # validate radarr url & api_key
     radarr = Radarr(cfg.radarr.url, cfg.radarr.api_key)
-    if not radarr.validate_api_key():
-        log.error("Aborting due to failure to validate Radarr URL / API Key")
-        return None
-    else:
-        log.info("Validated Radarr URL & API Key")
 
-    # retrieve profile id for requested profile
-    profile_id = radarr.get_profile_id(cfg.radarr.profile)
-    if not profile_id or not profile_id > 0:
-        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.radarr.profile)
-    else:
-        log.info("Retrieved Profile ID for %s: %d", cfg.radarr.profile, profile_id)
+    validate_trakt(trakt, False)
+    validate_pvr(radarr, 'Radarr', False)
+
+    profile_id = get_profile_id(radarr, cfg.radarr.profile)
 
     # get trakt movie
     trakt_movie = trakt.get_movie(movie_id)
@@ -392,7 +360,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
            authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
-    from misc import helpers
+    from helpers import radarr as radarr_helper
+    from helpers import trakt as trakt_helper
 
     added_movies = 0
 
@@ -406,65 +375,30 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
 
     # validate trakt api_key
     trakt = Trakt(cfg)
-    if not trakt.validate_client_id():
-        log.error("Aborting due to failure to validate Trakt API Key")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                             'reason': 'Failure to validate Trakt API Key'})
-        return None
-    else:
-        log.info("Validated Trakt API Key")
-
-    # validate radarr url & api_key
     radarr = Radarr(cfg.radarr.url, cfg.radarr.api_key)
-    if not radarr.validate_api_key():
-        log.error("Aborting due to failure to validate Radarr URL / API Key")
-        if notifications:
-            callback_notify(
-                {'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                 'reason': 'Failure to validate Radarr URL / API Key'})
-        return None
-    else:
-        log.info("Validated Radarr URL & API Key")
 
-    # retrieve profile id for requested profile
-    profile_id = radarr.get_profile_id(cfg.radarr.profile)
-    if not profile_id or not profile_id > 0:
-        log.error("Aborting due to failure to retrieve Profile ID for: %s", cfg.radarr.profile)
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                             'reason': 'Failure to retrieve Radarr Profile ID of %s' % cfg.radarr.profile})
-        return None
-    else:
-        log.info("Retrieved Profile ID for %s: %d", cfg.radarr.profile, profile_id)
+    validate_trakt(trakt, notifications)
+    validate_pvr(radarr, 'Radarr', notifications)
 
-    # get radarr movies list
-    radarr_movie_list = radarr.get_movies()
-    if not radarr_movie_list:
-        log.error("Aborting due to failure to retrieve Radarr movies list")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                             'reason': 'Failure to retrieve Radarr movies list'})
-        return None
-    else:
-        log.info("Retrieved Radarr movies list, movies found: %d", len(radarr_movie_list))
+    profile_id = get_profile_id(radarr, cfg.radarr.profile)
+
+    pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
 
     # get trakt movies list
-    trakt_movies_list = None
     if list_type.lower() == 'anticipated':
-        trakt_movies_list = trakt.get_anticipated_movies()
+        trakt_objects_list = trakt.get_anticipated_movies()
     elif list_type.lower() == 'trending':
-        trakt_movies_list = trakt.get_trending_movies()
+        trakt_objects_list = trakt.get_trending_movies()
     elif list_type.lower() == 'popular':
-        trakt_movies_list = trakt.get_popular_movies()
+        trakt_objects_list = trakt.get_popular_movies()
     elif list_type.lower() == 'boxoffice':
-        trakt_movies_list = trakt.get_boxoffice_movies()
+        trakt_objects_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'watchlist':
-        trakt_movies_list = trakt.get_watchlist_movies(authenticate_user)
+        trakt_objects_list = trakt.get_watchlist_movies(authenticate_user)
     else:
-        trakt_movies_list = trakt.get_user_list_movies(list_type, authenticate_user)
+        trakt_objects_list = trakt.get_user_list_movies(list_type, authenticate_user)
 
-    if not trakt_movies_list:
+    if not trakt_objects_list:
         log.error("Aborting due to failure to retrieve Trakt %s movies list", list_type)
         if notifications:
             callback_notify(
@@ -472,10 +406,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
                  'reason': 'Failure to retrieve Trakt %s movies list' % list_type})
         return None
     else:
-        log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_movies_list))
+        log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_objects_list))
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list = helpers.radarr_remove_existing_movies(radarr_movie_list, trakt_movies_list)
+    processed_movies_list = radarr_helper.remove_existing_movies(pvr_objects_list, trakt_objects_list)
     if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
         if notifications:
@@ -501,7 +435,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
                 continue
 
             # check if movie passes out blacklist criteria inspection
-            if not helpers.trakt_is_movie_blacklisted(movie, cfg.filters.movies):
+            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies):
                 log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
@@ -553,6 +487,9 @@ def callback_notify(data):
         return
     elif data['event'] == 'abort':
         notify.send(message="Aborted adding Trakt %s %s due to: %s" % (data['list_type'], data['type'], data['reason']))
+        return
+    elif data['event'] == 'error':
+        notify.send(message="Error: %s" % data['reason'])
         return
     else:
         log.error("Unexpected callback: %s", data)
