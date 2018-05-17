@@ -321,7 +321,7 @@ def movie(movie_id, folder=None, no_search=False):
     validate_trakt(trakt, False)
     validate_pvr(radarr, 'Radarr', False)
 
-    profile_id = get_profile_id(radarr, cfg.sonarr.profile)
+    profile_id = get_profile_id(radarr, cfg.radarr.profile)
 
     # get trakt movie
     trakt_movie = trakt.get_movie(movie_id)
@@ -380,7 +380,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
     validate_trakt(trakt, notifications)
     validate_pvr(radarr, 'Radarr', notifications)
 
-    profile_id = get_profile_id(radarr, cfg.sonarr.profile)
+    profile_id = get_profile_id(radarr, cfg.radarr.profile)
 
     pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
 
