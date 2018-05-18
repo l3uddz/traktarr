@@ -211,11 +211,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 
     # get trakt series list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_shows()
+        trakt_objects_list = trakt.get_anticipated_shows(genres=genre)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_shows()
+        trakt_objects_list = trakt.get_trending_shows(genres=genre)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_shows()
+        trakt_objects_list = trakt.get_popular_shows(genres=genre)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
     else:
@@ -386,11 +386,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_movies()
+        trakt_objects_list = trakt.get_anticipated_movies(genres=genre)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_movies()
+        trakt_objects_list = trakt.get_trending_movies(genres=genre)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_movies()
+        trakt_objects_list = trakt.get_popular_movies(genres=genre)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'watchlist':
