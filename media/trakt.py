@@ -57,11 +57,14 @@ class Trakt:
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def _make_items_request(self, url, limit, languages, type_name, object_name, authenticate_user=None, payload={},
-                            sleep_between=5):
+                            sleep_between=5, genres=None):
         if languages is None:
             languages = ['en']
 
         payload = dict_merge(payload, {'extended': 'full', 'limit': limit, 'page': 1, 'languages': ','.join(languages)})
+        if genres:
+            payload['genres'] = genres
+
         processed = []
 
         type_name = type_name.replace('{authenticate_user}', self._user_used_for_authentication(authenticate_user))
@@ -306,31 +309,34 @@ class Trakt:
             object_name='show',
         )
 
-    def get_trending_shows(self, limit=1000, languages=None):
+    def get_trending_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/trending',
             limit=limit,
             languages=languages,
             object_name='shows',
             type_name='trending',
+            genres=genres
         )
 
-    def get_popular_shows(self, limit=1000, languages=None):
+    def get_popular_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/popular',
             limit=limit,
             languages=languages,
             object_name='shows',
             type_name='popular',
+            genres=genres
         )
 
-    def get_anticipated_shows(self, limit=1000, languages=None):
+    def get_anticipated_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/anticipated',
             limit=limit,
             languages=languages,
             object_name='shows',
             type_name='anticipated',
+            genres=genres
         )
 
     def get_watchlist_shows(self, authenticate_user=None, limit=1000, languages=None):
@@ -367,31 +373,34 @@ class Trakt:
             object_name='movie',
         )
 
-    def get_trending_movies(self, limit=1000, languages=None):
+    def get_trending_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/trending',
             limit=limit,
             languages=languages,
             object_name='movies',
             type_name='trending',
+            genres=genres
         )
 
-    def get_popular_movies(self, limit=1000, languages=None):
+    def get_popular_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/popular',
             limit=limit,
             languages=languages,
             object_name='movies',
             type_name='popular',
+            genres=genres
         )
 
-    def get_anticipated_movies(self, limit=1000, languages=None):
+    def get_anticipated_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/anticipated',
             limit=limit,
             languages=languages,
             object_name='movies',
             type_name='anticipated',
+            genres=genres
         )
 
     def get_boxoffice_movies(self, limit=1000, languages=None):
