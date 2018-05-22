@@ -607,7 +607,7 @@ Sonarr configuration.
 
 ### Tags
 
-Tags option within Traktarr allow Sonarr to add tags shows so that you may filter out certain keywords out of shows from certain television networks.
+Tags option allows Sonarr to assign tags to shows, from specific television networks, to filter in/out certain keywords.
 
 **Example:**
 
@@ -616,7 +616,7 @@ To show how tags work, we will create a tag `AMZN` and assign it to certain tele
 1. First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
 
    ```
-   Must contain: BluRay, Amazon, AMZN,
+   Must contain: BluRay, Amazon, AMZN
    Must not contain:
    Tags: AMZN
    ```
