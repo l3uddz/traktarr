@@ -25,7 +25,8 @@
 
 ---
 
- [![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
 [![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
 [![Discord](https://img.shields.io/discord/381077432285003776.svg)](https://discord.gg/xmNYmSJ)
 
@@ -606,49 +607,46 @@ Sonarr configuration.
 
 ### Tags
 
-To show how tags work, we will create a sample tag `AMZN` and assign it to certain networks.
+Tags option within Traktarr allow Sonarr to add tags shows so that you may filter out certain keywords out of shows from certain television networks.
 
-_Note: These are optional._
+**Example:**
 
-### Sonarr
+To show how tags work, we will create a tag `AMZN` and assign it to certain television networks that usually have AMZN releases.
 
-First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
+1. First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
 
-```
-Must contain: BluRay, Amazon, AMZN,
-Must not contain:
-Tags: AMZN
-```
+   ```
+   Must contain: BluRay, Amazon, AMZN,
+   Must not contain:
+   Tags: AMZN
+   ```
 
-### traktarr
+2. And, finally, we will edit the traktarr config and assign the `AMZN` tag to some networks.
 
-Finally, we will edit the traktarr config and assign the `AMZN` tag to certain networks.
-
-```json
-"tags": {
-  "amzn": [
-    "hbo",
-    "amc",
-    "usa network",
-    "tnt",
-    "starz",
-    "the cw",
-    "fx",
-    "fox",
-    "abc",
-    "nbc",
-    "cbs",
-    "tbs",
-    "amazon",
-    "syfy",
-    "cinemax",
-    "bravo",
-    "showtime",
-    "paramount network"
-  ]
-}
-
-```
+   ```json
+   "tags": {
+     "amzn": [
+       "hbo",
+       "amc",
+       "usa network",
+       "tnt",
+       "starz",
+       "the cw",
+       "fx",
+       "fox",
+       "abc",
+       "nbc",
+       "cbs",
+       "tbs",
+       "amazon",
+       "syfy",
+       "cinemax",
+       "bravo",
+       "showtime",
+       "paramount network"
+     ]
+   }
+   ```
 
 ## Trakt
 
