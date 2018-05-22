@@ -607,7 +607,7 @@ Sonarr configuration.
 
 ### Tags
 
-Tags option allows Sonarr to assign tags to shows, from specific television networks, to filter in/out certain keywords.
+The `tags` option allows Sonarr to assign tags to shows from specific television networks, so that Sonarr can filter in/out certain keywords from releases.
 
 **Example:**
 
