@@ -84,7 +84,10 @@ class Trakt:
 
                     for item in resp_json:
                         if item not in processed:
-                            processed.append(item)
+                            if object_name.rstrip('s') not in item and 'title' in item:
+                                processed.append({object_name.rstrip('s'): item})
+                            else:
+                                processed.append(item)
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
