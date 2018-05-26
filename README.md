@@ -198,7 +198,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
-			"allowed_languages": [],
+      "allowed_languages": [],
       "blacklist_title_keywords": [
         "untitled",
         "barbie",
@@ -220,7 +220,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
-			"allowed_languages": [],
+      "allowed_languages": [],
       "blacklisted_genres": [
         "animation",
         "game-show",
@@ -449,7 +449,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       "gb",
       "ca"
     ],
-		"allowed_languages": [],
+    "allowed_languages": [],
     "blacklist_title_keywords": [
       "untitled",
       "barbie"
@@ -494,7 +494,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "gb",
     "ca"
   ],
-	"allowed_languages": [],
+  "allowed_languages": [],
   "blacklisted_genres": [
     "animation",
     "game-show",
