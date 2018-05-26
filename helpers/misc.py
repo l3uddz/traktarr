@@ -44,3 +44,22 @@ def dict_merge(dct, merge_dct):
             dct[k] = merge_dct[k]
 
     return dct
+
+
+def unblacklist_genres(genre, blacklisted_genres):
+    genres = genre.split(',')
+    for allow_genre in genres:
+        if allow_genre in blacklisted_genres:
+            blacklisted_genres.remove(allow_genre)
+    return
+
+
+def allowed_genres(genre, object_type, trakt_object):
+    allowed_object = False
+    genres = genre.split(',')
+
+    for item in genres:
+        if item.lower() in trakt_object[object_type]['genres']:
+            allowed_object = True
+            break
+    return allowed_object
