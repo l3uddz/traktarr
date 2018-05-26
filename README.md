@@ -1,30 +1,3 @@
-<!-- TOC depthFrom:1 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [traktarr](#traktarr)
-- [Demo](#demo)
-- [Requirements](#requirements)
-- [Installation](#installation)
-	- [1. Base Install](#1-base-install)
-	- [2. Create a Trakt Application](#2-create-a-trakt-application)
-	- [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
-- [Configuration](#configuration)
-	- [Sample Configuration](#sample-configuration)
-	- [Core](#core)
-	- [Automatic](#automatic)
-	- [Filters](#filters)
-	- [Notifications](#notifications)
-	- [Radarr](#radarr)
-	- [Sonarr](#sonarr)
-	- [Trakt](#trakt)
-- [Usage](#usage)
-	- [Automatic (Scheduled)](#automatic-scheduled)
-	- [Manual (CLI)](#manual-cli)
-	- [Examples (Manual)](#examples-manual)
-
-<!-- /TOC -->
-
----
-
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
 [![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
@@ -56,6 +29,53 @@ Types of Trakt lists supported:
   - Custom list(s)
 
 \* Support for multiple (authenticated) users.
+
+---
+
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [traktarr](#traktarr)
+- [Demo](#demo)
+- [Requirements](#requirements)
+- [Installation](#installation)
+	- [1. Base Install](#1-base-install)
+	- [2. Create a Trakt Application](#2-create-a-trakt-application)
+	- [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
+- [Configuration](#configuration)
+	- [Sample Configuration](#sample-configuration)
+	- [Core](#core)
+	- [Automatic](#automatic)
+		- [Personal Watchlists](#personal-watchlists)
+		- [Custom Lists](#custom-lists)
+			- [Public Lists](#public-lists)
+			- [Private Lists](#private-lists)
+	- [Filters](#filters)
+		- [Movies](#movies)
+		- [Shows](#shows)
+	- [Notifications](#notifications)
+		- [Pushover](#pushover)
+		- [Slack](#slack)
+	- [Radarr](#radarr)
+	- [Sonarr](#sonarr)
+		- [Tags](#tags)
+	- [Trakt](#trakt)
+- [Usage](#usage)
+	- [Automatic (Scheduled)](#automatic-scheduled)
+		- [Setup](#setup)
+		- [Customize](#customize)
+	- [Manual (CLI)](#manual-cli)
+		- [General](#general)
+		- [Movie (Single Movie)](#movie-single-movie)
+		- [Movies (Multiple Movies)](#movies-multiple-movies)
+		- [Show (Single Show)](#show-single-show)
+		- [Shows (Multiple Shows)](#shows-multiple-shows)
+	- [Examples (Manual)](#examples-manual)
+
+<!-- /TOC -->
+
+---
+
+
 
 
 # Demo
