@@ -2,6 +2,7 @@
 import os.path
 import sys
 import time
+import signal
 
 import click
 import schedule
@@ -703,13 +704,19 @@ def init_notifications():
     return
 
 
+# Handles exit signals, cancels jobs and exits cleanly
+def exit_handler(signum, frame):
+    log.info(f"Received {signal.Signals(signum).name}, canceling jobs and exiting.")
+    schedule.clear()
+    exit()
+
+
 ############################################################
 # MAIN
 ############################################################
 
 if __name__ == "__main__":
     print("""
-
   ,--.                 ,--.     ,--.
 ,-'  '-.,--.--. ,--,--.|  |,-.,-'  '-. ,--,--.,--.--.,--.--.
 '-.  .-'|  .--'' ,-.  ||     /'-.  .-'' ,-.  ||  .--'|  .--'
@@ -724,5 +731,11 @@ if __name__ == "__main__":
 #########################################################################
 # GNU General Public License v3.0                                       #
 #########################################################################
-        """)
+""")
+
+    # Register the signal handlers
+    signal.signal(signal.SIGTERM, exit_handler)
+    signal.signal(signal.SIGINT, exit_handler)
+
+    # Start application
     app()
