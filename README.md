@@ -178,6 +178,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
+			"allowed_languages": [],
       "blacklist_title_keywords": [
         "untitled",
         "barbie",
@@ -199,6 +200,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
+			"allowed_languages": [],
       "blacklisted_genres": [
         "animation",
         "game-show",
@@ -427,6 +429,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       "gb",
       "ca"
     ],
+		"allowed_languages": [],
     "blacklist_title_keywords": [
       "untitled",
       "barbie"
@@ -443,7 +446,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   },
 ```
 
-`allowed_countries` - allowed countries of origin.
+`allowed_countries` - only add movies from these countries.
+
+`allowed_languages` - only add movies with these languages (default/blank=English).
+
+- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 `blacklist_title_keywords` - blacklist certain words in titles.
 
@@ -466,6 +474,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "gb",
     "ca"
   ],
+	"allowed_languages": [],
   "blacklisted_genres": [
     "animation",
     "game-show",
@@ -501,7 +510,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 }
 ```
 
-`allowed_countries` - allowed countries of origin.
+`allowed_countries` - only add shows from these countries.
+
+`allowed_languages` - only add shows with these languages (default/blank=English).
+
+- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 `blacklisted_genres` - blacklist certain genres.
 
