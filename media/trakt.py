@@ -58,7 +58,7 @@ class Trakt:
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def _make_items_request(self, url, limit, languages, type_name, object_name, authenticate_user=None, payload={},
                             sleep_between=5, genres=None):
-        if languages is None:
+        if not languages:
             languages = ['en']
 
         payload = dict_merge(payload, {'extended': 'full', 'limit': limit, 'page': 1, 'languages': ','.join(languages)})
