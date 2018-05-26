@@ -375,45 +375,45 @@ Private lists can be added in two ways:
 
 1. If there is only one authenticated user, you can add the private list just like any other public list:
 
-```json
-"automatic": {
-  "movies": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-movies-list": 10
-    }
-  },
-  "shows": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-shows-list": 10
-    }
-  }
-},
-```
+   ```json
+   "automatic": {
+     "movies": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-movies-list": 10
+       }
+     },
+     "shows": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-shows-list": 10
+       }
+     }
+   },
+   ```
 
 2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`.
 
-_Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
+   _Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
 
-```json
-"automatic": {
-  "movies": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-movies-list": {
-            "authenticate_as": "user2",
-            "limit": 10
-        }
-    }
-  },
-  "shows": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-shows-list": {
-            "authenticate_as": "user2",
-            "limit": 10
-        }
-    }
-  }
-},
-```
+   ```json
+   "automatic": {
+     "movies": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-movies-list": {
+               "authenticate_as": "user2",
+               "limit": 10
+           }
+       }
+     },
+     "shows": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-shows-list": {
+               "authenticate_as": "user2",
+               "limit": 10
+           }
+       }
+     }
+   },
+   ```
 
 
 ## Filters
