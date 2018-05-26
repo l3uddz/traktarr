@@ -749,11 +749,7 @@ Options:
   --help                Show this message and exit.
 ```
 
-<<<<<<< HEAD
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
-=======
 _Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
->>>>>>> Readme: minor fixes
 
 ### Movies (Multiple Movies)
 
@@ -804,11 +800,7 @@ Options:
   --help               Show this message and exit.
 ```
 
-<<<<<<< HEAD
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
-=======
 _Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
->>>>>>> Readme: minor fixes
 
 
 ### Shows (Multiple Shows)

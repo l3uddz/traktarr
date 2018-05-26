@@ -185,14 +185,15 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
           authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
+    from helpers import misc as misc_helper
     from helpers import sonarr as sonarr_helper
     from helpers import trakt as trakt_helper
 
     added_shows = 0
 
     # remove genre from shows blacklisted_genres if supplied
-    if genre and genre in cfg.filters.shows.blacklisted_genres:
-        cfg['filters']['shows']['blacklisted_genres'].remove(genre)
+    if genre:
+        misc_helper.unblacklist_genres(genre, cfg['filters']['shows']['blacklisted_genres'])
 
     # replace sonarr root_folder if folder is supplied
     if folder:
@@ -212,11 +213,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
 
     # get trakt series list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_shows()
+        trakt_objects_list = trakt.get_anticipated_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_shows()
+        trakt_objects_list = trakt.get_trending_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_shows()
+        trakt_objects_list = trakt.get_popular_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
     else:
@@ -254,8 +255,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
     for series in sorted_series_list:
         try:
             # check if genre matches genre supplied via argument
-            if genre and genre.lower() not in series['show']['genres']:
-                log.debug("Skipping: %s because it was not from %s genre", series['show']['title'], genre.lower())
+            if genre and not misc_helper.allowed_genres(genre, 'show', series):
+                log.debug("Skipping: %s because it was not from %s genre(s)", series['show']['title'], genre.lower())
                 continue
 
             # check if series passes out blacklist criteria inspection
@@ -361,14 +362,15 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
            authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
+    from helpers import misc as misc_helper
     from helpers import radarr as radarr_helper
     from helpers import trakt as trakt_helper
 
     added_movies = 0
 
     # remove genre from movies blacklisted_genres if supplied
-    if genre and genre in cfg.filters.movies.blacklisted_genres:
-        cfg['filters']['movies']['blacklisted_genres'].remove(genre)
+    if genre:
+        misc_helper.unblacklist_genres(genre, cfg['filters']['movies']['blacklisted_genres'])
 
     # replace radarr root_folder if folder is supplied
     if folder:
@@ -387,11 +389,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_movies()
+        trakt_objects_list = trakt.get_anticipated_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_movies()
+        trakt_objects_list = trakt.get_trending_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_movies()
+        trakt_objects_list = trakt.get_popular_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'watchlist':
@@ -431,8 +433,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
     for movie in sorted_movies_list:
         try:
             # check if genre matches genre supplied via argument
-            if genre and genre.lower() not in movie['movie']['genres']:
-                log.debug("Skipping: %s because it was not from %s genre", movie['movie']['title'], genre.lower())
+            if genre and not misc_helper.allowed_genres(genre, 'movie', movie):
+                log.debug("Skipping: %s because it was not from %s genre(s)", movie['movie']['title'], genre.lower())
                 continue
 
             # check if movie passes out blacklist criteria inspection
