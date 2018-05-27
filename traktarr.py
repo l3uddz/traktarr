@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os.path
+import signal
 import sys
 import time
-import signal
 
 import click
 import schedule
@@ -706,7 +706,7 @@ def init_notifications():
 
 # Handles exit signals, cancels jobs and exits cleanly
 def exit_handler(signum, frame):
-    log.info(f"Received {signal.Signals(signum).name}, canceling jobs and exiting.")
+    log.info("Received %s, canceling jobs and exiting.", signal.Signals(signum).name)
     schedule.clear()
     exit()
 
