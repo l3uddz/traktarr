@@ -1,5 +1,12 @@
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+[![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
+[![Discord](https://img.shields.io/discord/381077432285003776.svg)](https://discord.gg/xmNYmSJ)
+
+
 # traktarr
-Add new shows & movies to Sonarr/Radarr from Trakt.
+
+**traktarr** uses Trakt to add new shows into Sonarr and new movies into Radarr.
 
 Types of Trakt lists supported:
 
@@ -11,7 +18,7 @@ Types of Trakt lists supported:
 
   - Anticipated
 
-  - boxoffice
+  - Boxoffice
 
 - Public lists
 
@@ -23,6 +30,53 @@ Types of Trakt lists supported:
 
 \* Support for multiple (authenticated) users.
 
+---
+
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [traktarr](#traktarr)
+- [Demo](#demo)
+- [Requirements](#requirements)
+- [Installation](#installation)
+	- [1. Base Install](#1-base-install)
+	- [2. Create a Trakt Application](#2-create-a-trakt-application)
+	- [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
+- [Configuration](#configuration)
+	- [Sample Configuration](#sample-configuration)
+	- [Core](#core)
+	- [Automatic](#automatic)
+		- [Personal Watchlists](#personal-watchlists)
+		- [Custom Lists](#custom-lists)
+			- [Public Lists](#public-lists)
+			- [Private Lists](#private-lists)
+	- [Filters](#filters)
+		- [Movies](#movies)
+		- [Shows](#shows)
+	- [Notifications](#notifications)
+		- [Pushover](#pushover)
+		- [Slack](#slack)
+	- [Radarr](#radarr)
+	- [Sonarr](#sonarr)
+		- [Tags](#tags)
+	- [Trakt](#trakt)
+- [Usage](#usage)
+	- [Automatic (Scheduled)](#automatic-scheduled)
+		- [Setup](#setup)
+		- [Customize](#customize)
+	- [Manual (CLI)](#manual-cli)
+		- [General](#general)
+		- [Movie (Single Movie)](#movie-single-movie)
+		- [Movies (Multiple Movies)](#movies-multiple-movies)
+		- [Show (Single Show)](#show-single-show)
+		- [Shows (Multiple Shows)](#shows-multiple-shows)
+	- [Examples (Manual)](#examples-manual)
+
+<!-- /TOC -->
+
+---
+
+
+
 
 # Demo
 
@@ -33,8 +87,11 @@ Click to enlarge.
 
 # Requirements
 
-1. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
-2. requirements.txt modules (see below).
+1. Ubuntu/Debian
+
+2. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
+
+3. requirements.txt modules (see below).
 
 # Installation
 
@@ -43,20 +100,31 @@ Click to enlarge.
 Install traktarr to be run with `traktarr` command.
 
 1. `cd /opt`
+
 2. `sudo git clone https://github.com/l3uddz/traktarr`
+
 3. `sudo chown -R user:group traktarr` (run `id` to find your user / group)
+
 4. `cd traktarr`
+
 5. `sudo python3 -m pip install -r requirements.txt`
+
 6. `sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr`
+
 7. `traktarr` - run once to generate a sample a config.json file.
+
 8. `nano config.json` - edit preferences.
 
 ## 2. Create a Trakt Application
 
 1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
+
 2. Enter a name for your application; for example `traktarr`
+
 3. Enter `urn:ietf:wg:oauth:2.0:oob` in the `Redirect uri` field.
+
 4. Click "SAVE APP".
+
 5. Open the traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
 
    ```
@@ -73,7 +141,9 @@ Install traktarr to be run with `traktarr` command.
 For each user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
 
 Repeat the following steps for every user you want to authenticate:
+
 1. Run `traktarr trakt_authentication`
+
 2. You wil get the following prompt:
 
    ```
@@ -81,13 +151,19 @@ Repeat the following steps for every user you want to authenticate:
    - Go to: https://trakt.tv/activate on any device and enter A0XXXXXX. We'll be polling Trakt every 5 seconds for a reply
    ```
 3. Go to https://trakt.tv/activate.
+
 4. Enter the code you see in your terminal.
+
 5. Click continue.
+
 6. If you are not logged in to Trakt, login now.
+
 7. Click "Accept".
+
 8. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
 
 You've now authenticated the user.
+
 You can repeat this process for as many users as you like.
 
 
@@ -122,6 +198,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
+      "allowed_languages": [],
       "blacklist_title_keywords": [
         "untitled",
         "barbie",
@@ -143,6 +220,7 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
+      "allowed_languages": [],
       "blacklisted_genres": [
         "animation",
         "game-show",
@@ -317,45 +395,45 @@ Private lists can be added in two ways:
 
 1. If there is only one authenticated user, you can add the private list just like any other public list:
 
-```json
-"automatic": {
-  "movies": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-movies-list": 10
-    }
-  },
-  "shows": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-shows-list": 10
-    }
-  }
-},
-```
+   ```json
+   "automatic": {
+     "movies": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-movies-list": 10
+       }
+     },
+     "shows": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-shows-list": 10
+       }
+     }
+   },
+   ```
 
 2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`.
 
-_Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
+   _Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
 
-```json
-"automatic": {
-  "movies": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-movies-list": {
-            "authenticate_as": "user2",
-            "limit": 10
-        }
-    }
-  },
-  "shows": {
-    "lists": {
-        "https://trakt.tv/users/user/lists/my-private-shows-list": {
-            "authenticate_as": "user2",
-            "limit": 10
-        }
-    }
-  }
-},
-```
+   ```json
+   "automatic": {
+     "movies": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-movies-list": {
+               "authenticate_as": "user2",
+               "limit": 10
+           }
+       }
+     },
+     "shows": {
+       "lists": {
+           "https://trakt.tv/users/user/lists/my-private-shows-list": {
+               "authenticate_as": "user2",
+               "limit": 10
+           }
+       }
+     }
+   },
+   ```
 
 
 ## Filters
@@ -371,6 +449,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       "gb",
       "ca"
     ],
+    "allowed_languages": [],
     "blacklist_title_keywords": [
       "untitled",
       "barbie"
@@ -387,7 +466,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   },
 ```
 
-`allowed_countries` - allowed countries of origin.
+`allowed_countries` - only add movies from these countries.
+
+`allowed_languages` - only add movies with these languages (default/blank=English).
+
+- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 `blacklist_title_keywords` - blacklist certain words in titles.
 
@@ -410,6 +494,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "gb",
     "ca"
   ],
+  "allowed_languages": [],
   "blacklisted_genres": [
     "animation",
     "game-show",
@@ -445,7 +530,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 }
 ```
 
-`allowed_countries` - allowed countries of origin.
+`allowed_countries` - only add shows from these countries.
+
+`allowed_languages` - only add shows with these languages (default/blank=English).
+
+- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 `blacklisted_genres` - blacklist certain genres.
 
@@ -551,49 +641,46 @@ Sonarr configuration.
 
 ### Tags
 
-To show how tags work, we will create a sample tag `AMZN` and assign it to certain networks.
+The `tags` option allows Sonarr to assign tags to shows from specific television networks, so that Sonarr can filter in/out certain keywords from releases.
 
-_Note: These are optional._
+**Example:**
 
-### Sonarr
+To show how tags work, we will create a tag `AMZN` and assign it to certain television networks that usually have AMZN releases.
 
-First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
+1. First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
 
-```
-Must contain: BluRay, Amazon, AMZN,
-Must not contain:
-Tags: AMZN
-```
+   ```
+   Must contain: BluRay, Amazon, AMZN
+   Must not contain:
+   Tags: AMZN
+   ```
 
-### traktarr
+2. And, finally, we will edit the traktarr config and assign the `AMZN` tag to some networks.
 
-Finally, we will edit the traktarr config and assign the `AMZN` tag to certain networks.
-
-```json
-"tags": {
-  "amzn": [
-    "hbo",
-    "amc",
-    "usa network",
-    "tnt",
-    "starz",
-    "the cw",
-    "fx",
-    "fox",
-    "abc",
-    "nbc",
-    "cbs",
-    "tbs",
-    "amazon",
-    "syfy",
-    "cinemax",
-    "bravo",
-    "showtime",
-    "paramount network"
-  ]
-}
-
-```
+   ```json
+   "tags": {
+     "amzn": [
+       "hbo",
+       "amc",
+       "usa network",
+       "tnt",
+       "starz",
+       "the cw",
+       "fx",
+       "fox",
+       "abc",
+       "nbc",
+       "cbs",
+       "tbs",
+       "amazon",
+       "syfy",
+       "cinemax",
+       "bravo",
+       "showtime",
+       "paramount network"
+     ]
+   }
+   ```
 
 ## Trakt
 
@@ -615,13 +702,40 @@ Trakt Authentication info:
 
 ## Automatic (Scheduled)
 
-To have traktarr get Movies and Shows for you automatically, on set interval.
+### Setup
+
+To have traktarr get Movies and Shows for you automatically, on set interval, do the following:
 
 1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
+
 2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours.
+
 3. `sudo systemctl daemon-reload`
+
 4. `sudo systemctl enable traktarr.service`
+
 5. `sudo systemctl start traktarr.service`
+
+### Customize
+
+You can customize how the scheduled traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
+
+```
+  -d, --add-delay FLOAT  Seconds between each add request to Sonarr / Radarr.
+                         [default: 2.5]
+  --no-search            Disable search when adding to Sonarr / Radarr.
+  --run-now              Do a first run immediately without waiting.
+  --no-notifications     Disable notifications.
+  --help                 Show this message and exit.
+```
+
+You can bring up the list, anytime, by running the following command:
+
+```
+traktarr run --help
+```
+
+\* Remember, other configuration options need to go into the `config.json` file under the `Automatic` section.
 
 ## Manual (CLI)
 
@@ -669,7 +783,7 @@ Options:
   --help                Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
 
 ### Movies (Multiple Movies)
 
@@ -720,7 +834,7 @@ Options:
   --help               Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and support both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
 
 
 ### Shows (Multiple Shows)

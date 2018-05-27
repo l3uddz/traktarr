@@ -1,143 +1,28 @@
-import os.path
-
 import backoff
-import requests
 
-from misc import helpers
-from misc import str as misc_str
+from helpers.misc import backoff_handler, dict_merge
+from media.pvr import PVR
 from misc.log import logger
 
 log = logger.get_logger(__name__)
 
 
-def backoff_handler(details):
-    log.warning("Backing off {wait:0.1f} seconds afters {tries} tries "
-                "calling function {target} with args {args} and kwargs "
-                "{kwargs}".format(**details))
-
-
-class Radarr:
-    def __init__(self, server_url, api_key):
-        self.server_url = server_url
-        self.api_key = api_key
-        self.headers = {
-            'Content-Type': 'application/json',
-            'X-Api-Key': self.api_key,
-        }
-
-    def validate_api_key(self):
-        try:
-            # request system status to validate api_key
-            req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
-                headers=self.headers,
-                timeout=60
-            )
-            log.debug("Request Response: %d", req.status_code)
-
-            if req.status_code == 200 and 'version' in req.json():
-                return True
-            return False
-        except Exception:
-            log.exception("Exception validating api_key: ")
-        return False
-
-    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_movies(self):
-        try:
-            # make request
-            req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
-                headers=self.headers,
-                timeout=60
-            )
-            log.debug("Request URL: %s", req.url)
-            log.debug("Request Response: %d", req.status_code)
-
-            if req.status_code == 200:
-                resp_json = req.json()
-                log.debug("Found %d movies", len(resp_json))
-                return resp_json
-            else:
-                log.error("Failed to retrieve all movies, request response: %d", req.status_code)
-        except Exception:
-            log.exception("Exception retrieving movies: ")
-        return None
-
-    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def get_profile_id(self, profile_name):
-        try:
-            # make request
-            req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
-                headers=self.headers,
-                timeout=60
-            )
-            log.debug("Request URL: %s", req.url)
-            log.debug("Request Response: %d", req.status_code)
-
-            if req.status_code == 200:
-                resp_json = req.json()
-                for profile in resp_json:
-                    if profile['name'].lower() == profile_name.lower():
-                        log.debug("Found id of %s profile: %d", profile_name, profile['id'])
-                        return profile['id']
-                    log.debug("Profile %s with id %d did not match %s", profile['name'], profile['id'], profile_name)
-            else:
-                log.error("Failed to retrieve all quality profiles, request response: %d", req.status_code)
-        except Exception:
-            log.exception("Exception retrieving id of profile %s: ", profile_name)
-        return None
+class Radarr(PVR):
+    def get_objects(self):
+        return self._get_objects('api/movie')
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def add_movie(self, movie_tmdbid, movie_title, movie_year, movie_title_slug, profile_id, root_folder,
                   search_missing=False):
-        try:
-            # generate payload
-            payload = {
-                'tmdbId': movie_tmdbid,
-                'title': movie_title,
-                'year': movie_year,
-                'qualityProfileId': profile_id,
-                'images': [],
-                'monitored': True,
-                'rootFolderPath': root_folder,
-                'minimumAvailability': 'released',
-                'titleSlug': movie_title_slug,
-                'addOptions': {
-                    'ignoreEpisodesWithFiles': False,
-                    'ignoreEpisodesWithoutFiles': False,
-                    'searchForMovie': search_missing
-                }
+        payload = self._prepare_add_object_payload(movie_title, movie_title_slug, profile_id, root_folder)
+
+        payload = dict_merge(payload, {
+            'tmdbId': movie_tmdbid,
+            'year': movie_year,
+            'minimumAvailability': 'released',
+            'addOptions': {
+                'searchForMovie': search_missing
             }
+        })
 
-            # make request
-            req = requests.post(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/movie'),
-                headers=self.headers,
-                json=payload,
-                timeout=60
-            )
-            log.debug("Request URL: %s", req.url)
-            log.debug("Request Payload: %s", payload)
-            log.debug("Request Response Code: %d", req.status_code)
-            log.debug("Request Response Text:\n%s", req.text)
-
-            response_json = None
-            if 'json' in req.headers['Content-Type'].lower():
-                response_json = helpers.get_response_dict(req.json(), 'tmdbId', movie_tmdbid)
-
-            if (req.status_code == 201 or req.status_code == 200) and (response_json and 'tmdbId' in response_json) \
-                    and response_json['tmdbId'] == movie_tmdbid:
-                log.debug("Successfully added %s (%d)", movie_title, movie_tmdbid)
-                return True
-            elif response_json and 'message' in response_json:
-                log.error("Failed to add %s (%d) - status_code: %d, reason: %s", movie_title, movie_tmdbid,
-                          req.status_code, response_json['message'])
-                return False
-            else:
-                log.error("Failed to add %s (%d), unexpected response:\n%s", movie_title, movie_tmdbid, req.text)
-                return False
-        except Exception:
-            log.exception("Exception adding movie %s (%d): ", movie_title, movie_tmdbid)
-        return None
+        return self._add_object('api/movie', payload, identifier_field='tmdbId', identifier=movie_tmdbid)
