@@ -67,7 +67,8 @@ class Trakt:
 
         processed = []
 
-        type_name = type_name.replace('{authenticate_user}', self._user_used_for_authentication(authenticate_user))
+        if authenticate_user:
+            type_name = type_name.replace('{authenticate_user}', self._user_used_for_authentication(authenticate_user))
 
         try:
             while True:
