@@ -8,9 +8,10 @@ log = logger.get_logger(__name__)
 class Pushover:
     NAME = "Pushover"
 
-    def __init__(self, app_token, user_token):
+    def __init__(self, app_token, user_token, priority=0):
         self.app_token = app_token
         self.user_token = user_token
+        self.priority = priority
         log.debug("Initialized Pushover notification agent")
 
     def send(self, **kwargs):
@@ -23,7 +24,8 @@ class Pushover:
             payload = {
                 'token': self.app_token,
                 'user': self.user_token,
-                'message': kwargs['message']
+                'message': kwargs['message'],
+                'priority': self.priority,
             }
             resp = requests.post('https://api.pushover.net/1/messages.json', data=payload, timeout=30)
             return True if resp.status_code == 200 else False
