@@ -523,10 +523,15 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False, ignore_
                 else:
                     log.info("Adding %d shows from Trakt's %s list", limit, list_type)
 
+                local_ignore_blacklist = ignore_blacklist
+
+                if list_type.lower() in cfg.filters.shows.disabled_for:
+                    local_ignore_blacklist = True
+
                 # run shows
                 added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                              add_delay=add_delay, no_search=no_search,
-                                             notifications=notifications, ignore_blacklist=ignore_blacklist)
+                                             notifications=notifications, ignore_blacklist=local_ignore_blacklist)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -535,11 +540,16 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False, ignore_
                     else:
                         log.info("Adding %d shows from the %s from %s", limit, list_type, authenticate_user)
 
+                    local_ignore_blacklist = ignore_blacklist
+
+                    if "watchlist:%s".format(authenticate_user) in cfg.filters.shows.disabled_for:
+                        local_ignore_blacklist = True
+
                     # run shows
                     added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
                                                  notifications=notifications, authenticate_user=authenticate_user,
-                                                 ignore_blacklist=ignore_blacklist)
+                                                 ignore_blacklist=local_ignore_blacklist)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -549,11 +559,16 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False, ignore_
                         authenticate_user = None
                         limit = v
 
+                    local_ignore_blacklist = ignore_blacklist
+
+                    if "list:%s".format(list) in cfg.filters.shows.disabled_for:
+                        local_ignore_blacklist = True
+
                     # run shows
                     added_shows = shows.callback(list_type=list, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
                                                  notifications=notifications, authenticate_user=authenticate_user,
-                                                 ignore_blacklist=ignore_blacklist)
+                                                 ignore_blacklist=local_ignore_blacklist)
 
             if added_shows is None:
                 log.error("Failed adding shows from Trakt's %s list", list_type)
@@ -596,10 +611,15 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False, ignore
                 else:
                     log.info("Adding %d movies from Trakt's %s list", limit, list_type)
 
+                local_ignore_blacklist = ignore_blacklist
+
+                if list_type.lower() in cfg.filters.movies.disabled_for:
+                    local_ignore_blacklist = True
+
                 # run movies
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                add_delay=add_delay, no_search=no_search,
-                                               notifications=notifications, ignore_blacklist=ignore_blacklist)
+                                               notifications=notifications, ignore_blacklist=local_ignore_blacklist)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -608,11 +628,16 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False, ignore
                     else:
                         log.info("Adding %d movies from the %s from %s", limit, list_type, authenticate_user)
 
+                    local_ignore_blacklist = ignore_blacklist
+
+                    if "watchlist:%s".format(authenticate_user) in cfg.filters.movies.disabled_for:
+                        local_ignore_blacklist = True
+
                     # run movies
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                    add_delay=add_delay, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=ignore_blacklist)
+                                                   ignore_blacklist=local_ignore_blacklist)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -622,11 +647,16 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False, ignore
                         authenticate_user = None
                         limit = v
 
+                    local_ignore_blacklist = ignore_blacklist
+
+                    if "list:%s".format(list) in cfg.filters.movies.disabled_for:
+                        local_ignore_blacklist = True
+
                     # run shows
                     added_movies = movies.callback(list_type=list, add_limit=limit,
                                                    add_delay=add_delay, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=ignore_blacklist)
+                                                   ignore_blacklist=local_ignore_blacklist)
 
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
