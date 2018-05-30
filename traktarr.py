@@ -181,8 +181,9 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
+@click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-          authenticate_user=None):
+          authenticate_user=None, ignore_blacklist=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -260,7 +261,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
                 continue
 
             # check if series passes out blacklist criteria inspection
-            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows):
+            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
@@ -358,8 +359,9 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
+@click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-           authenticate_user=None):
+           authenticate_user=None, ignore_blacklist=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -438,7 +440,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
                 continue
 
             # check if movie passes out blacklist criteria inspection
-            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies):
+            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies, ignore_blacklist):
                 log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
@@ -499,7 +501,7 @@ def callback_notify(data):
     return
 
 
-def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
+def automatic_shows(add_delay=2.5, no_search=False, notifications=False, ignore_blacklist=False):
     from media.trakt import Trakt
 
     total_shows_added = 0
@@ -524,7 +526,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                 # run shows
                 added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                              add_delay=add_delay, no_search=no_search,
-                                             notifications=notifications)
+                                             notifications=notifications, ignore_blacklist=ignore_blacklist)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -536,7 +538,8 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                     # run shows
                     added_shows = shows.callback(list_type=list_type, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
-                                                 notifications=notifications, authenticate_user=authenticate_user)
+                                                 notifications=notifications, authenticate_user=authenticate_user,
+                                                 ignore_blacklist=ignore_blacklist)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -549,7 +552,8 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
                     # run shows
                     added_shows = shows.callback(list_type=list, add_limit=limit,
                                                  add_delay=add_delay, no_search=no_search,
-                                                 notifications=notifications, authenticate_user=authenticate_user)
+                                                 notifications=notifications, authenticate_user=authenticate_user,
+                                                 ignore_blacklist=ignore_blacklist)
 
             if added_shows is None:
                 log.error("Failed adding shows from Trakt's %s list", list_type)
@@ -570,7 +574,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
     return
 
 
-def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
+def automatic_movies(add_delay=2.5, no_search=False, notifications=False, ignore_blacklist=False):
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -595,7 +599,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
                 # run movies
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                add_delay=add_delay, no_search=no_search,
-                                               notifications=notifications)
+                                               notifications=notifications, ignore_blacklist=ignore_blacklist)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -607,7 +611,8 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
                     # run movies
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                    add_delay=add_delay, no_search=no_search,
-                                                   notifications=notifications, authenticate_user=authenticate_user)
+                                                   notifications=notifications, authenticate_user=authenticate_user,
+                                                   ignore_blacklist=ignore_blacklist)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -620,7 +625,8 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
                     # run shows
                     added_movies = movies.callback(list_type=list, add_limit=limit,
                                                    add_delay=add_delay, no_search=no_search,
-                                                   notifications=notifications, authenticate_user=authenticate_user)
+                                                   notifications=notifications, authenticate_user=authenticate_user,
+                                                   ignore_blacklist=ignore_blacklist)
 
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
@@ -647,7 +653,8 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
 @click.option('--run-now', is_flag=True, help="Do a first run immediately without waiting.")
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
-def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
+@click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
+def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False, ignore_blacklist=False):
     log.info("Automatic mode is now running...")
 
     # Add tasks to schedule and do first run if enabled
@@ -656,7 +663,8 @@ def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
             automatic_movies,
             add_delay,
             no_search,
-            not no_notifications
+            not no_notifications,
+            ignore_blacklist
         )
         if run_now:
             movie_schedule.run()
@@ -669,7 +677,8 @@ def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
             automatic_shows,
             add_delay,
             no_search,
-            not no_notifications
+            not no_notifications,
+            ignore_blacklist
         )
         if run_now:
             shows_schedule.run()

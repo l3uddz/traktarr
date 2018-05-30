@@ -726,6 +726,7 @@ You can customize how the scheduled traktarr is ran by editing the `traktarr.ser
   --no-search            Disable search when adding to Sonarr / Radarr.
   --run-now              Do a first run immediately without waiting.
   --no-notifications     Disable notifications.
+  --ignore-blacklist     Ignores the blacklist when running the command.
   --help                 Show this message and exit.
 ```
 
@@ -809,6 +810,7 @@ Options:
   -f, --folder TEXT         Add movies with this root folder to Radarr.
   --no-search               Disable search when adding movies to Radarr.
   --notifications           Send notifications.
+  --ignore-blacklist        Ignores the blacklist when running the command.
   --authenticate-user TEXT  Specify which user to authenticate with to
                             retrieve Trakt lists. Default: first user in the
                             config.
@@ -861,6 +863,7 @@ Options:
   -f, --folder TEXT         Add shows with this root folder to Sonarr.
   --no-search               Disable search when adding shows to Sonarr.
   --notifications           Send notifications.
+  --ignore-blacklist        Ignores the blacklist when running the command.
   --authenticate-user TEXT  Specify which user to authenticate with to
                             retrieve Trakt lists. Default: first user in the
                             config
