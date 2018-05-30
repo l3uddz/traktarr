@@ -259,7 +259,8 @@ You can repeat this process for as many users as you like.
     "pushover": {
       "service": "pushover",
       "app_token": "",
-      "user_token": ""
+      "user_token": "",
+      "priority": 0
     },
     "slack": {
       "service": "slack",
@@ -564,7 +565,8 @@ Currently, only Pushover and Slack are supported. More will be added later.
   "pushover": {
     "service": "pushover",
     "app_token": "",
-    "user_token": ""
+    "user_token": "",
+    "priority": 0
   },
   "slack": {
     "service": "slack",
@@ -581,6 +583,8 @@ Currently, only Pushover and Slack are supported. More will be added later.
 ### Pushover
 
 `app_token` and `user_token` - retrieve from Pushover.net.
+
+You can specify a priority for the messages send via Pushover using the `priority` key. It can be any Pushover priority value (https://pushover.net/api#priority).
 
 _Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"pushover"`._
 
