@@ -193,6 +193,7 @@ You can repeat this process for as many users as you like.
   },
   "filters": {
     "movies": {
+      "disabled_for": [],
       "allowed_countries": [
         "us",
         "gb",
@@ -215,6 +216,7 @@ You can repeat this process for as many users as you like.
       "blacklisted_tmdb_ids": []
     },
     "shows": {
+      "disabled_for": [],
       "allowed_countries": [
         "us",
         "gb",
@@ -444,6 +446,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ```json
   "movies": {
+    "disabled_for": [],
     "allowed_countries": [
       "us",
       "gb",
@@ -464,6 +467,18 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_min_year": 2000,
     "blacklisted_tmdb_ids": []
   },
+```
+
+`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+
+Example:
+
+```
+    "disabled_for": [
+        "anticipated",
+        "watchlist:user1",
+        "list:http://url-to-list"
+    ],
 ```
 
 `allowed_countries` - only add movies from these countries.
@@ -528,6 +543,18 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   ],
   "blacklisted_tvdb_ids": []
 }
+```
+
+`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+
+Example:
+
+```
+    "disabled_for": [
+        "anticipated",
+        "watchlist:user1",
+        "list:http://url-to-list"
+    ],
 ```
 
 `allowed_countries` - only add shows from these countries.
