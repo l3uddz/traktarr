@@ -175,13 +175,15 @@ def show(show_id, folder=None, no_search=False):
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
+@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
+              help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
-def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
+def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False, notifications=False,
           authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
@@ -246,9 +248,16 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
         log.info("Removed existing Sonarr shows from Trakt shows list, shows left to process: %d",
                  len(processed_series_list))
 
-    # sort filtered series list by highest votes
-    sorted_series_list = sorted(processed_series_list, key=lambda k: k['show']['votes'], reverse=True)
-    log.info("Sorted shows list to process by highest votes")
+    # sort filtered series list
+    if sort == 'release':
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'first_aired')
+        log.info("Sorted shows list to process by release date")
+    elif sort == 'rating':
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'rating')
+        log.info("Sorted shows list to process by highest rating")
+    else:
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'votes')
+        log.info("Sorted shows list to process by highest votes")
 
     # loop series_list
     log.info("Processing list now...")
@@ -352,13 +361,15 @@ def movie(movie_id, folder=None, no_search=False):
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
+@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
+              help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
-def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False, notifications=False,
            authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
@@ -424,9 +435,16 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
         log.info("Removed existing Radarr movies from Trakt movies list, movies left to process: %d",
                  len(processed_movies_list))
 
-    # sort filtered movie list by highest votes
-    sorted_movies_list = sorted(processed_movies_list, key=lambda k: k['movie']['votes'], reverse=True)
-    log.info("Sorted movie list to process by highest votes")
+    # sort filtered movie list
+    if sort == 'release':
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'released')
+        log.info("Sorted movies list to process by release date")
+    elif sort == 'rating':
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'rating')
+        log.info("Sorted movies list to process by highest rating")
+    else:
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'votes')
+        log.info("Sorted movies list to process by highest votes")
 
     # loop movies
     log.info("Processing list now...")
