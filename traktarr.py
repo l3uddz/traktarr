@@ -175,14 +175,16 @@ def show(show_id, folder=None, no_search=False):
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
+@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
+              help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
-def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-          authenticate_user=None):
+def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
+          notifications=False, authenticate_user=None):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -246,9 +248,16 @@ def shows(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_sea
         log.info("Removed existing Sonarr shows from Trakt shows list, shows left to process: %d",
                  len(processed_series_list))
 
-    # sort filtered series list by highest votes
-    sorted_series_list = sorted(processed_series_list, key=lambda k: k['show']['votes'], reverse=True)
-    log.info("Sorted shows list to process by highest votes")
+    # sort filtered series list
+    if sort == 'release':
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'first_aired')
+        log.info("Sorted shows list to process by release date")
+    elif sort == 'rating':
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'rating')
+        log.info("Sorted shows list to process by highest rating")
+    else:
+        sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'votes')
+        log.info("Sorted shows list to process by highest votes")
 
     # loop series_list
     log.info("Processing list now...")
@@ -352,14 +361,16 @@ def movie(movie_id, folder=None, no_search=False):
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
+@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
+              help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
-def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_search=False, notifications=False,
-           authenticate_user=None):
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
+           notifications=False, authenticate_user=None):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -424,9 +435,16 @@ def movies(list_type, add_limit=0, add_delay=2.5, genre=None, folder=None, no_se
         log.info("Removed existing Radarr movies from Trakt movies list, movies left to process: %d",
                  len(processed_movies_list))
 
-    # sort filtered movie list by highest votes
-    sorted_movies_list = sorted(processed_movies_list, key=lambda k: k['movie']['votes'], reverse=True)
-    log.info("Sorted movie list to process by highest votes")
+    # sort filtered movie list
+    if sort == 'release':
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'released')
+        log.info("Sorted movies list to process by release date")
+    elif sort == 'rating':
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'rating')
+        log.info("Sorted movies list to process by highest rating")
+    else:
+        sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'votes')
+        log.info("Sorted movies list to process by highest votes")
 
     # loop movies
     log.info("Processing list now...")
@@ -499,7 +517,7 @@ def callback_notify(data):
     return
 
 
-def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
+def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=False):
     from media.trakt import Trakt
 
     total_shows_added = 0
@@ -523,7 +541,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
 
                 # run shows
                 added_shows = shows.callback(list_type=list_type, add_limit=limit,
-                                             add_delay=add_delay, no_search=no_search,
+                                             add_delay=add_delay, sort=sort, no_search=no_search,
                                              notifications=notifications)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
@@ -535,7 +553,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
 
                     # run shows
                     added_shows = shows.callback(list_type=list_type, add_limit=limit,
-                                                 add_delay=add_delay, no_search=no_search,
+                                                 add_delay=add_delay, sort=sort, no_search=no_search,
                                                  notifications=notifications, authenticate_user=authenticate_user)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
@@ -548,7 +566,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
 
                     # run shows
                     added_shows = shows.callback(list_type=list, add_limit=limit,
-                                                 add_delay=add_delay, no_search=no_search,
+                                                 add_delay=add_delay, sort=sort, no_search=no_search,
                                                  notifications=notifications, authenticate_user=authenticate_user)
 
             if added_shows is None:
@@ -570,7 +588,7 @@ def automatic_shows(add_delay=2.5, no_search=False, notifications=False):
     return
 
 
-def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
+def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False):
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -594,7 +612,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 
                 # run movies
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
-                                               add_delay=add_delay, no_search=no_search,
+                                               add_delay=add_delay, sort=sort, no_search=no_search,
                                                notifications=notifications)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
@@ -606,7 +624,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 
                     # run movies
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
-                                                   add_delay=add_delay, no_search=no_search,
+                                                   add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
@@ -619,7 +637,7 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 
                     # run shows
                     added_movies = movies.callback(list_type=list, add_limit=limit,
-                                                   add_delay=add_delay, no_search=no_search,
+                                                   add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user)
 
             if added_movies is None:
@@ -644,10 +662,12 @@ def automatic_movies(add_delay=2.5, no_search=False, notifications=False):
 @app.command(help='Run in automatic mode.')
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
               show_default=True)
+@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
+              help='Sort list to process.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
 @click.option('--run-now', is_flag=True, help="Do a first run immediately without waiting.")
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
-def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
+def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifications=False):
     log.info("Automatic mode is now running...")
 
     # Add tasks to schedule and do first run if enabled
@@ -655,6 +675,7 @@ def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
         movie_schedule = schedule.every(cfg.automatic.movies.interval).hours.do(
             automatic_movies,
             add_delay,
+            sort,
             no_search,
             not no_notifications
         )
@@ -668,6 +689,7 @@ def run(add_delay=2.5, no_search=False, run_now=False, no_notifications=False):
         shows_schedule = schedule.every(cfg.automatic.shows.interval).hours.do(
             automatic_shows,
             add_delay,
+            sort,
             no_search,
             not no_notifications
         )
