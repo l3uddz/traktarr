@@ -242,8 +242,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         if notifications:
             callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to remove existing Sonarr shows from retrieved Trakt %s shows list' % list_type
-                             })
+                             'reason': 'Failure to remove existing Sonarr shows from retrieved Trakt %s shows list'
+                                       % list_type})
         return None
     else:
         log.info("Removed existing Sonarr shows from Trakt shows list, shows left to process: %d",
