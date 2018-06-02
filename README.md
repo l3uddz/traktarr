@@ -193,6 +193,7 @@ You can repeat this process for as many users as you like.
   },
   "filters": {
     "movies": {
+      "disabled_for": [],
       "allowed_countries": [
         "us",
         "gb",
@@ -215,6 +216,7 @@ You can repeat this process for as many users as you like.
       "blacklisted_tmdb_ids": []
     },
     "shows": {
+      "disabled_for": [],
       "allowed_countries": [
         "us",
         "gb",
@@ -445,6 +447,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ```json
   "movies": {
+    "disabled_for": [],
     "allowed_countries": [
       "us",
       "gb",
@@ -465,6 +468,18 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_min_year": 2000,
     "blacklisted_tmdb_ids": []
   },
+```
+
+`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+
+Example:
+
+```
+    "disabled_for": [
+        "anticipated",
+        "watchlist:user1",
+        "list:http://url-to-list"
+    ],
 ```
 
 `allowed_countries` - only add movies from these countries.
@@ -529,6 +544,18 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   ],
   "blacklisted_tvdb_ids": []
 }
+```
+
+`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+
+Example:
+
+```
+    "disabled_for": [
+        "anticipated",
+        "watchlist:user1",
+        "list:http://url-to-list"
+    ],
 ```
 
 `allowed_countries` - only add shows from these countries.
@@ -730,6 +757,7 @@ You can customize how the scheduled traktarr is ran by editing the `traktarr.ser
   --no-search            Disable search when adding to Sonarr / Radarr.
   --run-now              Do a first run immediately without waiting.
   --no-notifications     Disable notifications.
+  --ignore-blacklist     Ignores the blacklist when running the command.
   --help                 Show this message and exit.
 ```
 
@@ -813,6 +841,7 @@ Options:
   -f, --folder TEXT         Add movies with this root folder to Radarr.
   --no-search               Disable search when adding movies to Radarr.
   --notifications           Send notifications.
+  --ignore-blacklist        Ignores the blacklist when running the command.
   --authenticate-user TEXT  Specify which user to authenticate with to
                             retrieve Trakt lists. Default: first user in the
                             config.
@@ -865,6 +894,7 @@ Options:
   -f, --folder TEXT         Add shows with this root folder to Sonarr.
   --no-search               Disable search when adding shows to Sonarr.
   --notifications           Send notifications.
+  --ignore-blacklist        Ignores the blacklist when running the command.
   --authenticate-user TEXT  Specify which user to authenticate with to
                             retrieve Trakt lists. Default: first user in the
                             config

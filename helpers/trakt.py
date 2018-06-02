@@ -106,7 +106,10 @@ def blacklisted_show_id(show, blacklisted_ids):
     return blacklisted
 
 
-def is_show_blacklisted(show, blacklist_settings):
+def is_show_blacklisted(show, blacklist_settings, ignore_blacklist):
+    if ignore_blacklist:
+        return False
+
     blacklisted = False
     try:
         if blacklisted_show_year(show, blacklist_settings.blacklisted_min_year,
@@ -228,7 +231,10 @@ def blacklisted_movie_id(movie, blacklisted_ids):
     return blacklisted
 
 
-def is_movie_blacklisted(movie, blacklist_settings):
+def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist):
+    if ignore_blacklist:
+        return False
+
     blacklisted = False
     try:
         if blacklisted_movie_title(movie, blacklist_settings.blacklist_title_keywords):
