@@ -57,6 +57,7 @@ class Config(object, metaclass=Singleton):
         },
         'filters': {
             'shows': {
+                'disabled_for': [],
                 'blacklisted_genres': [],
                 'blacklisted_networks': [],
                 'allowed_countries': [],
@@ -67,6 +68,7 @@ class Config(object, metaclass=Singleton):
                 'blacklisted_tvdb_ids': [],
             },
             'movies': {
+                'disabled_for': [],
                 'blacklisted_genres': [],
                 'blacklisted_min_runtime': 60,
                 'blacklisted_min_year': 2000,
