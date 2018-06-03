@@ -77,3 +77,8 @@ def sorted_list(original_list, list_type, sort_key, reverse=True):
                 item[list_type][sort_key] = 0
 
     return sorted(prepared_list, key=lambda k: k[list_type][sort_key], reverse=reverse)
+
+
+# reference: https://stackoverflow.com/a/16712886
+def substring_after(s, delim):
+    return s.partition(delim)[2]
