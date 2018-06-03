@@ -737,8 +737,8 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
         if run_now:
             movie_schedule.run()
 
-        # Sleep between tasks
-        time.sleep(add_delay)
+            # Sleep between tasks
+            time.sleep(add_delay)
 
     if cfg.automatic.shows.interval:
         shows_schedule = schedule.every(cfg.automatic.shows.interval).hours.do(
@@ -751,6 +751,9 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
         )
         if run_now:
             shows_schedule.run()
+
+            # Sleep between tasks
+            time.sleep(add_delay)
 
     # Enter running schedule
     while True:
