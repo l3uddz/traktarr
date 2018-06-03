@@ -1,3 +1,5 @@
+from copy import copy
+
 from misc.log import logger
 
 log = logger.get_logger(__name__)
@@ -63,3 +65,20 @@ def allowed_genres(genre, object_type, trakt_object):
             allowed_object = True
             break
     return allowed_object
+
+
+def sorted_list(original_list, list_type, sort_key, reverse=True):
+    prepared_list = copy(original_list)
+    for item in prepared_list:
+        if not item[list_type][sort_key]:
+            if sort_key == 'released' or sort_key == 'first_aired':
+                item[list_type][sort_key] = ""
+            else:
+                item[list_type][sort_key] = 0
+
+    return sorted(prepared_list, key=lambda k: k[list_type][sort_key], reverse=reverse)
+
+
+# reference: https://stackoverflow.com/a/16712886
+def substring_after(s, delim):
+    return s.partition(delim)[2]
