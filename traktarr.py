@@ -114,7 +114,8 @@ def get_objects(pvr, type, notifications):
         if notifications:
             callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s shows list' % type})
         exit()
-    log.info("Retrieved %s shows list, shows found: %d", type, len(objects_list))
+    objects_type = 'movies' if type.lower() == 'radarr' else 'shows'
+    log.info("Retrieved %s %s list, %s found: %d", type, objects_type, objects_type, len(objects_list))
     return objects_list
 
 
@@ -171,8 +172,8 @@ def show(show_id, folder=None, no_search=False):
 
 @app.command(help='Add multiple shows to Sonarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, watchlist or any URL to a list',
-              required=True)
+              help='Trakt list to process. For example, anticipated, trending, popular, watched, played, watchlist '
+                   'or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
@@ -221,6 +222,14 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_trending_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+    elif list_type.lower().startswith('played'):
+        most_type = misc_helper.substring_after(list_type.lower(), "_")
+        trakt_objects_list = trakt.get_most_played_shows(genres=genre, languages=cfg.filters.shows.allowed_languages,
+                                                         most_type=most_type if most_type else None)
+    elif list_type.lower().startswith('watched'):
+        most_type = misc_helper.substring_after(list_type.lower(), "_")
+        trakt_objects_list = trakt.get_most_watched_shows(genres=genre, languages=cfg.filters.shows.allowed_languages,
+                                                          most_type=most_type if most_type else None)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
     else:
@@ -357,8 +366,8 @@ def movie(movie_id, folder=None, no_search=False):
 
 @app.command(help='Add multiple movies to Radarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watchlist '
-                   'or any URL to a list',
+              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watched, played, '
+                   'watchlist or any URL to a list',
               required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
@@ -409,6 +418,14 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
         trakt_objects_list = trakt.get_popular_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
+    elif list_type.lower().startswith('played'):
+        most_type = misc_helper.substring_after(list_type.lower(), "_")
+        trakt_objects_list = trakt.get_most_played_movies(genres=genre, languages=cfg.filters.movies.allowed_languages,
+                                                          most_type=most_type if most_type else None)
+    elif list_type.lower().startswith('watched'):
+        most_type = misc_helper.substring_after(list_type.lower(), "_")
+        trakt_objects_list = trakt.get_most_watched_movies(genres=genre, languages=cfg.filters.movies.allowed_languages,
+                                                           most_type=most_type if most_type else None)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_movies(authenticate_user)
     else:
@@ -532,7 +549,8 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() in Trakt.non_user_lists:
+            if list_type.lower() in Trakt.non_user_lists or (
+                    '_' in list_type and list_type.lower().partition("_")[0] in Trakt.non_user_lists):
                 limit = value
 
                 if limit <= 0:
@@ -620,7 +638,8 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() in Trakt.non_user_lists:
+            if list_type.lower() in Trakt.non_user_lists or (
+                    '_' in list_type and list_type.lower().partition("_")[0] in Trakt.non_user_lists):
                 limit = value
 
                 if limit <= 0:
@@ -720,8 +739,8 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
         if run_now:
             movie_schedule.run()
 
-        # Sleep between tasks
-        time.sleep(add_delay)
+            # Sleep between tasks
+            time.sleep(add_delay)
 
     if cfg.automatic.shows.interval:
         shows_schedule = schedule.every(cfg.automatic.shows.interval).hours.do(
@@ -734,6 +753,9 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
         )
         if run_now:
             shows_schedule.run()
+
+            # Sleep between tasks
+            time.sleep(add_delay)
 
     # Enter running schedule
     while True:
