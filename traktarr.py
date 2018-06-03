@@ -549,7 +549,8 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() in Trakt.non_user_lists:
+            if list_type.lower() in Trakt.non_user_lists or (
+                    '_' in list_type and list_type.lower().partition("_")[0] in Trakt.non_user_lists):
                 limit = value
 
                 if limit <= 0:
@@ -637,7 +638,8 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
             if list_type.lower() == 'interval':
                 continue
 
-            if list_type.lower() in Trakt.non_user_lists:
+            if list_type.lower() in Trakt.non_user_lists or (
+                    '_' in list_type and list_type.lower().partition("_")[0] in Trakt.non_user_lists):
                 limit = value
 
                 if limit <= 0:

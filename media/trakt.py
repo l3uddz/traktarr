@@ -11,7 +11,7 @@ log = logger.get_logger(__name__)
 
 
 class Trakt:
-    non_user_lists = ['anticipated', 'trending', 'popular', 'boxoffice']
+    non_user_lists = ['anticipated', 'trending', 'popular', 'boxoffice', 'watched', 'played']
 
     def __init__(self, cfg):
         self.cfg = cfg
