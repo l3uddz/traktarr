@@ -343,6 +343,26 @@ class Trakt:
             genres=genres
         )
 
+    def get_most_played_shows(self, limit=1000, languages=None, genres=None, most_type=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/shows/played/%s' % ('weekly' if not most_type else most_type),
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='played',
+            genres=genres
+        )
+
+    def get_most_watched_shows(self, limit=1000, languages=None, genres=None, most_type=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/shows/watched/%s' % ('weekly' if not most_type else most_type),
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='watched',
+            genres=genres
+        )
+
     def get_watchlist_shows(self, authenticate_user=None, limit=1000, languages=None):
         return self._make_items_request(
             url='https://api.trakt.tv/users/{authenticate_user}/watchlist/shows',
@@ -404,6 +424,26 @@ class Trakt:
             languages=languages,
             object_name='movies',
             type_name='anticipated',
+            genres=genres
+        )
+
+    def get_most_played_movies(self, limit=1000, languages=None, genres=None, most_type=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/movies/played/%s' % ('weekly' if not most_type else most_type),
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='played',
+            genres=genres
+        )
+
+    def get_most_watched_movies(self, limit=1000, languages=None, genres=None, most_type=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/movies/watched/%s' % ('weekly' if not most_type else most_type),
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='watched',
             genres=genres
         )
 
