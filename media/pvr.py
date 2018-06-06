@@ -27,7 +27,8 @@ class PVR(ABC):
             req = requests.get(
                 os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
                 headers=self.headers,
-                timeout=60
+                timeout=60,
+                allow_redirects=False
             )
             log.debug("Request Response: %d", req.status_code)
 
@@ -49,7 +50,8 @@ class PVR(ABC):
             req = requests.get(
                 os.path.join(misc_str.ensure_endswith(self.server_url, "/"), endpoint),
                 headers=self.headers,
-                timeout=60
+                timeout=60,
+                allow_redirects=False
             )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
@@ -71,7 +73,8 @@ class PVR(ABC):
             req = requests.get(
                 os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
                 headers=self.headers,
-                timeout=60
+                timeout=60,
+                allow_redirects=False
             )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
@@ -111,7 +114,8 @@ class PVR(ABC):
                 os.path.join(misc_str.ensure_endswith(self.server_url, "/"), endpoint),
                 headers=self.headers,
                 json=payload,
-                timeout=60
+                timeout=60,
+                allow_redirects=False
             )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Payload: %s", payload)
