@@ -23,7 +23,8 @@ class Sonarr(PVR):
             req = requests.get(
                 os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
                 headers=self.headers,
-                timeout=60
+                timeout=60,
+                allow_redirects=False
             )
             log.debug("Request URL: %s", req.url)
             log.debug("Request Response: %d", req.status_code)
