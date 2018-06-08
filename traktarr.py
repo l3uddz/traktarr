@@ -186,7 +186,7 @@ def show(show_id, folder=None, no_search=False):
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
-              help='Removes rejected/existing movies from recommended.')
+              help='Removes rejected/existing shows from recommended.')
 def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
           notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
