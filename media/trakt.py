@@ -20,14 +20,17 @@ class Trakt:
     # Requests
     ############################################################
 
-    def _make_request(self, url, payload={}, authenticate_user=None):
+    def _make_request(self, url, payload={}, authenticate_user=None, request_type='get'):
         headers, authenticate_user = self._headers(authenticate_user)
 
         if authenticate_user:
             url = url.replace('{authenticate_user}', authenticate_user)
 
         # make request
-        req = requests.get(url, headers=headers, params=payload, timeout=30)
+        if request_type == 'delete':
+            req = requests.delete(url, headers=headers, params=payload, timeout=30)
+        else:
+            req = requests.get(url, headers=headers, params=payload, timeout=30)
         log.debug("Request URL: %s", req.url)
         log.debug("Request Payload: %s", payload)
         log.debug("Request User: %s", authenticate_user)
@@ -128,6 +131,16 @@ class Trakt:
             return False
         except Exception:
             log.exception("Exception validating client_id: ")
+        return False
+
+    def remove_recommended_item(self, item_type, trakt_id, authenticate_user=None):
+        ret = self._make_request(
+            url='https://api.trakt.tv/recommendations/%ss/%s' % (item_type, str(trakt_id)),
+            authenticate_user=authenticate_user,
+            request_type='delete'
+        )
+        if ret.status_code == 204:
+            return True
         return False
 
     ############################################################
@@ -363,6 +376,17 @@ class Trakt:
             genres=genres
         )
 
+    def get_recommended_shows(self, authenticate_user=None, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/recommendations/shows',
+            authenticate_user=authenticate_user,
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='recommended from {authenticate_user}',
+            genres=genres
+        )
+
     def get_watchlist_shows(self, authenticate_user=None, limit=1000, languages=None):
         return self._make_items_request(
             url='https://api.trakt.tv/users/{authenticate_user}/watchlist/shows',
@@ -454,6 +478,17 @@ class Trakt:
             languages=languages,
             object_name='movies',
             type_name='anticipated',
+        )
+
+    def get_recommended_movies(self, authenticate_user=None, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/recommendations/movies',
+            authenticate_user=authenticate_user,
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='recommended from {authenticate_user}',
+            genres=genres
         )
 
     def get_watchlist_movies(self, authenticate_user=None, limit=1000, languages=None):

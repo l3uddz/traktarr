@@ -17,7 +17,7 @@ def movies_to_tmdb_dict(radarr_movies):
     return None
 
 
-def remove_existing_movies(radarr_movies, trakt_movies):
+def remove_existing_movies(radarr_movies, trakt_movies, callback=None):
     new_movies_list = []
 
     if not radarr_movies or not trakt_movies:
@@ -34,10 +34,14 @@ def remove_existing_movies(radarr_movies, trakt_movies):
         for tmp in trakt_movies:
             if 'movie' not in tmp or 'ids' not in tmp['movie'] or 'tmdb' not in tmp['movie']['ids']:
                 log.debug("Skipping movie because it did not have required fields: %s", tmp)
+                if callback:
+                    callback('movie', tmp)
                 continue
             # check if movie exists in processed_movies
             if tmp['movie']['ids']['tmdb'] in processed_movies:
                 log.debug("Removing existing movie: %s", tmp['movie']['title'])
+                if callback:
+                    callback('movie', tmp)
                 continue
 
             new_movies_list.append(tmp)
