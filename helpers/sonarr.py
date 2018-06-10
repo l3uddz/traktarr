@@ -48,7 +48,7 @@ def series_to_tvdb_dict(sonarr_series):
     return None
 
 
-def remove_existing_series(sonarr_series, trakt_series):
+def remove_existing_series(sonarr_series, trakt_series, callback=None):
     new_series_list = []
 
     if not sonarr_series or not trakt_series:
@@ -65,10 +65,14 @@ def remove_existing_series(sonarr_series, trakt_series):
         for tmp in trakt_series:
             if 'show' not in tmp or 'ids' not in tmp['show'] or 'tvdb' not in tmp['show']['ids']:
                 log.debug("Skipping show because it did not have required fields: %s", tmp)
+                if callback:
+                    callback('show', tmp)
                 continue
             # check if show exists in processed_series
             if tmp['show']['ids']['tvdb'] in processed_series:
                 log.debug("Removing existing show: %s", tmp['show']['title'])
+                if callback:
+                    callback('show', tmp)
                 continue
 
             new_series_list.append(tmp)

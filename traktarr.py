@@ -185,8 +185,10 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
+@click.option('--remove-rejected-from-recommended', is_flag=True,
+              help='Removes rejected/existing shows from recommended.')
 def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
-          notifications=False, authenticate_user=None, ignore_blacklist=False):
+          notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -222,6 +224,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_trending_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+    elif list_type.lower() == 'recommended':
+        trakt_objects_list = trakt.get_recommended_shows(authenticate_user, genres=genre,
+                                                         languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_shows(genres=genre, languages=cfg.filters.shows.allowed_languages,
@@ -245,8 +250,14 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     else:
         log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_objects_list))
 
+    # set remove_rejected_recommended to False if this is not the recommended list
+    if list_type.lower() != 'recommended':
+        remove_rejected_from_recommended = False
+
     # build filtered series list without series that exist in sonarr
-    processed_series_list = sonarr_helper.remove_existing_series(pvr_objects_list, trakt_objects_list)
+    processed_series_list = sonarr_helper.remove_existing_series(pvr_objects_list, trakt_objects_list,
+                                                                 callback_remove_recommended
+                                                                 if remove_rejected_from_recommended else None)
     if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
         if notifications:
@@ -279,7 +290,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                 continue
 
             # check if series passes out blacklist criteria inspection
-            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist):
+            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist,
+                                                    callback_remove_recommended
+                                                    if remove_rejected_from_recommended else None):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
                          ', '.join(series['show']['genres']), series['show']['network'],
                          series['show']['country'].upper())
@@ -380,8 +393,10 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
+@click.option('--remove-rejected-from-recommended', is_flag=True,
+              help='Removes rejected/existing movies from recommended.')
 def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
-           notifications=False, authenticate_user=None, ignore_blacklist=False):
+           notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -418,6 +433,9 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
         trakt_objects_list = trakt.get_popular_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
+    elif list_type.lower() == 'recommended':
+        trakt_objects_list = trakt.get_recommended_movies(authenticate_user, genres=genre,
+                                                          languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_movies(genres=genre, languages=cfg.filters.movies.allowed_languages,
@@ -441,8 +459,14 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
     else:
         log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_objects_list))
 
+    # set remove_rejected_recommended to False if this is not the recommended list
+    if list_type.lower() != 'recommended':
+        remove_rejected_from_recommended = False
+
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list = radarr_helper.remove_existing_movies(pvr_objects_list, trakt_objects_list)
+    processed_movies_list = radarr_helper.remove_existing_movies(pvr_objects_list, trakt_objects_list,
+                                                                 callback_remove_recommended
+                                                                 if remove_rejected_from_recommended else None)
     if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
         if notifications:
@@ -475,7 +499,9 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
                 continue
 
             # check if movie passes out blacklist criteria inspection
-            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies, ignore_blacklist):
+            if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies, ignore_blacklist,
+                                                     callback_remove_recommended if remove_rejected_from_recommended
+                                                     else None):
                 log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                          ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                 # add movie to radarr
@@ -508,8 +534,27 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
 
 
 ############################################################
-# AUTOMATIC
+# CALLBACKS
 ############################################################
+
+
+def callback_remove_recommended(media_type, media_info):
+    from media.trakt import Trakt
+
+    trakt = Trakt(cfg)
+
+    if not media_info[media_type]['title'] or not media_info[media_type]['year']:
+        log.debug("Skipping removing %s item from recommended list as no title/year was available:\n%s", media_type,
+                  media_info)
+        return
+
+    media_name = '%s (%d)' % (media_info[media_type]['title'], media_info[media_type]['year'])
+
+    if trakt.remove_recommended_item(media_type, media_info[media_type]['ids']['trakt']):
+        log.info("Removed rejected recommended %s: %s", media_type, media_name)
+    else:
+        log.info("FAILED removing rejected recommended %s: %s", media_type, media_name)
+
 
 def callback_notify(data):
     log.debug("Received callback data: %s", data)
@@ -534,6 +579,11 @@ def callback_notify(data):
     else:
         log.error("Unexpected callback: %s", data)
     return
+
+
+############################################################
+# AUTOMATIC
+############################################################
 
 
 def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False):
