@@ -85,13 +85,21 @@ class Trakt:
 
                 if req.status_code == 200:
                     resp_json = req.json()
-
-                    for item in resp_json:
-                        if item not in processed:
-                            if object_name.rstrip('s') not in item and 'title' in item:
-                                processed.append({object_name.rstrip('s'): item})
-                            else:
-                                processed.append(item)
+                    if type_name == 'person' and 'cast' in resp_json:
+                        # handle person results
+                        for item in resp_json['cast']:
+                            if item not in processed:
+                                if object_name.rstrip('s') not in item and 'title' in item:
+                                    processed.append({object_name.rstrip('s'): item})
+                                else:
+                                    processed.append(item)
+                    else:
+                        for item in resp_json:
+                            if item not in processed:
+                                if object_name.rstrip('s') not in item and 'title' in item:
+                                    processed.append({object_name.rstrip('s'): item})
+                                else:
+                                    processed.append(item)
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
@@ -356,6 +364,16 @@ class Trakt:
             genres=genres
         )
 
+    def get_person_shows(self, person, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/people/%s/shows' % person,
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='person',
+            genres=genres
+        )
+
     def get_most_played_shows(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/played/%s' % ('weekly' if not most_type else most_type),
@@ -448,6 +466,16 @@ class Trakt:
             languages=languages,
             object_name='movies',
             type_name='anticipated',
+            genres=genres
+        )
+
+    def get_person_movies(self, person, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/people/%s/movies' % person,
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='person',
             genres=genres
         )
 
