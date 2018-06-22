@@ -172,14 +172,15 @@ def show(show_id, folder=None, no_search=False):
 
 @app.command(help='Add multiple shows to Sonarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, watched, played, watchlist '
-                   'or any URL to a list', required=True)
+              help='Trakt list to process. For example, anticipated, trending, popular, person, watched, played, '
+                   'watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
               help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
+@click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
@@ -187,7 +188,7 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing shows from recommended.')
-def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
+def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, actor=None, no_search=False,
           notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
@@ -224,6 +225,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_trending_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+    elif list_type.lower() == 'person':
+        if not actor:
+            log.error("You must specify an actor with the --actor / -a parameter when using the person list type!")
+            return None
+        trakt_objects_list = trakt.get_person_shows(person=actor, genres=genre,
+                                                    languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_shows(authenticate_user, genres=genre,
                                                          languages=cfg.filters.shows.allowed_languages)
@@ -379,15 +386,15 @@ def movie(movie_id, folder=None, no_search=False):
 
 @app.command(help='Add multiple movies to Radarr.')
 @click.option('--list-type', '-t',
-              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, watched, played, '
-                   'watchlist or any URL to a list',
-              required=True)
+              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, person, watched, '
+                   'played, watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
               help='Sort list to process.')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
+@click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
@@ -395,7 +402,7 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, actor=None, no_search=False,
            notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
@@ -433,6 +440,13 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
         trakt_objects_list = trakt.get_popular_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
+    elif list_type.lower() == 'person':
+        if not actor:
+            log.error("You must specify an actor with the --actor / -a parameter when using the person list type!")
+            return None
+        trakt_objects_list = trakt.get_person_movies(person=actor, genres=genre,
+                                                     languages=cfg.filters.movies.allowed_languages)
+
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_movies(authenticate_user, genres=genre,
                                                           languages=cfg.filters.movies.allowed_languages)
