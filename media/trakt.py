@@ -39,6 +39,25 @@ class Trakt:
         return req
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    def _make_list_meta_request(self, url, authenticate_user=None, payload={},
+                            sleep_between=5):
+        try:
+            req = self._make_request(url, payload, authenticate_user)
+
+            if req.status_code == 200:
+                resp_json = req.json()
+                return resp_json
+            elif req.status_code == 401:
+                log.error("The authentication to Trakt is revoked. Please re-authenticate.")
+                exit()
+            else:
+                log.error("Failed to retrieve %s, request response: %d", url, req.status_code)
+                return None
+        except Exception as e:
+            log.exception("Exception retrieving: %s ",  e)
+        return None
+
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def _make_item_request(self, url, object_name, payload={}):
         payload = dict_merge(payload, {'extended': 'full'})
 
@@ -528,6 +547,19 @@ class Trakt:
             object_name='movies',
             type_name='watchlist from {authenticate_user}',
         )
+
+    def get_user_list_meta_movies(self, list_url, authenticate_user=None):
+        """
+        Fetch the meta information about the list, i.e., all the data about
+        a list except its items: name, updated date, etc.
+        """
+        list_user, list_key = extract_list_user_and_key_from_url(list_url)
+        log.debug('Fetching name %s from %s', list_key, list_user)
+        list = self._make_list_meta_request(
+            url='https://api.trakt.tv/users/' + list_user + '/lists/' + list_key,
+            authenticate_user=authenticate_user,
+        )
+        return list
 
     def get_user_list_movies(self, list_url, authenticate_user=None, limit=1000, languages=None):
         list_user, list_key = extract_list_user_and_key_from_url(list_url)

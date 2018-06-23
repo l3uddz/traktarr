@@ -270,6 +270,11 @@ You can repeat this process for as many users as you like.
     },
     "verbose": true
   },
+  "plex": {
+    "url": "http://localhost:32400"
+    "token": "",
+    "movies_library": "Movies",
+  },
   "radarr": {
     "api_key": "",
     "profile": "HD-1080p",
@@ -728,6 +733,23 @@ Trakt Authentication info:
 
 `client_secret` - Fill in your Trakt Secret key (_Client Scret_)
 
+## Plex
+
+Plex authentication info:
+
+```json
+"plex": {
+  "movies_library": "",
+  "token": "",
+  "url": ""
+}
+```
+
+`movies_library` - The name of the movies library in Plex e.g, `Movies`
+
+`token` - Your plex access token.
+
+`url` - Url to your plex server e.g., `http://localhost:32400`
 
 # Usage
 
@@ -901,6 +923,36 @@ Options:
   --help                    Show this message and exit.
 ```
 
+
+## Plex Collections
+
+Use this command to tag Plex movies with a collection name based on a Trakt
+list.
+
+
+```
+traktarr tagmovies --help
+```
+
+
+```
+Usage: traktarr tagmovies [OPTIONS]
+
+  Tags Plex movies with a collection named from a Trakt list.
+
+Options:
+  -t, --list-type TEXT      Trakt list to process. For example, anticipated,
+                            trending, popular, boxoffice, watchlist or any URL
+                            to a list  [required]
+  -n, --name TEXT           Use this name as the collection name instead of
+                            the list name
+  --notifications           Send notifications.
+  --authenticate-user TEXT  Specify which user to authenticate with to
+                            retrieve Trakt lists. Default: first user in the
+                            config.
+  --help                    Show this message and exit.
+```
+
 ## Examples (Manual)
 
 - Add the movie "Black Panther (2018)":
@@ -943,4 +995,10 @@ Options:
 
   ```
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
+  ```
+
+- Tag all plex movies with the collection "James Bond Series"
+
+  ```
+  traktarr tagmovies -t "https://trakt.tv/users/danio1972/lists/james-bond-series"
   ```

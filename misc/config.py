@@ -41,6 +41,11 @@ class Config(object, metaclass=Singleton):
             'client_id': '',
             'client_secret': ''
         },
+        'plex': {
+            'url': 'http://localhost:32400',
+            'token': '',
+            'movies_library': 'Movies'
+        },
         'sonarr': {
             'url': 'http://localhost:8989/',
             'api_key': '',

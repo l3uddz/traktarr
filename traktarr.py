@@ -546,6 +546,92 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, fold
 
     return added_movies
 
+@app.command(help='Tags Plex movies with a collection named from a Trakt list')
+@click.option('--list-type', '-t',
+              help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, '
+                   'watchlist or any URL to a list',
+              required=True)
+@click.option('--name', '-n', default=None, help='Use this name as the collection name instead of the list name')
+@click.option('--notifications', is_flag=True, help='Send notifications.')
+@click.option('--authenticate-user',
+              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
+def tagmovies(list_type, name=None, notifications=False, authenticate_user=None):
+    from media.trakt import Trakt
+    from media.plex import Plex
+    from helpers import trakt as trakt_helper
+    from helpers import plex as plex_helper
+    from helpers import misc as misc_helper
+    trakt = Trakt(cfg)
+    plex = Plex(cfg)
+    validate_trakt(trakt, notifications)
+    default_name = None
+    default_description = None
+    # get trakt movies list
+    if list_type.lower() == 'anticipated':
+        trakt_objects_list = trakt.get_anticipated_movies(genres=None, languages=cfg.filters.movies.allowed_languages)
+        default_name = 'Trakt Anticipated'
+    elif list_type.lower() == 'trending':
+        trakt_objects_list = trakt.get_trending_movies(genres=None, languages=cfg.filters.movies.allowed_languages)
+        default_name = 'Trakt Trending'
+    elif list_type.lower() == 'popular':
+        trakt_objects_list = trakt.get_popular_movies(genres=None, languages=cfg.filters.movies.allowed_languages)
+        default_name = 'Trakt Popular'
+    elif list_type.lower() == 'boxoffice':
+        trakt_objects_list = trakt.get_boxoffice_movies()
+        default_name = 'Trakt Box Office'
+    else:
+        meta = trakt.get_user_list_meta_movies(list_type, authenticate_user)
+        default_name = meta['name']
+        default_description = meta['description']
+        trakt_objects_list = trakt.get_user_list_movies(list_type, authenticate_user)
+
+    if not trakt_objects_list:
+        log.error("Aborting due to failure to retrieve Trakt %s movies list", list_type)
+        if notifications:
+            callback_notify(
+                {'event': 'abort', 'type': 'movies', 'list_type': list_type,
+                'reason': 'Failure to retrieve Trakt %s movies list' % list_type})
+        return None
+    else:
+        log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_objects_list))
+
+    plex_movies = plex.get_movies()
+    if not plex_movies:
+        log.error("Aborting due to failure to retrieve movies from Plex")
+    else:
+        log.info("Retrieved Plex movies, movies found: %d", len(plex_movies))
+
+    processed_movies_list = plex_helper.match_plex_to_trakt_movies(plex_movies, trakt_objects_list)
+    if processed_movies_list is None:
+        log.error("Aborting due to failure when matching Plex movies to Trakt movies")
+        if notifications:
+            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
+                            'reason': 'Failure when matching Plex movies to Trakt movies'
+                            'Trakt %s movies list' % list_type})
+            return None
+    else:
+        log.info("Matched existing Plex movies to Trakt movies list, movies left to process: %d",
+                 len(processed_movies_list))
+
+    col_name = name
+    if col_name is None:
+        col_name =  default_name
+
+    log.info("Processing list now...")
+    tagged_movies = 0
+    for movie in processed_movies_list:
+        try:
+            if not plex_helper.is_movie_in_collection(movie, col_name):
+                log.info("Adding collection %s tag to %s", col_name, movie.title)
+                plex.add_collection(movie.ratingKey, col_name)
+                tagged_movies += 1
+            else:
+                log.debug("Ignoring %s, it already is in the collection ", movie.title)
+        except Exception:
+            log.exception("Exception while processing movie %s: ", movie.title)
+
+    log.info("Tagged %d movie(s)", tagged_movies)
+
 
 ############################################################
 # CALLBACKS
