@@ -1,7 +1,8 @@
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+[![License: GPL 3](https://img.shields.io/badge/License-GPL%203-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord)](https://discord.io/cloudbox)
 [![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
-[![Discord](https://img.shields.io/discord/381077432285003776.svg)](https://discord.gg/xmNYmSJ)
+
 
 
 # traktarr
@@ -34,7 +35,6 @@ Types of Trakt lists supported:
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [traktarr](#traktarr)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -308,7 +308,7 @@ Used for automatic / scheduled traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
 
-_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. via manual/CLI command only); see [Usage](#usage)._
+_Note: These settings are only needed if you plan to use traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
 
 ```json
 "automatic": {
