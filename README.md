@@ -726,7 +726,7 @@ Trakt Authentication info:
 
 `client_id` - Fill in your Trakt API key (_Client ID_).
 
-`client_secret` - Fill in your Trakt Secret key (_Client Scret_)
+`client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
 
 # Usage
