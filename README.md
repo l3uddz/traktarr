@@ -979,7 +979,7 @@ Options:
 
  - Example: `-f /mnt/unionfs/Media/Movies/Movies-Kids/`
 
-`--no-search` - Tells Radarr to not automatically search for added shows / movies.
+`--no-search` - Tells Radarr to not automatically search for added movies.
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
@@ -1066,7 +1066,7 @@ Options:
 
   - `played_all` Most played of all time.
 
-`-l`, `--add-limit` - Limit number of shows added to Radarr.
+`-l`, `--add-limit` - Limit number of shows added to Sonarr.
 
 `-d`, `--add-delay` - Add seconds delay between each add request to Sonarr. Default is 2.5 seconds.
 
@@ -1084,7 +1084,7 @@ Options:
 
  - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
 
-`--no-search` - Tells Sonarr to not automatically search for added shows / movies.
+`--no-search` - Tells Sonarr to not automatically search for added shows.
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
@@ -1113,13 +1113,13 @@ Options:
   traktarr movies -t boxoffice -g comedy -l 10 --notifications
   ```
 
-- Add movies, from a list of most watched this week, and limited to 5 items.
+- Add movies, from a list of most watched played this week, and limited to 5 items.
 
   ```
   traktarr movies -t watched -l 5
   ```
 
-- Add movies, from a list of most played this month, and limited to 5 items.
+- Add movies, from a list of most played movies this month, and limited to 5 items.
 
   ```
   traktarr movies -t played_monthly -l 5
@@ -1158,13 +1158,19 @@ Options:
   traktarr shows -t popular -l 2 --no-search
   ```
 
-- Add shows, from a list of most played this year, and limited to 5 items.
+- Add shows, from a list of most watched shows this year, and limited to 5 items.
 
   ```
   traktarr shows -t watched_yearly -l 5
   ```
 
-- Add shows, from a list of most played of all time, and limited to 5 items.
+- Add shows, from a list of most played shows this week, and limited to 5 items.
+
+  ```
+  traktarr shows -t played -l 5
+  ```
+
+- Add shows, from a list of most played shows of all time, and limited to 5 items.
 
   ```
   traktarr shows -t played_all -l 5
