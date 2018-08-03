@@ -335,7 +335,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     log.info("Added %d new show(s) to Sonarr", added_shows)
 
     # send notification
-    if notifications:
+    if notifications and (cfg.notifications.verbose or added_shows > 0):
         notify.send(message="Added %d shows from Trakt's %s list" % (added_shows, list_type))
 
     return added_shows
@@ -557,7 +557,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     log.info("Added %d new movie(s) to Radarr", added_movies)
 
     # send notification
-    if notifications:
+    if notifications and (cfg.notifications.verbose or added_movies > 0):
         notify.send(message="Added %d movies from Trakt's %s list" % (added_movies, list_type))
 
     return added_movies
@@ -697,7 +697,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
 
         log.info("Finished, added %d shows total to Sonarr!", total_shows_added)
         # send notification
-        if notifications:
+        if notifications and (cfg.notifications.verbose or total_shows_added > 0):
             notify.send(message="Added %d shows total to Sonarr!" % total_shows_added)
 
     except Exception:
@@ -786,7 +786,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
 
         log.info("Finished, added %d movies total to Radarr!", total_movies_added)
         # send notification
-        if notifications:
+        if notifications and (cfg.notifications.verbose or total_movies_added > 0):
             notify.send(message="Added %d movies total to Radarr!" % total_movies_added)
 
     except Exception:
