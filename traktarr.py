@@ -528,7 +528,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
                         log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
                                   movie['movie']['title'])
                         continue
-                if (not movieRating or movieRating >= rating):
+                if (not rating or movieRating >= rating):
                     log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                              ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                     # add movie to radarr
