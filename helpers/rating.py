@@ -4,7 +4,7 @@ import requests
 
 log = logger.get_logger(__name__)
 def get_rating(apikey,imdbID):
-    log.debug("Requesting ratings from omdb for imdbID: %s".format(imdbID))
+    log.debug("Requesting ratings from omdb for imdbID: %s",imdbID)
     r = requests.get('http://www.omdbapi.com/?i=' + imdbID + '&apikey=' + apikey)
     if(r.status_code == 200):
         log.debug("Successfully requested ratings from OMDB")
