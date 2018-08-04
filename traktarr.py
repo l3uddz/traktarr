@@ -478,17 +478,27 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
 
             # check if movie passes out blacklist criteria inspection
             if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies, ignore_blacklist):
-                log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
-                         ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
-                # add movie to radarr
-                if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
-                                    movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
-                    log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
-                    if notifications:
-                        callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': movie['movie']})
+                #Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
+                movieRating = None
+                if(rating != 0):
+                    movieRating = omdb.get_movie_rating(movie['movie']['ids']['imdb'])
+                    if(movieRating == -1):
+                        raise Exception
+                if(not movieRating or movieRating >= rating ):
+                    log.info("Adding: %s (%d) | Genres: %s | Country: %s | Rating: %d%%", movie['movie']['title'],
+                             movie['movie']['year'],
+                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper(), movieRating)
+                    # add movie to radarr
+                    if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
+                                        movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
+                        log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
+                        if notifications:
+                            callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': movie['movie']})
                     added_movies += 1
                 else:
-                    log.error("FAILED adding %s (%d)", movie['movie']['title'], movie['movie']['year'])
+                    log.info("Skipping: %s (%d) | Genres: %s | Country: %s | Rating: %d%%", movie['movie']['title'],
+                             movie['movie']['year'],
+                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper(), movieRating)
 
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
