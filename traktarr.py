@@ -484,21 +484,23 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
                     movieRating = rating_helper.get_rating(cfg['omdb']['api_key'],movie['movie']['ids']['imdb'])
                     if(movieRating == -1):
                         raise Exception
-                if(not movieRating or movieRating >= rating ):
-                    log.info("Adding: %s (%d) | Genres: %s | Country: %s | Rating: %d%%", movie['movie']['title'],
+                if(not movieRating or movieRating >= rating):
+                    log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
                              movie['movie']['year'],
-                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper(), movieRating)
+                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                     # add movie to radarr
                     if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
                                         movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
                         log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
                         if notifications:
                             callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': movie['movie']})
-                    added_movies += 1
+                        added_movies += 1
+                    else:
+                        log.error("FAILED adding %s (%d)", movie['movie']['title'], movie['movie']['year'])
                 else:
-                    log.info("Skipping: %s (%d) | Genres: %s | Country: %s | Rating: %d%%", movie['movie']['title'],
+                    log.info("SKIPPING: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
                              movie['movie']['year'],
-                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper(), movieRating)
+                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
 
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
