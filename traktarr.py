@@ -373,6 +373,7 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
               help='Sort list to process.')
+@click.option('--rating','-r',default=0,help='Set a minimum rating threshold (according to Rotten Tomatoes)')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
@@ -380,13 +381,14 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--authenticate-user',
               help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, no_search=False,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=None, folder=None, no_search=False,
            notifications=False, authenticate_user=None, ignore_blacklist=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
     from helpers import radarr as radarr_helper
     from helpers import trakt as trakt_helper
+    from helpers import omdb
 
     added_movies = 0
 
