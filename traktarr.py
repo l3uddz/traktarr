@@ -388,7 +388,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
     from helpers import misc as misc_helper
     from helpers import radarr as radarr_helper
     from helpers import trakt as trakt_helper
-    from helpers import omdb
+    from helpers import rating as rating_helper
 
     added_movies = 0
 
