@@ -523,7 +523,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
                 # Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
                 movieRating = None
                 if (rating and cfg['omdb']['api_key'] != ''):
-                    movieRating = rating_helper.get_rating(cfg['omdb']['api_key'], movie['movie']['ids']['imdb'])
+                    movieRating = rating_helper.get_rating(cfg['omdb']['api_key'],movie)
                     if (movieRating == -1):
                         log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
                                   movie['movie']['title'])
