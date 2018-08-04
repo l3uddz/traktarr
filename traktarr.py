@@ -480,8 +480,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=
             if not trakt_helper.is_movie_blacklisted(movie, cfg.filters.movies, ignore_blacklist):
                 #Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
                 movieRating = None
-                if(rating != 0):
-                    movieRating = omdb.get_movie_rating(movie['movie']['ids']['imdb'])
+                if(rating and cfg['omdb']['api_key'] != ''):
+                    movieRating = rating_helper.get_rating(cfg['omdb']['api_key'],movie['movie']['ids']['imdb'])
                     if(movieRating == -1):
                         raise Exception
                 if(not movieRating or movieRating >= rating ):
