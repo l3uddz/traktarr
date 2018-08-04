@@ -394,7 +394,7 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
               help='Sort list to process.')
-@click.option('--rating','-r',default=0,help='Set a minimum rating threshold (according to Rotten Tomatoes)')
+@click.option('--rating','-r',default=None,help='Set a minimum rating threshold (according to Rotten Tomatoes)')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
