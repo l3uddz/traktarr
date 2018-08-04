@@ -41,6 +41,9 @@ class Config(object, metaclass=Singleton):
             'client_id': '',
             'client_secret': ''
         },
+        'omdb': {
+            'api_key':''
+        },
         'sonarr': {
             'url': 'http://localhost:8989/',
             'api_key': '',
