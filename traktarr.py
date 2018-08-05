@@ -405,7 +405,7 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=0, genre=None, folder=None, actor=None, no_search=False,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None, actor=None, no_search=False,
            notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
