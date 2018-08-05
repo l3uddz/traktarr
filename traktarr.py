@@ -705,7 +705,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
     return
 
 
-def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False):
+def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False,rating_limit=None):
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -736,7 +736,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                 # run movies
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                add_delay=add_delay, sort=sort, no_search=no_search,
-                                               notifications=notifications)
+                                               notifications=notifications,rating=rating_limit)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -754,7 +754,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist)
+                                                   ignore_blacklist=local_ignore_blacklist,rating=rating_limit)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -773,7 +773,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist)
+                                                   ignore_blacklist=local_ignore_blacklist,rating=rating_limit)
 
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
@@ -814,7 +814,8 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
             sort,
             no_search,
             not no_notifications,
-            ignore_blacklist
+            ignore_blacklist,
+            cfg.automatic.movies.rating_limit
         )
         if run_now:
             movie_schedule.run()
