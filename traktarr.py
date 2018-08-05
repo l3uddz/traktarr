@@ -522,13 +522,13 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                                                      else None):
                 # Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
                 movieRating = None
-                if (rating and cfg['omdb']['api_key'] != ''):
+                if (rating != None and cfg['omdb']['api_key'] != ''):
                     movieRating = rating_helper.get_rating(cfg['omdb']['api_key'],movie)
                     if (movieRating == -1):
                         log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
                                   movie['movie']['title'])
                         continue
-                if (not rating or movieRating >= rating):
+                if (rating == None or movieRating >= rating):
                     log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
                              ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                     # add movie to radarr
