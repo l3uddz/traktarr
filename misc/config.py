@@ -55,6 +55,9 @@ class Config(object, metaclass=Singleton):
             'profile': 'HD-1080p',
             'root_folder': '/movies/'
         },
+        'omdb': {
+            'api_key': ''
+        },
         'filters': {
             'shows': {
                 'disabled_for': [],
