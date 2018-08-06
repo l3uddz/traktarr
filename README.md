@@ -187,7 +187,8 @@ You can repeat this process for as many users as you like.
       "boxoffice": 10,
       "interval": 24,
       "popular": 3,
-      "trending": 2
+      "trending": 2,
+      "rating_limit": 0
     },
     "shows": {
       "anticipated": 10,
@@ -291,6 +292,9 @@ You can repeat this process for as many users as you like.
   "trakt": {
     "client_id": "",
     "client_secret": ""
+  },
+  "omdb": {
+    "api_key": ""
   }
 }
 ```
@@ -328,6 +332,7 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
     "played_all": 2,
     "watchlist": {},
     "lists": {},
+    "rating_limit": 0
   },
   "shows": {
     "anticipated": 10,
@@ -369,6 +374,8 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
 `watchlist` - Specify which watchlists to fetch (see explanation below).
 
 `lists` - Specify which custom lists to fetch (see explanation below).
+
+`rating_limit` - Specify minimum movie rating threshold according to Rotten Tomatoes (movies only).
 
 ### Personal Watchlists
 
@@ -782,7 +789,16 @@ Trakt Authentication info:
 
 `client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
+## OMDB
 
+OMDB Authentication info:
+
+```json
+"omdb": {
+  "api_key":""
+}
+```
+`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
 # Usage
 
 ## Automatic (Scheduled)
@@ -927,6 +943,8 @@ Options:
                                   [default: 2.5]
   -s, --sort [votes|rating|release]
                                   Sort list to process.
+  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoese Score
+                                  [default: 0]
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
@@ -971,6 +989,10 @@ Options:
 
  - Example: `-s release`
 
+`-r`, `--rating` -  Only add movies above this rating according to Rotten Tomatoese Score.
+
+ - Example: `-r 75`
+ 
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
 - Can find a list [here](list_of_movie_genres.md).
