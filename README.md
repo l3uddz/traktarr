@@ -291,9 +291,6 @@ You can repeat this process for as many users as you like.
   "trakt": {
     "client_id": "",
     "client_secret": ""
-  },
-  "omdb": {
-    "api_key": ""
   }
 }
 ```
@@ -785,16 +782,7 @@ Trakt Authentication info:
 
 `client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
-## OMDB
 
-OMDB Authentication info:
-
-```json
-"omdb": {
-  "api_key":""
-}
-```
-`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line*)
 # Usage
 
 ## Automatic (Scheduled)
@@ -939,8 +927,6 @@ Options:
                                   [default: 2.5]
   -s, --sort [votes|rating|release]
                                   Sort list to process.
-  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoese Score
-                                  [default: 0]
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
@@ -985,10 +971,6 @@ Options:
 
  - Example: `-s release`
 
-`-r`, `--rating` -  Only add movies above this rating according to Rotten Tomatoese Score.
-
- - Example: `-r 75`
- 
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
 - Can find a list [here](list_of_movie_genres.md).
