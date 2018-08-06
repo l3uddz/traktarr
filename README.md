@@ -509,15 +509,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - This is similar to running `--ignore-blacklist` via the CLI command.
 
-Example:
+- Example:
 
-```
-    "disabled_for": [
-        "anticipated",
-        "watchlist:user1",
-        "list:http://url-to-list"
-    ],
-```
+   ```
+       "disabled_for": [
+           "anticipated",
+           "watchlist:user1",
+           "list:http://url-to-list"
+       ],
+   ```
 
 `allowed_countries` - Only add movies from these countries. Listed as two-letter country codes.
 
