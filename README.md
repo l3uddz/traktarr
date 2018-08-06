@@ -218,7 +218,8 @@ You can repeat this process for as many users as you like.
       "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 60,
       "blacklisted_min_year": 2000,
-      "blacklisted_tmdb_ids": []
+      "blacklisted_tmdb_ids": [],
+      "rating_limit": ""
     },
     "shows": {
       "disabled_for": [],
@@ -291,6 +292,9 @@ You can repeat this process for as many users as you like.
   "trakt": {
     "client_id": "",
     "client_secret": ""
+  },
+  "omdb": {
+    "api_key": ""
   }
 }
 ```
@@ -496,7 +500,8 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_max_year": 2019,
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
-    "blacklisted_tmdb_ids": []
+    "blacklisted_tmdb_ids": [],
+    "rating_limit": ""
   },
 ```
 
@@ -541,6 +546,8 @@ Example:
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
 `blacklisted_tmdb_ids` - Blacklist certain movies with their TMDB IDs.
+
+`rating_limit` - Only add movies above this Rotten Tomatoes score.
 
 ### Shows
 
@@ -782,7 +789,16 @@ Trakt Authentication info:
 
 `client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
+## OMDB
 
+OMDB Authentication info:
+
+```json
+"omdb": {
+  "api_key":""
+}
+```
+`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
 # Usage
 
 ## Automatic (Scheduled)
@@ -927,6 +943,8 @@ Options:
                                   [default: 2.5]
   -s, --sort [votes|rating|release]
                                   Sort list to process.
+  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoese Score
+                                  [default: 0]
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
@@ -971,6 +989,10 @@ Options:
 
  - Example: `-s release`
 
+`-r`, `--rating` -  Only add movies above this Rotten Tomatoes score.
+
+ - Example: `-r 75`
+ 
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
 - Can find a list [here](list_of_movie_genres.md).
@@ -1137,6 +1159,11 @@ Options:
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
 
+- Add movies, from the trending list, with a minimum rating of 80% on Rotten Tomatoes.
+
+  ```
+  traktarr movies -t trending -r 80
+  ```
 
 ### Shows
 
