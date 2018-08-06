@@ -187,7 +187,8 @@ You can repeat this process for as many users as you like.
       "boxoffice": 10,
       "interval": 24,
       "popular": 3,
-      "trending": 2
+      "trending": 2,
+      "rating_limit": 0
     },
     "shows": {
       "anticipated": 10,
@@ -331,6 +332,7 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
     "played_all": 2,
     "watchlist": {},
     "lists": {},
+    "rating_limit": 0
   },
   "shows": {
     "anticipated": 10,
@@ -372,6 +374,8 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
 `watchlist` - Specify which watchlists to fetch (see explanation below).
 
 `lists` - Specify which custom lists to fetch (see explanation below).
+
+`rating_limit` - Specify minimum movie rating threshold according to Rotten Tomatoes (movies only).
 
 ### Personal Watchlists
 
@@ -794,7 +798,7 @@ OMDB Authentication info:
   "api_key":""
 }
 ```
-`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line*)
+`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
 # Usage
 
 ## Automatic (Scheduled)
