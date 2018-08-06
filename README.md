@@ -187,8 +187,7 @@ You can repeat this process for as many users as you like.
       "boxoffice": 10,
       "interval": 24,
       "popular": 3,
-      "trending": 2,
-      "rating_limit": ""
+      "trending": 2
     },
     "shows": {
       "anticipated": 10,
@@ -219,7 +218,8 @@ You can repeat this process for as many users as you like.
       "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 60,
       "blacklisted_min_year": 2000,
-      "blacklisted_tmdb_ids": []
+      "blacklisted_tmdb_ids": [],
+      "rating_limit": ""
     },
     "shows": {
       "disabled_for": [],
@@ -332,7 +332,6 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
     "played_all": 2,
     "watchlist": {},
     "lists": {},
-    "rating_limit": ""
   },
   "shows": {
     "anticipated": 10,
@@ -374,8 +373,6 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
 `watchlist` - Specify which watchlists to fetch (see explanation below).
 
 `lists` - Specify which custom lists to fetch (see explanation below).
-
-`rating_limit` - Specify minimum movie rating threshold according to Rotten Tomatoes (movies only).
 
 ### Personal Watchlists
 
