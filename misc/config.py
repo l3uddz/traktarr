@@ -79,7 +79,8 @@ class Config(object, metaclass=Singleton):
                 'blacklist_title_keywords': [],
                 'blacklisted_tmdb_ids': [],
                 'allowed_countries': [],
-                'allowed_languages': []
+                'allowed_languages': [],
+                'rating_limit':""
             }
         },
         'automatic': {
@@ -88,8 +89,7 @@ class Config(object, metaclass=Singleton):
                 'anticipated': 3,
                 'trending': 3,
                 'popular': 3,
-                'boxoffice': 10,
-                'rating_limit':""
+                'boxoffice': 10
             },
             'shows': {
                 'interval': 48,
