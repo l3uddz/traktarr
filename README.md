@@ -188,7 +188,7 @@ You can repeat this process for as many users as you like.
       "interval": 24,
       "popular": 3,
       "trending": 2,
-      "rating_limit": 0
+      "rating_limit": ""
     },
     "shows": {
       "anticipated": 10,
@@ -332,7 +332,7 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
     "played_all": 2,
     "watchlist": {},
     "lists": {},
-    "rating_limit": 0
+    "rating_limit": ""
   },
   "shows": {
     "anticipated": 10,
