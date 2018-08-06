@@ -500,7 +500,8 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_max_year": 2019,
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
-    "blacklisted_tmdb_ids": []
+    "blacklisted_tmdb_ids": [],
+    "rating_limit": ""
   },
 ```
 
@@ -545,6 +546,8 @@ Example:
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
 `blacklisted_tmdb_ids` - Blacklist certain movies with their TMDB IDs.
+
+`rating_limit` - Only add movies above this Rotten Tomatoes score.
 
 ### Shows
 
@@ -986,7 +989,7 @@ Options:
 
  - Example: `-s release`
 
-`-r`, `--rating` -  Only add movies above this rating according to Rotten Tomatoese Score.
+`-r`, `--rating` -  Only add movies above this Rotten Tomatoes score.
 
  - Example: `-r 75`
  
@@ -1156,7 +1159,7 @@ Options:
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
 
-- Add movies,from the trending list, with a minimum rating of 80% according to rotten tomatoes
+- Add movies, from the trending list, with a minimum rating of 80% on Rotten Tomatoes.
 
   ```
   traktarr movies -t trending -r 80
