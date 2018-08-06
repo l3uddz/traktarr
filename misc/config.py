@@ -89,7 +89,7 @@ class Config(object, metaclass=Singleton):
                 'trending': 3,
                 'popular': 3,
                 'boxoffice': 10,
-                'rating_limit':0
+                'rating_limit':""
             },
             'shows': {
                 'interval': 48,
