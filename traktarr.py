@@ -815,7 +815,7 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
             no_search,
             not no_notifications,
             ignore_blacklist,
-            int(cfg.automatic.movies.rating_limit) if cfg.automatic.movies.rating_limit != "" else None
+            int(cfg.filters.movies.rating_limit) if cfg.filters.movies.rating_limit != "" else None
         )
         if run_now:
             movie_schedule.run()
