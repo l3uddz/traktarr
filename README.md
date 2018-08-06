@@ -1159,6 +1159,11 @@ Options:
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
 
+- Add movies,from the trending list, with a minimum rating of 80% according to rotten tomatoes
+
+  ```
+  traktarr movies -t trending -r 80
+  ```
 
 ### Shows
 
