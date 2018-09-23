@@ -891,7 +891,7 @@ if __name__ == "__main__":
 # Author:   l3uddz                                                      #
 # URL:      https://github.com/l3uddz/traktarr                          #
 # --                                                                    #
-# Part of the Cloudbox project: https://cloudbox.rocks                  #
+# Part of the Cloudbox project: https://cloudbox.works                  #
 #########################################################################
 # GNU General Public License v3.0                                       #
 #########################################################################
