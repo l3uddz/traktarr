@@ -175,7 +175,7 @@ def show(show_id, folder=None, no_search=False):
 @app.command(help='Add multiple shows to Sonarr.')
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, person, watched, played, '
-                   'watchlist or any URL to a list', required=True)
+                   'recommended, watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
@@ -389,7 +389,7 @@ def movie(movie_id, folder=None, no_search=False):
 @app.command(help='Add multiple movies to Radarr.')
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, person, watched, '
-                   'played, watchlist or any URL to a list', required=True)
+                   'recommended, played, watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
