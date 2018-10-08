@@ -1179,7 +1179,7 @@ Options:
   traktarr shows -t popular -l 5 -s rating
   ```
 
-- Add shows, from the popular list, limited to 2 items, and don't start automatic for them in Sonarr:
+- Add shows, from the popular list, limited to 2 items, and add them but don't search for episodes in Sonarr:
 
   ```
   traktarr shows -t popular -l 2 --no-search
