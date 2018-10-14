@@ -111,7 +111,7 @@ Install traktarr to be run with `traktarr` command.
 
 6. `sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr`
 
-7. `traktarr` - run once to generate a sample a config.json file.
+7. `traktarr run` - run once to generate a sample a config.json file.
 
 8. `nano config.json` - edit preferences.
 
