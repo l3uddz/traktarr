@@ -1,4 +1,4 @@
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
+w[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
 [![License: GPL 3](https://img.shields.io/badge/License-GPL%203-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE.md)
 [![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord)](https://discord.io/cloudbox)
 [![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
@@ -992,7 +992,7 @@ Options:
 `-r`, `--rating` -  Only add movies above this Rotten Tomatoes score.
 
  - Example: `-r 75`
- 
+
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
 - Can find a list [here](list_of_movie_genres.md).
@@ -1208,3 +1208,17 @@ Options:
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
+
+***
+
+If you find this project helpful, feel free to make a small donation to the developer:
+
+  - [Monzo](https://monzo.me/jamesbayliss9): Credit Cards, Apple Pay, Google Pay
+
+  - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
+
+    [![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=beer-square)](https://beerpay.io/l3uddz/traktarr) [![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat-square)](https://beerpay.io/l3uddz/traktarr?focus=wish)
+
+  - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
+
+  - BTC: 3CiHME1HZQsNNcDL6BArG7PbZLa8zUUgjL
