@@ -944,3 +944,8 @@ Options:
   ```
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=beer-square)](https://beerpay.io/l3uddz/traktarr)  [![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat-square)](https://beerpay.io/l3uddz/traktarr?focus=wish)
