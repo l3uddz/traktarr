@@ -22,6 +22,10 @@ __pycache__/
 # configs
 *.cfg
 *.json
+*.json.sample
+
+# documents
+*.md
 
 # generators
 *.bat

@@ -55,6 +55,9 @@ class Config(object, metaclass=Singleton):
             'profile': 'HD-1080p',
             'root_folder': '/movies/'
         },
+        'omdb': {
+            'api_key': ''
+        },
         'filters': {
             'shows': {
                 'disabled_for': [],
@@ -76,7 +79,8 @@ class Config(object, metaclass=Singleton):
                 'blacklist_title_keywords': [],
                 'blacklisted_tmdb_ids': [],
                 'allowed_countries': [],
-                'allowed_languages': []
+                'allowed_languages': [],
+                'rating_limit':""
             }
         },
         'automatic': {

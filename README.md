@@ -1,7 +1,8 @@
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE)
+w[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
+[![License: GPL 3](https://img.shields.io/badge/License-GPL%203-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE.md)
+[![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord)](https://discord.io/cloudbox)
 [![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
-[![Discord](https://img.shields.io/discord/381077432285003776.svg)](https://discord.gg/xmNYmSJ)
+
 
 
 # traktarr
@@ -10,7 +11,7 @@
 
 Types of Trakt lists supported:
 
-- Official Trakt lists
+- Official Trakt Lists
 
   - Trending
 
@@ -20,13 +21,17 @@ Types of Trakt lists supported:
 
   - Boxoffice
 
-- Public lists
+  - Most Watched
 
-- Private lists*
+  - Most Played
+
+- Public Lists
+
+- Private Lists*
 
   - Watchlist
 
-  - Custom list(s)
+  - Custom List(s)
 
 \* Support for multiple (authenticated) users.
 
@@ -34,7 +39,6 @@ Types of Trakt lists supported:
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [traktarr](#traktarr)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -69,8 +73,9 @@ Types of Trakt lists supported:
 		- [Movies (Multiple Movies)](#movies-multiple-movies)
 		- [Show (Single Show)](#show-single-show)
 		- [Shows (Multiple Shows)](#shows-multiple-shows)
-	- [Examples (Manual)](#examples-manual)
-
+	- [Examples (CLI)](#examples-cli)
+		- [Movies](#movies)
+		- [Shows](#shows)
 <!-- /TOC -->
 
 ---
@@ -213,7 +218,8 @@ You can repeat this process for as many users as you like.
       "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 60,
       "blacklisted_min_year": 2000,
-      "blacklisted_tmdb_ids": []
+      "blacklisted_tmdb_ids": [],
+      "rating_limit": ""
     },
     "shows": {
       "disabled_for": [],
@@ -286,6 +292,9 @@ You can repeat this process for as many users as you like.
   "trakt": {
     "client_id": "",
     "client_secret": ""
+  },
+  "omdb": {
+    "api_key": ""
   }
 }
 ```
@@ -299,8 +308,9 @@ You can repeat this process for as many users as you like.
 },
 ```
 
-`debug` - show debug messages.
-  - Default is `false` (keep it off unless your having issues).
+`debug` - Toggle debug messages in the log. Default is `false`.
+
+  - Set to `true`, if you are having issues and want to diagnose why.
 
 
 ## Automatic
@@ -308,7 +318,7 @@ Used for automatic / scheduled traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
 
-_Note: These settings are only needed if you plan to use traktarr on a schedule (i.e. via manual/CLI command only); see [Usage](#usage)._
+_Note: These settings are only needed if you plan to use traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
 
 ```json
 "automatic": {
@@ -318,27 +328,51 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
     "interval": 24,
     "popular": 3,
     "trending": 2,
+    "watched": 2,
+    "played_all": 2,
     "watchlist": {},
-    "lists": {}
+    "lists": {},
   },
   "shows": {
     "anticipated": 10,
     "interval": 48,
     "popular": 1,
     "trending": 2,
+    "watched_monthly": 2,
+    "played": 2,
     "watchlist": {},
     "lists": {}
   }
 },
 ```
 
-`interval` - specify how often (in hours) to run traktarr task.
+`interval` - Specify how often (in hours) to run traktarr task.
 
-`anticipated`, `popular`, `trending`, `boxoffice` (movies only) - specify how many items from each Trakt list to find.
+`anticipated`, `popular`, `trending`, `boxoffice` (movies only) - Specify how many items from each Trakt list to find.
 
-`watchlist` - specify which watchlists to fetch (see explanation below)
+`watched` - Adds items that are the most watched by unique Trakt users (mutliple viewings excluded).
 
-`lists` - specify which custom lists to fetch (see explanation below)
+  - `watched` / `watched_weekly` - Most watched in the week.
+
+  - `watched_monthly` - Most watched in the month.
+
+  - `watched_yearly` - Most watched in the year.
+
+  - `watched_all` - Most watched of all time.
+
+`played` - Adds items that are most the played items by Trakt users (mutliple viewings included).
+
+  - `played` / `played_weekly` - Most played in the week.
+
+  - `played_monthly` - Most played in the month.
+
+  - `played_yearly` - Most played in the year.
+
+  - `played_all` Most played of all time.
+
+`watchlist` - Specify which watchlists to fetch (see explanation below).
+
+`lists` - Specify which custom lists to fetch (see explanation below).
 
 ### Personal Watchlists
 
@@ -466,40 +500,54 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_max_year": 2019,
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
-    "blacklisted_tmdb_ids": []
+    "blacklisted_tmdb_ids": [],
+    "rating_limit": ""
   },
 ```
 
-`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+`disabled_for` - Specify for which lists the blacklist is disabled for, when running in automatic mode.
 
-Example:
+- This is similar to running `--ignore-blacklist` via the CLI command.
 
-```
-    "disabled_for": [
-        "anticipated",
-        "watchlist:user1",
-        "list:http://url-to-list"
-    ],
-```
+- Example:
 
-`allowed_countries` - only add movies from these countries.
+   ```
+       "disabled_for": [
+           "anticipated",
+           "watchlist:user1",
+           "list:http://url-to-list"
+       ],
+   ```
 
-`allowed_languages` - only add movies with these languages (default/blank=English).
+`allowed_countries` - Only add movies from these countries. Listed as two-letter country codes.
 
-- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- [List of available country codes](list_of_country_codes.md).
+
+`allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
+
+- By default, traktarr will only query movies in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
+
+- [List of available language codes](list_of_language_codes.md).
 
 `blacklist_title_keywords` - blacklist certain words in titles.
 
-`blacklisted_genres` - blacklist certain genres.
+`blacklisted_genres` - Blacklist certain genres.
 
-`blacklisted_max_year` - blacklist release dates after specified year.
+  - [List of available genres](list_of_movie_genres.md).
 
-`blacklisted_min_runtime` - blacklist runtime duration lower than specified time (in minutes).
+  - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
-`blacklisted_min_year` - blacklist release dates before specified year.
+`blacklisted_max_year` - Blacklist release dates after specified year.
 
-`blacklisted_tmdb_ids` - blacklist certain movies with their TMDB IDs.
+`blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
+
+`blacklisted_min_year` - Blacklist release dates before specified year.
+
+`blacklisted_tmdb_ids` - Blacklist certain movies with their TMDB IDs.
+
+`rating_limit` - Only add movies above this Rotten Tomatoes score.
 
 ### Shows
 
@@ -546,7 +594,10 @@ Example:
 }
 ```
 
-`disabled_for` - specify for which lists the blacklist must be disabled when running in automatic mode
+`disabled_for` - Specify for which lists the blacklist is disabled for, when running in automatic mode.
+
+- This is similar to running `--ignore-blacklist` via the CLI command.
+
 
 Example:
 
@@ -558,24 +609,33 @@ Example:
     ],
 ```
 
-`allowed_countries` - only add shows from these countries.
+`allowed_countries` - Only add shows from these countries. Listed as two-letter country codes.
 
-`allowed_languages` - only add shows with these languages (default/blank=English).
+- [List of available country codes](list_of_country_codes.md).
+
+`allowed_languages` - Only add shows with these languages.
 
 - By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
-`blacklisted_genres` - blacklist certain genres.
+- [List of available language codes](list_of_language_codes.md).
 
-`blacklisted_max_year` - blacklist release dates after specified year.
+`blacklisted_genres` - Blacklist certain genres.
 
-`blacklisted_min_runtime` - blacklist runtime duration lower than specified time (in minutes).
+- [List of available genres](list_of_show_genres.md).
 
-`blacklisted_min_year` - blacklist release dates before specified year.
+- For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
-`blacklisted_networks` - blacklist certain network.
+`blacklisted_max_year` - Blacklist release dates after specified year.
 
-`blacklisted_tvdb_ids` - blacklist certain shows with their TVDB IDs.
+`blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
+
+`blacklisted_min_year` - Blacklist release dates before specified year.
+
+`blacklisted_networks` - Blacklist certain network.
+
+`blacklisted_tvdb_ids` - Blacklist certain shows with their TVDB IDs.
 
 
 ## Notifications
@@ -603,13 +663,14 @@ Currently, only Pushover and Slack are supported. More will be added later.
 },
 ```
 
-`verbose` - toggle detailed notifications.
-  - Default is `true` (keep it off unless your having issues).
+`verbose` - Toggle detailed notifications. Default is `true`.
+
+  - Set to `false`, if you want to reduce the amount of detailed notifications (e.g. the names of the movies/shows added vs just the total).
 
 
 ### Pushover
 
-`app_token` and `user_token` - retrieve from Pushover.net.
+`app_token` and `user_token` - Retrieve from Pushover.net.
 
 You can specify a priority for the messages send via Pushover using the `priority` key. It can be any Pushover priority value (https://pushover.net/api#priority).
 
@@ -618,7 +679,7 @@ _Note: The key name (i.e the name right under notifications) can be anything, bu
 
 ### Slack
 
-`webhook_url` - webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations".
+`webhook_url` - Webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations".
 
 _Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"slack"`._
 
@@ -665,7 +726,7 @@ Sonarr configuration.
 
 `root_folder` - Root folder for TV shows.
 
-`tags` - assign tags to shows based the network it airs on. More details on this below.
+`tags` - Assign tags to shows based the network it airs on. More details on this below.
 
 `url` - Sonarr's URL.
 
@@ -726,9 +787,18 @@ Trakt Authentication info:
 
 `client_id` - Fill in your Trakt API key (_Client ID_).
 
-`client_secret` - Fill in your Trakt Secret key (_Client Scret_)
+`client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
+## OMDB
 
+OMDB Authentication info:
+
+```json
+"omdb": {
+  "api_key":""
+}
+```
+`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
 # Usage
 
 ## Automatic (Scheduled)
@@ -739,7 +809,7 @@ To have traktarr get Movies and Shows for you automatically, on set interval, do
 
 1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
 
-2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours.
+2. `sudo nano /etc/systemd/system/traktarr.service` and edit user/group to match yours' (run `id` to check).
 
 3. `sudo systemctl daemon-reload`
 
@@ -751,23 +821,56 @@ To have traktarr get Movies and Shows for you automatically, on set interval, do
 
 You can customize how the scheduled traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
 
-```
-  -d, --add-delay FLOAT  Seconds between each add request to Sonarr / Radarr.
-                         [default: 2.5]
-  --no-search            Disable search when adding to Sonarr / Radarr.
-  --run-now              Do a first run immediately without waiting.
-  --no-notifications     Disable notifications.
-  --ignore-blacklist     Ignores the blacklist when running the command.
-  --help                 Show this message and exit.
-```
-
-You can bring up the list, anytime, by running the following command:
+\* Remember, other configuration options need to go into the `config.json` file under the `Automatic` section.
 
 ```
 traktarr run --help
 ```
 
-\* Remember, other configuration options need to go into the `config.json` file under the `Automatic` section.
+```
+Usage: traktarr run [OPTIONS]
+
+  Run in automatic mode.
+
+Options:
+  -d, --add-delay FLOAT           Seconds between each add request to Sonarr /
+                                  Radarr.  [default: 2.5]
+  -s, --sort [votes|rating|release]
+                                  Sort list to process.
+  --no-search                     Disable search when adding to Sonarr /
+                                  Radarr.
+  --run-now                       Do a first run immediately without waiting.
+  --no-notifications              Disable notifications.
+  --ignore-blacklist              Ignores the blacklist when running the
+                                  command.
+  --help                          Show this message and exit.
+```
+
+
+`-d`, `--add-delay` - Add seconds delay between each add request to Sonarr / Radarr. Dfault is 2.5 seconds.
+
+ - Example: `-d 5`
+
+`-s`, `--sort` - Sort list by highest `votes`, highest `rating`, or the latest `release` dates. Default is highest `votes`.
+
+ - Example: `-s release`
+
+`--no-search` - Tells Sonarr / Radarr to not automatically search for added shows / movies.
+
+`--run-now` - Traktarr will run first automated search on start, without waiting for next interval.
+
+`--no-notifications` - Disable notifications. Default is `enabled`.
+
+`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
+
+
+Example of a modified line from the traktarr.service file that will always add from the most recent releases matched:
+
+```
+ExecStart=/usr/bin/python3 /opt/traktarr/traktarr.py run -s release
+```
+
+
 
 ## Manual (CLI)
 
@@ -830,23 +933,80 @@ Usage: traktarr movies [OPTIONS]
   Add multiple movies to Radarr.
 
 Options:
-  -t, --list-type TEXT      Trakt list to process. For example, anticipated,
-                            trending, popular, boxoffice, watchlist or any URL
-                            to a list  [required]
-  -l, --add-limit INTEGER   Limit number of movies added to Radarr.  [default:
-                            0]
-  -d, --add-delay FLOAT     Seconds between each add request to Radarr.
-                            [default: 2.5]
-  -g, --genre TEXT          Only add movies from this genre to Radarr.
-  -f, --folder TEXT         Add movies with this root folder to Radarr.
-  --no-search               Disable search when adding movies to Radarr.
-  --notifications           Send notifications.
-  --ignore-blacklist        Ignores the blacklist when running the command.
-  --authenticate-user TEXT  Specify which user to authenticate with to
-                            retrieve Trakt lists. Default: first user in the
-                            config.
-  --help                    Show this message and exit.
+  -t, --list-type TEXT            Trakt list to process. For example,
+                                  anticipated, trending, popular, boxoffice,
+                                  watched, played, watchlist or any URL to a
+                                  list  [required]
+  -l, --add-limit INTEGER         Limit number of movies added to Radarr.
+                                  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Radarr.
+                                  [default: 2.5]
+  -s, --sort [votes|rating|release]
+                                  Sort list to process.
+  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoese Score
+                                  [default: 0]
+  -g, --genre TEXT                Only add movies from this genre to Radarr.
+  -f, --folder TEXT               Add movies with this root folder to Radarr.
+  --no-search                     Disable search when adding movies to Radarr.
+  --notifications                 Send notifications.
+  --authenticate-user TEXT        Specify which user to authenticate with to
+                                  retrieve Trakt lists. Default: first user in
+                                  the config.
+  --ignore-blacklist              Ignores the blacklist when running the
+                                  command.
+  --help                          Show this message and exit.
 ```
+
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (trakt list).
+
+- Watched Lists: Movies that are the most watched by unique Trakt users (mutliple viewings excluded).
+
+  - `watched` / `watched_weekly` - Most watched in the week.
+
+  - `watched_monthly` - Most watched in the month.
+
+  - `watched_yearly` - Most watched in the year.
+
+  - `watched_all` - Most watched of all time.
+
+- Played Lists: Movies that are the most played by Trakt users (mutliple viewings included).
+
+  - `played` / `played_weekly` - Most played in the week.
+
+  - `played_monthly` - Most played in the month.
+
+  - `played_yearly` - Most played in the year.
+
+  - `played_all` Most played of all time.
+
+`-l`, `--add-limit` - Limit number of movies added to Radarr.
+
+`-d`, `--add-delay` - Add seconds delay between each add request to Radarr. Default is 2.5 seconds.
+
+ - Example: `-d 5`
+
+`-s`, `--sort` - Sort list by highest `votes`, highest `rating`, or the latest `release` dates. Default is highest `votes`.
+
+ - Example: `-s release`
+
+`-r`, `--rating` -  Only add movies above this Rotten Tomatoes score.
+
+ - Example: `-r 75`
+
+`-g`, `--genre` - Only add movies from this genre to Radarr.
+
+- Can find a list [here](list_of_movie_genres.md).
+
+`-f`, `--folder` -  Add shows to a specific root folder in Radarr.
+
+ - Example: `-f /mnt/unionfs/Media/Movies/Movies-Kids/`
+
+`--no-search` - Tells Radarr to not automatically search for added movies.
+
+`--notifications` - To enable notifications. Default is `disabled`.
+
+`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
+
 
 ### Show (Single Show)
 
@@ -883,25 +1043,79 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT      Trakt list to process. For example, anticipated,
-                            trending, popular, watchlist or any URL to a list
-                            [required]
-  -l, --add-limit INTEGER   Limit number of shows added to Sonarr.  [default:
-                            0]
-  -d, --add-delay FLOAT     Seconds between each add request to Sonarr.
-                            [default: 2.5]
-  -g, --genre TEXT          Only add shows from this genre to Sonarr.
-  -f, --folder TEXT         Add shows with this root folder to Sonarr.
-  --no-search               Disable search when adding shows to Sonarr.
-  --notifications           Send notifications.
-  --ignore-blacklist        Ignores the blacklist when running the command.
-  --authenticate-user TEXT  Specify which user to authenticate with to
-                            retrieve Trakt lists. Default: first user in the
-                            config
-  --help                    Show this message and exit.
+  -t, --list-type TEXT            Trakt list to process. For example,
+                                  anticipated, trending, popular, watched,
+                                  played, watchlist or any URL to a list
+                                  [required]
+  -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
+                                  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
+                                  [default: 2.5]
+  -s, --sort [votes|rating|release]
+                                  Sort list to process.
+  -g, --genre TEXT                Only add shows from this genre to Sonarr.
+  -f, --folder TEXT               Add shows with this root folder to Sonarr.
+  --no-search                     Disable search when adding shows to Sonarr.
+  --notifications                 Send notifications.
+  --authenticate-user TEXT        Specify which user to authenticate with to
+                                  retrieve Trakt lists. Default: first user in
+                                  the config
+  --ignore-blacklist              Ignores the blacklist when running the
+                                  command.
+  --help                          Show this message and exit.
 ```
 
-## Examples (Manual)
+
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (trakt list).
+
+- Watched Lists: Shows that are the most watched by unique Trakt users (mutliple viewings excluded).
+
+  - `watched` / `watched_weekly` - Most watched in the week.
+
+  - `watched_monthly` - Most watched in the month.
+
+  - `watched_yearly` - Most watched in the year.
+
+  - `watched_all` - Most watched of all time.
+
+- Played Lists: Shows that are the most played by Trakt users (mutliple viewings included).
+
+  - `played` / `played_weekly` - Most played in the week.
+
+  - `played_monthly` - Most played in the month.
+
+  - `played_yearly` - Most played in the year.
+
+  - `played_all` Most played of all time.
+
+`-l`, `--add-limit` - Limit number of shows added to Sonarr.
+
+`-d`, `--add-delay` - Add seconds delay between each add request to Sonarr. Default is 2.5 seconds.
+
+ - Example: `-d 5`
+
+`-s`, `--sort` - Sort list by highest `votes`, highest `rating`, or the latest `release` dates. Default is highest `votes`.
+
+ - Example: `-s release`
+
+`-g`, `--genre` - Only add shows from this genre to Sonarr.
+
+- Can find a list [here](list_of_show_genres.md).
+
+`-f`, `--folder` -  Add shows to a specific root folder in Sonarr.
+
+ - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
+
+`--no-search` - Tells Sonarr to not automatically search for added shows.
+
+`--notifications` - To enable notifications. Default is `disabled`.
+
+`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
+
+
+## Examples (CLI)
+
+### Movies
 
 - Add the movie "Black Panther (2018)":
 
@@ -909,43 +1123,102 @@ Options:
   traktarr movie -id black-panther-2018
   ```
 
+- Add movies, from the popular list, labeled with the thriller genre, limited to 5 items, and sorted by latest release date.
+
+  ```
+  traktarr movies -t popular -g thriller -l 5 -s release
+  ```
+
+- Add movies, from the boxoffice list, labeled with the comedy genre, limited to 10 items, and send notifications:
+
+  ```
+  traktarr movies -t boxoffice -g comedy -l 10 --notifications
+  ```
+
+- Add movies, from a list of most watched played this week, and limited to 5 items.
+
+  ```
+  traktarr movies -t watched -l 5
+  ```
+
+- Add movies, from a list of most played movies this month, and limited to 5 items.
+
+  ```
+  traktarr movies -t played_monthly -l 5
+  ```
+
+- Add (all) movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
+
+  ```
+  traktarr movies -t https://trakt.tv/users/rkerwin/lists/top-100-movies
+  ```
+
+- Add (all) movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
+
+  ```
+  traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
+  ```
+
+- Add movies, from the trending list, with a minimum rating of 80% on Rotten Tomatoes.
+
+  ```
+  traktarr movies -t trending -r 80
+  ```
+
+### Shows
+
 - Add the show "The 100":
 
   ```
   traktarr show -id the-100
   ```
 
-- Add boxoffice movies, labeled with the comedy genre, limited to 10 items, and send notifications:
+- Add shows, from the popular list, limited to 5 items, and sorted by higest ratings.
 
   ```
-  traktarr movies -t boxoffice -g comedy -l 10 --notifications
+  traktarr shows -t popular -l 5 -s rating
   ```
 
-- Add popular shows, limited to 2 items, and don't start the search in Sonarr:
+- Add shows, from the popular list, limited to 2 items, and add them but don't search for episodes in Sonarr:
 
   ```
   traktarr shows -t popular -l 2 --no-search
   ```
 
-- Add all shows from the watchlist of `user1`:
+- Add shows, from a list of most watched shows this year, and limited to 5 items.
+
+  ```
+  traktarr shows -t watched_yearly -l 5
+  ```
+
+- Add shows, from a list of most played shows this week, and limited to 5 items.
+
+  ```
+  traktarr shows -t played -l 5
+  ```
+
+- Add shows, from a list of most played shows of all time, and limited to 5 items.
+
+  ```
+  traktarr shows -t played_all -l 5
+  ```
+
+- Add (all) shows from the watchlist of `user1`:
 
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
 
-- Add all movies from the public list `https://trakt.tv/users/rkerwin/lists/top-100-movies`:
+***
 
-  ```
-  traktarr movies -t https://trakt.tv/users/rkerwin/lists/top-100-movies
-  ```
+If you find this project helpful, feel free to make a small donation to the developer:
 
-- Add all movies from the private list `https://trakt.tv/users/user1/lists/private-movies-list` of `user1`:
+  - [Monzo](https://monzo.me/jamesbayliss9): Credit Cards, Apple Pay, Google Pay
 
-  ```
-  traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
-  ```
+  - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
 
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
+    [![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=beer-square)](https://beerpay.io/l3uddz/traktarr) [![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat-square)](https://beerpay.io/l3uddz/traktarr?focus=wish)
 
-[![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=beer-square)](https://beerpay.io/l3uddz/traktarr)  [![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat-square)](https://beerpay.io/l3uddz/traktarr?focus=wish)
+  - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
+
+  - BTC: 3CiHME1HZQsNNcDL6BArG7PbZLa8zUUgjL

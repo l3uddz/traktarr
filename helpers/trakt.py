@@ -106,7 +106,7 @@ def blacklisted_show_id(show, blacklisted_ids):
     return blacklisted
 
 
-def is_show_blacklisted(show, blacklist_settings, ignore_blacklist):
+def is_show_blacklisted(show, blacklist_settings, ignore_blacklist, callback=None):
     if ignore_blacklist:
         return False
 
@@ -125,6 +125,10 @@ def is_show_blacklisted(show, blacklist_settings, ignore_blacklist):
             blacklisted = True
         if blacklisted_show_id(show, blacklist_settings.blacklisted_tvdb_ids):
             blacklisted = True
+
+        if blacklisted and callback:
+            callback('show', show)
+
     except Exception:
         log.exception("Exception determining if show was blacklisted %s: ", show)
     return blacklisted
@@ -231,7 +235,7 @@ def blacklisted_movie_id(movie, blacklisted_ids):
     return blacklisted
 
 
-def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist):
+def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist, callback=None):
     if ignore_blacklist:
         return False
 
@@ -250,6 +254,10 @@ def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist):
             blacklisted = True
         if blacklisted_movie_id(movie, blacklist_settings.blacklisted_tmdb_ids):
             blacklisted = True
+
+        if blacklisted and callback:
+            callback('movie', movie)
+
     except Exception:
         log.exception("Exception determining if movie was blacklisted %s: ", movie)
     return blacklisted

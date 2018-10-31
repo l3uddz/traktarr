@@ -20,14 +20,17 @@ class Trakt:
     # Requests
     ############################################################
 
-    def _make_request(self, url, payload={}, authenticate_user=None):
+    def _make_request(self, url, payload={}, authenticate_user=None, request_type='get'):
         headers, authenticate_user = self._headers(authenticate_user)
 
         if authenticate_user:
             url = url.replace('{authenticate_user}', authenticate_user)
 
         # make request
-        req = requests.get(url, headers=headers, params=payload, timeout=30)
+        if request_type == 'delete':
+            req = requests.delete(url, headers=headers, params=payload, timeout=30)
+        else:
+            req = requests.get(url, headers=headers, params=payload, timeout=30)
         log.debug("Request URL: %s", req.url)
         log.debug("Request Payload: %s", payload)
         log.debug("Request User: %s", authenticate_user)
@@ -82,13 +85,21 @@ class Trakt:
 
                 if req.status_code == 200:
                     resp_json = req.json()
-
-                    for item in resp_json:
-                        if item not in processed:
-                            if object_name.rstrip('s') not in item and 'title' in item:
-                                processed.append({object_name.rstrip('s'): item})
-                            else:
-                                processed.append(item)
+                    if type_name == 'person' and 'cast' in resp_json:
+                        # handle person results
+                        for item in resp_json['cast']:
+                            if item not in processed:
+                                if object_name.rstrip('s') not in item and 'title' in item:
+                                    processed.append({object_name.rstrip('s'): item})
+                                else:
+                                    processed.append(item)
+                    else:
+                        for item in resp_json:
+                            if item not in processed:
+                                if object_name.rstrip('s') not in item and 'title' in item:
+                                    processed.append({object_name.rstrip('s'): item})
+                                else:
+                                    processed.append(item)
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
@@ -128,6 +139,16 @@ class Trakt:
             return False
         except Exception:
             log.exception("Exception validating client_id: ")
+        return False
+
+    def remove_recommended_item(self, item_type, trakt_id, authenticate_user=None):
+        ret = self._make_request(
+            url='https://api.trakt.tv/recommendations/%ss/%s' % (item_type, str(trakt_id)),
+            authenticate_user=authenticate_user,
+            request_type='delete'
+        )
+        if ret.status_code == 204:
+            return True
         return False
 
     ############################################################
@@ -343,6 +364,16 @@ class Trakt:
             genres=genres
         )
 
+    def get_person_shows(self, person, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/people/%s/shows' % person,
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='person',
+            genres=genres
+        )
+
     def get_most_played_shows(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/played/%s' % ('weekly' if not most_type else most_type),
@@ -360,6 +391,17 @@ class Trakt:
             languages=languages,
             object_name='shows',
             type_name='watched',
+            genres=genres
+        )
+
+    def get_recommended_shows(self, authenticate_user=None, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/recommendations/shows',
+            authenticate_user=authenticate_user,
+            limit=limit,
+            languages=languages,
+            object_name='shows',
+            type_name='recommended from {authenticate_user}',
             genres=genres
         )
 
@@ -427,6 +469,16 @@ class Trakt:
             genres=genres
         )
 
+    def get_person_movies(self, person, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/people/%s/movies' % person,
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='person',
+            genres=genres
+        )
+
     def get_most_played_movies(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/played/%s' % ('weekly' if not most_type else most_type),
@@ -454,6 +506,17 @@ class Trakt:
             languages=languages,
             object_name='movies',
             type_name='anticipated',
+        )
+
+    def get_recommended_movies(self, authenticate_user=None, limit=1000, languages=None, genres=None):
+        return self._make_items_request(
+            url='https://api.trakt.tv/recommendations/movies',
+            authenticate_user=authenticate_user,
+            limit=limit,
+            languages=languages,
+            object_name='movies',
+            type_name='recommended from {authenticate_user}',
+            genres=genres
         )
 
     def get_watchlist_movies(self, authenticate_user=None, limit=1000, languages=None):
