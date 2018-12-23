@@ -847,7 +847,7 @@ Options:
 ```
 
 
-`-d`, `--add-delay` - Add seconds delay between each add request to Sonarr / Radarr. Dfault is 2.5 seconds.
+`-d`, `--add-delay` - Add seconds delay between each add request to Sonarr / Radarr. Default is `2.5` seconds.
 
  - Example: `-d 5`
 
