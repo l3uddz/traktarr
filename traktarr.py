@@ -6,7 +6,6 @@ import time
 
 import click
 import schedule
-
 from pyfiglet import Figlet
 
 ############################################################
@@ -394,7 +393,8 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
               help='Sort list to process.')
-@click.option('--rating','-r',default=None,type=(int),help='Set a minimum rating threshold (according to Rotten Tomatoes)')
+@click.option('--rating', '-r', default=None, type=(int),
+              help='Set a minimum rating threshold (according to Rotten Tomatoes)')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
@@ -405,7 +405,8 @@ def movie(movie_id, folder=None, no_search=False):
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None, actor=None, no_search=False,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None, actor=None,
+           no_search=False,
            notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
@@ -522,18 +523,20 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                                                      else None):
                 # Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
                 movieRating = None
-                if (rating != None and cfg['omdb']['api_key'] != ''):
-                    movieRating = rating_helper.get_rating(cfg['omdb']['api_key'],movie)
-                    if (movieRating == -1):
+                if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
+                    movieRating = rating_helper.get_rating(cfg['omdb']['api_key'], movie)
+                    if movieRating == -1:
                         log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
                                   movie['movie']['title'])
                         continue
-                if (rating == None or movieRating >= rating):
-                    log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'], movie['movie']['year'],
+                if rating is None or movieRating >= rating:
+                    log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
+                             movie['movie']['year'],
                              ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
                     # add movie to radarr
                     if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
-                                        movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
+                                        movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder,
+                                        not no_search):
                         log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
                         if notifications:
                             callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': movie['movie']})
@@ -705,7 +708,8 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
     return
 
 
-def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False,rating_limit=None):
+def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False,
+                     rating_limit=None):
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -736,7 +740,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                 # run movies
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                add_delay=add_delay, sort=sort, no_search=no_search,
-                                               notifications=notifications,rating=rating_limit)
+                                               notifications=notifications, rating=rating_limit)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -754,7 +758,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist,rating=rating_limit)
+                                                   ignore_blacklist=local_ignore_blacklist, rating=rating_limit)
             elif list_type.lower() == 'lists':
                 for list, v in value.items():
                     if isinstance(v, dict):
@@ -773,7 +777,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist,rating=rating_limit)
+                                                   ignore_blacklist=local_ignore_blacklist, rating=rating_limit)
 
             if added_movies is None:
                 log.error("Failed adding movies from Trakt's %s list", list_type)
@@ -880,7 +884,6 @@ def exit_handler(signum, frame):
 ############################################################
 
 if __name__ == "__main__":
-
     print("")
 
     f = Figlet(font='graffiti')
