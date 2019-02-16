@@ -1,3 +1,4 @@
+import json
 import time
 
 import backoff
@@ -22,31 +23,40 @@ class Trakt:
 
     def _make_request(self, url, payload={}, authenticate_user=None, request_type='get'):
         headers, authenticate_user = self._headers(authenticate_user)
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' \
+                                '(KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36'
 
         if authenticate_user:
             url = url.replace('{authenticate_user}', authenticate_user)
 
         # make request
+        resp_data = ''
         if request_type == 'delete':
-            req = requests.delete(url, headers=headers, params=payload, timeout=30)
+            with requests.delete(url, headers=headers, params=payload, timeout=30, stream=True) as req:
+                for chunk in req.iter_content(chunk_size=250000, decode_unicode=True):
+                    if chunk:
+                        resp_data += chunk
         else:
-            req = requests.get(url, headers=headers, params=payload, timeout=30)
+            with requests.get(url, headers=headers, params=payload, timeout=30, stream=True) as req:
+                for chunk in req.iter_content(chunk_size=250000, decode_unicode=True):
+                    if chunk:
+                        resp_data += chunk
+
         log.debug("Request URL: %s", req.url)
         log.debug("Request Payload: %s", payload)
         log.debug("Request User: %s", authenticate_user)
         log.debug("Response Code: %d", req.status_code)
-
-        return req
+        return req, resp_data
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def _make_item_request(self, url, object_name, payload={}):
         payload = dict_merge(payload, {'extended': 'full'})
 
         try:
-            req = self._make_request(url, payload)
+            req, resp_data = self._make_request(url, payload)
 
-            if req.status_code == 200:
-                resp_json = req.json()
+            if req.status_code == 200 and len(resp_data):
+                resp_json = json.loads(resp_data)
                 return resp_json
             elif req.status_code == 401:
                 log.error("The authentication to Trakt is revoked. Please re-authenticate.")
@@ -58,7 +68,7 @@ class Trakt:
             log.exception("Exception retrieving %s: ", object_name)
         return None
 
-    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
+    @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=6, on_backoff=backoff_handler)
     def _make_items_request(self, url, limit, languages, type_name, object_name, authenticate_user=None, payload={},
                             sleep_between=5, genres=None):
         if not languages:
@@ -74,8 +84,34 @@ class Trakt:
             type_name = type_name.replace('{authenticate_user}', self._user_used_for_authentication(authenticate_user))
 
         try:
+            resp_data = ''
             while True:
-                req = self._make_request(url, payload, authenticate_user)
+                attempts = 0
+                max_attempts = 6
+                retrieve_error = False
+                while attempts <= max_attempts:
+                    try:
+                        req, resp_data = self._make_request(url, payload, authenticate_user)
+                        if resp_data is not None:
+                            retrieve_error = False
+                            break
+                        else:
+                            log.warning("Failed to retrieve valid response for Trakt %s %s from _make_item_request",
+                                        type_name, object_name)
+
+                    except Exception:
+                        log.exception("Exception retrieving %s %s in _make_item_request: ", type_name, object_name)
+                        retrieve_error = True
+
+                    attempts += 1
+                    log.info("Sleeping for %d seconds before making attempt %d/%d", 3 * attempts, attempts + 1,
+                             max_attempts)
+                    time.sleep(3 * attempts)
+
+                if retrieve_error or not resp_data or not len(resp_data):
+                    log.error("Failed retrieving %s %s from _make_item_request %d times, aborting...", type_name,
+                              object_name, attempts)
+                    return None
 
                 current_page = payload['page']
                 total_pages = 0 if 'X-Pagination-Page-Count' not in req.headers else int(
@@ -83,23 +119,28 @@ class Trakt:
 
                 log.debug("Response Page: %d of %d", current_page, total_pages)
 
-                if req.status_code == 200:
-                    resp_json = req.json()
-                    if type_name == 'person' and 'cast' in resp_json:
-                        # handle person results
-                        for item in resp_json['cast']:
-                            if item not in processed:
-                                if object_name.rstrip('s') not in item and 'title' in item:
-                                    processed.append({object_name.rstrip('s'): item})
-                                else:
-                                    processed.append(item)
+                if req.status_code == 200 and len(resp_data):
+                    if resp_data.startswith("[{") and resp_data.endswith("}]"):
+                        resp_json = json.loads(resp_data)
+
+                        if type_name == 'person' and 'cast' in resp_json:
+                            # handle person results
+                            for item in resp_json['cast']:
+                                if item not in processed:
+                                    if object_name.rstrip('s') not in item and 'title' in item:
+                                        processed.append({object_name.rstrip('s'): item})
+                                    else:
+                                        processed.append(item)
+                        else:
+                            for item in resp_json:
+                                if item not in processed:
+                                    if object_name.rstrip('s') not in item and 'title' in item:
+                                        processed.append({object_name.rstrip('s'): item})
+                                    else:
+                                        processed.append(item)
+
                     else:
-                        for item in resp_json:
-                            if item not in processed:
-                                if object_name.rstrip('s') not in item and 'title' in item:
-                                    processed.append({object_name.rstrip('s'): item})
-                                else:
-                                    processed.append(item)
+                        log.warning("Receiving malformed JSON response for page: %d of %d", current_page, total_pages)
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
@@ -112,6 +153,7 @@ class Trakt:
                         log.info("There are %d pages left to retrieve results from", total_pages - current_page)
                         payload['page'] += 1
                         time.sleep(sleep_between)
+
                 elif req.status_code == 401:
                     log.error("The authentication to Trakt is revoked. Please re-authenticate.")
                     exit()
@@ -122,6 +164,7 @@ class Trakt:
             if len(processed):
                 log.debug("Found %d %s %s", len(processed), type_name, object_name)
                 return processed
+
             return None
         except Exception:
             log.exception("Exception retrieving %s %s: ", type_name, object_name)
@@ -130,7 +173,7 @@ class Trakt:
     def validate_client_id(self):
         try:
             # request anticipated shows to validate client_id
-            req = self._make_request(
+            req, req_data = self._make_request(
                 url='https://api.trakt.tv/shows/anticipated',
             )
 
@@ -142,7 +185,7 @@ class Trakt:
         return False
 
     def remove_recommended_item(self, item_type, trakt_id, authenticate_user=None):
-        ret = self._make_request(
+        ret, ret_data = self._make_request(
             url='https://api.trakt.tv/recommendations/%ss/%s' % (item_type, str(trakt_id)),
             authenticate_user=authenticate_user,
             request_type='delete'
