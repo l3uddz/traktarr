@@ -140,7 +140,7 @@ class Trakt:
                                         processed.append(item)
 
                     else:
-                        log.warning("Receiving malformed JSON response for page: %d of %d", current_page, total_pages)
+                        log.warning("Received malformed JSON response for page: %d of %d", current_page, total_pages)
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
