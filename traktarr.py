@@ -529,7 +529,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                         log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
                                   movie['movie']['title'])
                         continue
-                if rating is None or movieRating >= rating:
+                if (rating is None or movieRating is None) or movieRating >= rating:
                     log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
                              movie['movie']['year'],
                              ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
