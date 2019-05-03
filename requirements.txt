@@ -4,3 +4,4 @@ attrdict==2.0.0
 click==6.7
 requests~=2.20.0
 pyfiglet
+cashier~=1.3
