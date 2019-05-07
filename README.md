@@ -514,13 +514,13 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Example:
 
-   ```
-       "disabled_for": [
-           "anticipated",
-           "watchlist:user1",
-           "list:http://url-to-list"
-       ],
-   ```
+  ```json
+  "disabled_for": [
+      "anticipated",
+      "watchlist:user1",
+      "list:http://url-to-list"
+  ],
+  ```
 
 `allowed_countries` - Only add movies from these countries. Listed as two-letter country codes.
 
@@ -549,6 +549,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
 `blacklisted_tmdb_ids` - Blacklist certain movies with their TMDB IDs.
+
+  - Example:
+
+    ```json
+    "blacklisted_tmdb_ids": [
+      140607,
+      181808
+    ],
+    ```
 
 `rating_limit` - Only add movies above this Rotten Tomatoes score.
 
@@ -603,7 +612,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Example:
 
-  ```
+  ```json
   "disabled_for": [
       "anticipated",
       "watchlist:user1",
@@ -641,7 +650,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Example:
 
-    ```
+    ```json
     "blacklisted_tvdb_ids": [
       79274,
       85287,
