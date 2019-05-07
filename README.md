@@ -38,6 +38,8 @@ Types of Trakt lists supported:
 
 ---
 
+## TOC
+
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Demo](#demo)
@@ -84,14 +86,14 @@ Types of Trakt lists supported:
 
 
 
-# Demo
+## Demo
 
 Click to enlarge.
 
 [![asciicast](assets/demo.gif)](https://asciinema.org/a/180044)
 
 
-# Requirements
+### Requirements
 
 1. Ubuntu/Debian
 
@@ -99,9 +101,9 @@ Click to enlarge.
 
 3. requirements.txt modules (see below).
 
-# Installation
+## Installation
 
-## 1. Base Install
+### 1. Base Install
 
 Install traktarr to be run with `traktarr` command.
 
@@ -121,7 +123,7 @@ Install traktarr to be run with `traktarr` command.
 
 8. `nano config.json` - edit preferences.
 
-## 2. Create a Trakt Application
+### 2. Create a Trakt Application
 
 1. Create a Trakt application by going [here](https://trakt.tv/oauth/applications/new)
 
@@ -142,7 +144,7 @@ Install traktarr to be run with `traktarr` command.
        }
    ```
 
-## 3. Authenticate User(s) (optional)
+### 3. Authenticate User(s) (optional)
 
 For each user you want to access the private lists for (i.e. watchlist and/or custom lists), you will need to to authenticate that user.
 
@@ -173,9 +175,9 @@ You've now authenticated the user.
 You can repeat this process for as many users as you like.
 
 
-# Configuration
+## Configuration
 
-## Sample Configuration
+### Sample Configuration
 
 ```json
 {
@@ -301,7 +303,7 @@ You can repeat this process for as many users as you like.
 ```
 
 
-## Core
+### Core
 
 ```json
 "core": {
@@ -314,7 +316,7 @@ You can repeat this process for as many users as you like.
   - Set to `true`, if you are having issues and want to diagnose why.
 
 
-## Automatic
+### Automatic
 Used for automatic / scheduled traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
@@ -375,7 +377,7 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
 
 `lists` - Specify which custom lists to fetch (see explanation below).
 
-### Personal Watchlists
+#### Personal Watchlists
 
 The watchlist task can be scheduled with a differtent item limit for every (authenticated) user.
 
@@ -401,13 +403,13 @@ So for every user, you will add: `"username": limit` to the watchlist key. For e
 
 Of course you can combine this with running the other list types as well.
 
-### Custom Lists
+#### Custom Lists
 
 You can also schedule any number of public or private custom lists.
 
 For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser.
 
-#### Public Lists
+##### Public Lists
 
 Public lists can be added by specifying the url and the item limit like this:
 
@@ -427,7 +429,7 @@ Public lists can be added by specifying the url and the item limit like this:
 ```
 
 
-#### Private Lists
+##### Private Lists
 
 Private lists can be added in two ways:
 
@@ -474,11 +476,11 @@ Private lists can be added in two ways:
    ```
 
 
-## Filters
+### Filters
 
 Use filters to specify the movie/shows's country of origin or blacklist (i.e. filter-out) certain keywords, genres, years, runtime, or specific movies/shows.
 
-### Movies
+#### Movies
 
 ```json
   "movies": {
@@ -550,7 +552,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `rating_limit` - Only add movies above this Rotten Tomatoes score.
 
-### Shows
+#### Shows
 
 ```json
 "shows": {
@@ -651,7 +653,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     ```
 
 
-## Notifications
+### Notifications
 
 Notification alerts for traktarr tasks.
 
@@ -681,7 +683,7 @@ Currently, only Pushover and Slack are supported. More will be added later.
   - Set to `false`, if you want to reduce the amount of detailed notifications (e.g. the names of the movies/shows added vs just the total).
 
 
-### Pushover
+#### Pushover
 
 `app_token` and `user_token` - Retrieve from Pushover.net.
 
@@ -690,14 +692,14 @@ You can specify a priority for the messages send via Pushover using the `priorit
 _Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"pushover"`._
 
 
-### Slack
+#### Slack
 
 `webhook_url` - Webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations".
 
 _Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"slack"`._
 
 
-## Radarr
+### Radarr
 
 Radarr configuration.
 
@@ -718,7 +720,7 @@ Radarr configuration.
 `url` - Radarr's URL.
 
 
-## Sonarr
+### Sonarr
 
 Sonarr configuration.
 
@@ -744,7 +746,7 @@ Sonarr configuration.
 `url` - Sonarr's URL.
 
 
-### Tags
+#### Tags
 
 The `tags` option allows Sonarr to assign tags to shows from specific television networks, so that Sonarr can filter in/out certain keywords from releases.
 
@@ -787,7 +789,7 @@ To show how tags work, we will create a tag `AMZN` and assign it to certain tele
    }
    ```
 
-## Trakt
+### Trakt
 
 Trakt Authentication info:
 
@@ -802,7 +804,7 @@ Trakt Authentication info:
 
 `client_secret` - Fill in your Trakt Secret key (_Client Secret_)
 
-## OMDB
+### OMDB
 
 OMDB Authentication info:
 
@@ -812,11 +814,11 @@ OMDB Authentication info:
 }
 ```
 `api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
-# Usage
+## Usage
 
-## Automatic (Scheduled)
+### Automatic (Scheduled)
 
-### Setup
+#### Setup
 
 To have traktarr get Movies and Shows for you automatically, on set interval, do the following:
 
@@ -830,7 +832,7 @@ To have traktarr get Movies and Shows for you automatically, on set interval, do
 
 5. `sudo systemctl start traktarr.service`
 
-### Customize
+#### Customize
 
 You can customize how the scheduled traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
 
@@ -885,9 +887,9 @@ ExecStart=/usr/bin/python3 /opt/traktarr/traktarr.py run -s release
 
 
 
-## Manual (CLI)
+### Manual (CLI)
 
-### General
+#### General
 
 ```
 traktarr
@@ -913,7 +915,7 @@ Commands:
   trakt_authentication  Authenticate traktarr.
   ```
 
-### Movie (Single Movie)
+#### Movie (Single Movie)
 
 ```
 traktarr movie --help
@@ -933,7 +935,7 @@ Options:
 
 _Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
 
-### Movies (Multiple Movies)
+#### Movies (Multiple Movies)
 
 ```
 traktarr movies --help
@@ -1021,7 +1023,7 @@ Options:
 `--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
 
 
-### Show (Single Show)
+#### Show (Single Show)
 
 ```
 traktarr show --help
@@ -1043,7 +1045,7 @@ Options:
 _Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
 
 
-### Shows (Multiple Shows)
+#### Shows (Multiple Shows)
 
 ```
 traktarr shows --help
@@ -1126,9 +1128,9 @@ Options:
 `--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
 
 
-## Examples (CLI)
+### Examples (CLI)
 
-### Movies
+#### Movies
 
 - Add the movie "Black Panther (2018)":
 
@@ -1178,7 +1180,7 @@ Options:
   traktarr movies -t trending -r 80
   ```
 
-### Shows
+#### Shows
 
 - Add the show "The 100":
 
