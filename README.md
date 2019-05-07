@@ -599,16 +599,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - This is similar to running `--ignore-blacklist` via the CLI command.
 
+- Example:
 
-Example:
-
-```
-    "disabled_for": [
-        "anticipated",
-        "watchlist:user1",
-        "list:http://url-to-list"
-    ],
-```
+  ```
+  "disabled_for": [
+      "anticipated",
+      "watchlist:user1",
+      "list:http://url-to-list"
+  ],
+  ```
 
 `allowed_countries` - Only add shows from these countries. Listed as two-letter country codes.
 
@@ -637,6 +636,19 @@ Example:
 `blacklisted_networks` - Blacklist certain network.
 
 `blacklisted_tvdb_ids` - Blacklist certain shows with their TVDB IDs.
+
+  - Example:
+
+    ```
+    "blacklisted_tvdb_ids": [
+      79274,
+      85287,
+      71256,
+      194751,
+      76733,
+      336238
+    ],
+    ```
 
 
 ## Notifications
