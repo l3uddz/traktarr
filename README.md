@@ -9,7 +9,7 @@
 
 
 
-**Traktarr** uses Trakt to add new shows into Sonarr and new movies into Radarr.
+Traktarr uses Trakt to find shows and movies to add in to Sonarr and Radarr, respectively.
 
 Types of Trakt lists supported:
 
@@ -106,7 +106,7 @@ Click to enlarge.
 
 ## 1. Base Install
 
-Install traktarr to be run with `traktarr` command.
+Install Traktarr to be run with `traktarr` command:
 
 1. `cd /opt`
 
@@ -134,7 +134,7 @@ Install traktarr to be run with `traktarr` command.
 
 4. Click "SAVE APP".
 
-5. Open the traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
+5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
 
    ```
        {
@@ -318,11 +318,11 @@ You can repeat this process for as many users as you like.
 
 
 ## Automatic
-Used for automatic / scheduled traktarr tasks.
+Used for automatic / scheduled Traktarr tasks.
 
 Movies can be run on a separate schedule then from Shows.
 
-_Note: These settings are only needed if you plan to use traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
+_Note: These settings are only needed if you plan to use Traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
 
 ```json
 "automatic": {
@@ -350,7 +350,7 @@ _Note: These settings are only needed if you plan to use traktarr on a schedule 
 },
 ```
 
-`interval` - Specify how often (in hours) to run traktarr task.
+`interval` - Specify how often (in hours) to run Traktarr task.
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - Specify how many items from each Trakt list to find.
 
@@ -529,7 +529,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
-- By default, traktarr will only query movies in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- By default, Traktarr will only query movies in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
@@ -627,7 +627,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_languages` - Only add shows with these languages.
 
-- By default, traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
+- By default, Traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
@@ -665,7 +665,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ## Notifications
 
-Notification alerts for traktarr tasks.
+Notification alerts for Traktarr tasks.
 
 _Note: Manual commands need the `--notifications` flag._
 
@@ -772,7 +772,7 @@ To show how tags work, we will create a tag `AMZN` and assign it to certain tele
    Tags: AMZN
    ```
 
-2. And, finally, we will edit the traktarr config and assign the `AMZN` tag to some networks.
+2. And, finally, we will edit the Traktarr config and assign the `AMZN` tag to some networks.
 
    ```json
    "tags": {
@@ -831,7 +831,7 @@ OMDB Authentication info:
 
 ### Setup
 
-To have traktarr get Movies and Shows for you automatically, on set interval, do the following:
+To have Traktarr get Movies and Shows for you automatically, on set interval, do the following:
 
 1. `sudo cp /opt/traktarr/systemd/traktarr.service /etc/systemd/system/`
 
@@ -845,7 +845,7 @@ To have traktarr get Movies and Shows for you automatically, on set interval, do
 
 ### Customize
 
-You can customize how the scheduled traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
+You can customize how the scheduled Traktarr is ran by editing the `traktarr.service` file and adding any of the following options:
 
 \* Remember, other configuration options need to go into the `config.json` file under the `Automatic` section.
 
@@ -890,7 +890,7 @@ Options:
 `--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
 
 
-Example of a modified line from the traktarr.service file that will always add from the most recent releases matched:
+Example of a modified line from the `traktarr.service` file that will always add from the most recent releases matched:
 
 ```
 ExecStart=/usr/bin/python3 /opt/traktarr/traktarr.py run -s release
