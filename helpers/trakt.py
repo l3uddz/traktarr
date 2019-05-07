@@ -92,6 +92,7 @@ def blacklisted_show_runtime(show, lowest_runtime):
 
 def blacklisted_show_id(show, blacklisted_ids):
     blacklisted = False
+    blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
         if not show['show']['ids']['tvdb'] or not isinstance(show['show']['ids']['tvdb'], int):
             log.debug("%s was blacklisted because it had an invalid tvdb id", show['show']['title'])
@@ -221,6 +222,7 @@ def blacklisted_movie_runtime(movie, lowest_runtime):
 
 def blacklisted_movie_id(movie, blacklisted_ids):
     blacklisted = False
+    blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
         if not movie['movie']['ids']['tmdb'] or not isinstance(movie['movie']['ids']['tmdb'], int):
             log.debug("%s was blacklisted because it had an invalid tmdb id", movie['movie']['title'])
