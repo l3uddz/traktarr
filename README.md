@@ -1,15 +1,14 @@
 <img src="assets/logo.svg" width="600">
 
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
-[![License: GPL 3](https://img.shields.io/badge/License-GPL%203-blue.svg)](https://github.com/l3uddz/traktarr/blob/master/LICENSE.md)
-[![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord)](https://discord.io/cloudbox)
-[![Feature Requests](https://img.shields.io/badge/Requests-Feathub-blue.svg)](http://feathub.com/l3uddz/traktarr)
-[![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=flat)](https://beerpay.io/l3uddz/traktarr)
-[![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat)](https://beerpay.io/l3uddz/traktarr)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-blue.svg?style=flat-square)](https://www.python.org/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%203-blue.svg?style=flat-square)](https://github.com/l3uddz/traktarr/blob/master/LICENSE.md)
+[![last commit (develop)](https://img.shields.io/github/last-commit/l3uddz/traktarr/develop.svg?colorB=177DC1&label=Last%20Commit&style=flat-square)](https://github.com/l3uddz/traktarr/commits/develop)
+[![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord&style=flat-square)](https://discord.io/cloudbox)
+[![Contributing](https://img.shields.io/badge/Contributing-gray.svg?style=flat-square)](CONTRIBUTING.md)
+[![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](#donate)
 
 
-
-Traktarr uses Trakt to find shows and movies to add in to Sonarr and Radarr, respectively.
+Traktarr uses Trakt.tv to find shows and movies to add in to Sonarr and Radarr, respectively.
 
 Types of Trakt lists supported:
 
@@ -21,7 +20,7 @@ Types of Trakt lists supported:
 
   - Anticipated
 
-  - Boxoffice
+  - Box Office
 
   - Most Watched
 
@@ -80,6 +79,8 @@ Types of Trakt lists supported:
 	- [Examples (CLI)](#examples-cli)
 		- [Movies](#movies)
 		- [Shows](#shows)
+- [Donate](#donate)
+
 <!-- /TOC -->
 
 ---
@@ -354,7 +355,7 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - Specify how many items from each Trakt list to find.
 
-`watched` - Adds items that are the most watched by unique Trakt users (mutliple viewings excluded).
+`watched` - Adds items that are the most watched by unique Trakt users (multiple viewings excluded).
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -364,7 +365,7 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 
   - `watched_all` - Most watched of all time.
 
-`played` - Adds items that are most the played items by Trakt users (mutliple viewings included).
+`played` - Adds items that are most the played items by Trakt users (multiple viewings included).
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -380,8 +381,7 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 
 ### Personal Watchlists
 
-The watchlist task can be scheduled with a differtent item limit for every (authenticated) user.
-
+The watchlist task can be scheduled with a different item limit for every (authenticated) user.
 
 So for every user, you will add: `"username": limit` to the watchlist key. For example:
 
@@ -967,7 +967,7 @@ Options:
                                   [default: 2.5]
   -s, --sort [votes|rating|release]
                                   Sort list to process.
-  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoese Score
+  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoes Score
                                   [default: 0]
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
@@ -981,9 +981,9 @@ Options:
   --help                          Show this message and exit.
 ```
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (trakt list).
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list).
 
-- Watched Lists: Movies that are the most watched by unique Trakt users (mutliple viewings excluded).
+- Watched Lists: Movies that are the most watched by unique Trakt users (multiple viewings excluded).
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -993,7 +993,7 @@ Options:
 
   - `watched_all` - Most watched of all time.
 
-- Played Lists: Movies that are the most played by Trakt users (mutliple viewings included).
+- Played Lists: Movies that are the most played by Trakt users (multiple viewings included).
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -1029,7 +1029,7 @@ Options:
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
-`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
+`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in `config.json`.
 
 
 ### Show (Single Show)
@@ -1090,9 +1090,9 @@ Options:
 ```
 
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (trakt list).
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list).
 
-- Watched Lists: Shows that are the most watched by unique Trakt users (mutliple viewings excluded).
+- Watched Lists: Shows that are the most watched by unique Trakt users (multiple viewings excluded).
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -1102,7 +1102,7 @@ Options:
 
   - `watched_all` - Most watched of all time.
 
-- Played Lists: Shows that are the most played by Trakt users (mutliple viewings included).
+- Played Lists: Shows that are the most played by Trakt users (multiple viewings included).
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -1134,7 +1134,7 @@ Options:
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
-`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in config.json.
+`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in `config.json`.
 
 
 ## Examples (CLI)
@@ -1153,7 +1153,7 @@ Options:
   traktarr movies -t popular -g thriller -l 5 -s release
   ```
 
-- Add movies, from the boxoffice list, labeled with the comedy genre, limited to 10 items, and send notifications:
+- Add movies, from the Box Office list, labeled with the comedy genre, limited to 10 items, and send notifications:
 
   ```
   traktarr movies -t boxoffice -g comedy -l 10 --notifications
@@ -1197,7 +1197,7 @@ Options:
   traktarr show -id the-100
   ```
 
-- Add shows, from the popular list, limited to 5 items, and sorted by higest ratings.
+- Add shows, from the popular list, limited to 5 items, and sorted by highest ratings.
 
   ```
   traktarr shows -t popular -l 5 -s rating
@@ -1235,13 +1235,13 @@ Options:
 
 ***
 
+# Donate
+
 If you find this project helpful, feel free to make a small donation to the developer:
 
   - [Monzo](https://monzo.me/jamesbayliss9): Credit Cards, Apple Pay, Google Pay
 
   - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
-
-    [![Beerpay](https://beerpay.io/l3uddz/traktarr/badge.svg?style=beer-square)](https://beerpay.io/l3uddz/traktarr) [![Beerpay](https://beerpay.io/l3uddz/traktarr/make-wish.svg?style=flat-square)](https://beerpay.io/l3uddz/traktarr?focus=wish)
 
   - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
 
