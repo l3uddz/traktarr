@@ -8,40 +8,11 @@
 [![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](#donate)
 
 
-Traktarr uses Trakt.tv to find shows and movies to add in to Sonarr and Radarr, respectively.
-
-Types of Trakt lists supported:
-
-- Official Trakt Lists
-
-  - Trending
-
-  - Popular
-
-  - Anticipated
-
-  - Box Office
-
-  - Most Watched
-
-  - Most Played
-
-- Public Lists
-
-- Private Lists*
-
-  - Watchlist
-
-  - Custom List(s)
-
-\* Support for multiple (authenticated) users.
-
 ---
-
-# TOC
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [Introduction](#introduction)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -85,8 +56,35 @@ Types of Trakt lists supported:
 
 ---
 
+# Introduction
 
+Traktarr uses Trakt.tv to find shows and movies to add in to Sonarr and Radarr, respectively.
 
+Types of Trakt lists supported:
+
+- Official Trakt Lists
+
+  - Trending
+
+  - Popular
+
+  - Anticipated
+
+  - Box Office
+
+  - Most Watched
+
+  - Most Played
+
+- Public Lists
+
+- Private Lists*
+
+  - Watchlist
+
+  - Custom List(s)
+
+\* Support for multiple (authenticated) users.
 
 # Demo
 
