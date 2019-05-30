@@ -124,7 +124,7 @@ def get_objects(pvr, type, notifications):
 # SHOWS
 ############################################################
 
-@app.command(help='Add a single show to Sonarr.')
+@app.command(help='Add a single show to Sonarr.', context_settings=dict(max_content_width=100))
 @click.option('--show_id', '-id', help='Trakt show_id.', required=True)
 @click.option('--folder', '-f', default=None, help='Add show with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding show to Sonarr.')
@@ -171,14 +171,14 @@ def show(show_id, folder=None, no_search=False):
     return
 
 
-@app.command(help='Add multiple shows to Sonarr.')
+@app.command(help='Add multiple shows to Sonarr.', context_settings=dict(max_content_width=100))
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, person, watched, played, '
                    'recommended, watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
-@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
-              help='Sort list to process.')
+@click.option('--sort', '-s', default='votes', type=click.Choice(['rating', 'release', 'votes']),
+              help='Sort list to process.', show_default=True)
 @click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
@@ -344,7 +344,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 # MOVIES
 ############################################################
 
-@app.command(help='Add a single movie to Radarr.')
+@app.command(help='Add a single movie to Radarr.', context_settings=dict(max_content_width=100))
 @click.option('--movie_id', '-id', help='Trakt movie_id.', required=True)
 @click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
@@ -385,14 +385,14 @@ def movie(movie_id, folder=None, no_search=False):
     return
 
 
-@app.command(help='Add multiple movies to Radarr.')
+@app.command(help='Add multiple movies to Radarr.', context_settings=dict(max_content_width=100))
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, person, watched, '
                    'recommended, played, watchlist or any URL to a list', required=True)
 @click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
-@click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
-              help='Sort list to process.')
+@click.option('--sort', '-s', default='votes', type=click.Choice(['rating', 'release', 'votes']),
+              help='Sort list to process.', show_default=True)
 @click.option('--rating', '-r', default=None, type=(int),
               help='Set a minimum rating threshold (according to Rotten Tomatoes)')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
