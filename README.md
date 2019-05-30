@@ -934,13 +934,13 @@ Usage: traktarr movie [OPTIONS]
   Add a single movie to Radarr.
 
 Options:
-  -id, --movie_id TEXT  Trakt movie_id.  [required]
+  -id, --movie-id TEXT  Trakt Movie ID.  [required]
   -f, --folder TEXT     Add movie with this root folder to Radarr.
   --no-search           Disable search when adding movie to Radarr.
   --help                Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show-id` specified (i.e. not with lists), and supports both Trakt and IMDB IDs._
 
 ### Movies (Multiple Movies)
 
@@ -955,27 +955,24 @@ Usage: traktarr movies [OPTIONS]
   Add multiple movies to Radarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example,
-                                  anticipated, trending, popular, boxoffice,
-                                  watched, played, watchlist or any URL to a
-                                  list  [required]
-  -l, --add-limit INTEGER         Limit number of movies added to Radarr.
-                                  [default: 0]
-  -d, --add-delay FLOAT           Seconds between each add request to Radarr.
-                                  [default: 2.5]
-  -s, --sort [votes|rating|release]
-                                  Sort list to process.
-  -r, --rating INTEGER            Only add movies above this rating according to Rotten Tomatoes Score
-                                  [default: 0]
+  -t, --list-type TEXT            Trakt list to process. For example, anticipated, trending,
+                                  popular, boxoffice, person, watched, recommended, played,
+                                  watchlist or any URL to a list  [required]
+  -l, --add-limit INTEGER         Limit number of movies added to Radarr.  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Radarr.  [default: 2.5]
+  -s, --sort [rating|release|votes]
+                                  Sort list to process.  [default: votes]
+  -r, --rating INTEGER            Set a minimum rating threshold (according to Rotten Tomatoes)
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
+  -a, --actor TEXT                Only add movies from this actor to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
-  --authenticate-user TEXT        Specify which user to authenticate with to
-                                  retrieve Trakt lists. Default: first user in
-                                  the config.
-  --ignore-blacklist              Ignores the blacklist when running the
-                                  command.
+  --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
+                                  Default: first user in the config.
+  --ignore-blacklist              Ignores the blacklist when running the command.
+  --remove-rejected-from-recommended
+                                  Removes rejected/existing movies from recommended.
   --help                          Show this message and exit.
 ```
 
@@ -1023,11 +1020,17 @@ Options:
 
  - Example: `-f /mnt/unionfs/Media/Movies/Movies-Kids/`
 
+`-a`, `--actor` - Only add movies with a specific actor to Radarr.
+
 `--no-search` - Tells Radarr to not automatically search for added movies.
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
+`--authenticate-user` - Specify which authenticated user to retrieve Trakt lists as. Default is the first user in the config.
+
 `--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in `config.json`.
+
+`--remove-rejected-from-recommended` - Removes rejected/existing shows from the recommended list, so that it will be removed from further recommendations.
 
 
 ### Show (Single Show)
@@ -1043,13 +1046,13 @@ Usage: traktarr show [OPTIONS]
   Add a single show to Sonarr.
 
 Options:
-  -id, --show_id TEXT  Trakt show_id.  [required]
+  -id, --show-id TEXT  Trakt Show ID.  [required]
   -f, --folder TEXT    Add show with this root folder to Sonarr.
   --no-search          Disable search when adding show to Sonarr.
   --help               Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show_id` specified (i.e. not with lists), and supports both Trakt IDs and IMDB IDs._
+_Note: This command only works with `-id` or `--show-id` specified (i.e. not with lists), and supports both Trakt and IMDB IDs._
 
 
 ### Shows (Multiple Shows)
@@ -1065,25 +1068,23 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example,
-                                  anticipated, trending, popular, watched,
-                                  played, watchlist or any URL to a list
-                                  [required]
-  -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
-                                  [default: 0]
-  -d, --add-delay FLOAT           Seconds between each add request to Sonarr.
-                                  [default: 2.5]
-  -s, --sort [votes|rating|release]
-                                  Sort list to process.
+  -t, --list-type TEXT            Trakt list to process. For example, anticipated, trending,
+                                  popular, person, watched, played, recommended, watchlist or any
+                                  URL to a list  [required]
+  -l, --add-limit INTEGER         Limit number of shows added to Sonarr.  [default: 0]
+  -d, --add-delay FLOAT           Seconds between each add request to Sonarr.  [default: 2.5]
+  -s, --sort [rating|release|votes]
+                                  Sort list to process.  [default: votes]
   -g, --genre TEXT                Only add shows from this genre to Sonarr.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
+  -a, --actor TEXT                Only add movies from this actor to Radarr.
   --no-search                     Disable search when adding shows to Sonarr.
   --notifications                 Send notifications.
-  --authenticate-user TEXT        Specify which user to authenticate with to
-                                  retrieve Trakt lists. Default: first user in
-                                  the config
-  --ignore-blacklist              Ignores the blacklist when running the
-                                  command.
+  --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
+                                  Default: first user in the config
+  --ignore-blacklist              Ignores the blacklist when running the command.
+  --remove-rejected-from-recommended
+                                  Removes rejected/existing shows from recommended.
   --help                          Show this message and exit.
 ```
 
@@ -1128,11 +1129,17 @@ Options:
 
  - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
 
+ `-a`, `--actor` - Only add shows with a specific actor to Sonarr.
+
 `--no-search` - Tells Sonarr to not automatically search for added shows.
 
 `--notifications` - To enable notifications. Default is `disabled`.
 
+`--authenticate-user` - Specify which authenticated user to retrieve Trakt lists as. Default is the first user in the config.
+
 `--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in `config.json`.
+
+`--remove-rejected-from-recommended` - Removes rejected/existing shows from the recommended list, so that it will be removed from further recommendations.
 
 
 ## Examples (CLI)
