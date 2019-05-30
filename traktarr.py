@@ -125,7 +125,7 @@ def get_objects(pvr, type, notifications):
 ############################################################
 
 @app.command(help='Add a single show to Sonarr.', context_settings=dict(max_content_width=100))
-@click.option('--show_id', '-id', help='Trakt show_id.', required=True)
+@click.option('--show-id', '-id', help='Trakt Show ID.', required=True)
 @click.option('--folder', '-f', default=None, help='Add show with this root folder to Sonarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding show to Sonarr.')
 def show(show_id, folder=None, no_search=False):
@@ -345,7 +345,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 ############################################################
 
 @app.command(help='Add a single movie to Radarr.', context_settings=dict(max_content_width=100))
-@click.option('--movie_id', '-id', help='Trakt movie_id.', required=True)
+@click.option('--movie-id', '-id', help='Trakt Movie ID.', required=True)
 @click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
 def movie(movie_id, folder=None, no_search=False):
