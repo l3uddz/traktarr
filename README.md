@@ -668,7 +668,10 @@ Notification alerts for Traktarr tasks.
 
 _Note: Manual commands need the `--notifications` flag._
 
-Currently, only Pushover and Slack are supported. More will be added later.
+Currently, only Pushover and Slack are supported; others can be added in the future.
+
+_Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be the exact service name (e.g. `"pushover"`)._
+
 
 
 ```json
@@ -694,18 +697,41 @@ Currently, only Pushover and Slack are supported. More will be added later.
 
 ### Pushover
 
-`app_token` and `user_token` - Retrieve from Pushover.net.
+`app_token`  - Retrieve from Pushover.net. Required.
 
-You can specify a priority for the messages send via Pushover using the `priority` key. It can be any Pushover priority value (https://pushover.net/api#priority).
+`user_token` - Retrieve from Pushover.net. Required.
 
-_Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"pushover"`._
+`priority` - Priority for the messages (see https://pushover.net/api#priority). Optional.
+
+ - Choices are: `-2`, `-1`, `0`, `1`, `2`.
+
+ - Values are not quoted. 
+ 
+ - Default is `0`.
 
 
 ### Slack
 
-`webhook_url` - Webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations".
+```json
+  "slack": {
+    "service": "slack",
+    "webhook_url": "",
+    "channel": "",
+    "sender_name": "Traktarr",
+    "sender_icon": ":movie_camera:"
+  },
+  "verbose": true
+},
+```
 
-_Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be exactly `"slack"`._
+`webhook_url` - Webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations" on Slack's Website. Required.
+
+`channel` - Slack channel. Optional. Default is none.
+
+`sender_name` - Name the sender of the message. Optional. Default is `Traktarr`.
+
+`sender_icon` - Icon to use for the message. Optional. Default is `:movie_camera:`
+
 
 
 ## Radarr
