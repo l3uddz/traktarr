@@ -303,7 +303,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                                     if remove_rejected_from_recommended else None):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
                          ', '.join(series['show']['genres']), series['show']['network'],
-                         series['show']['country'].upper())
+                         (series['show']['country'] or 'N/A').upper())
 
                 # determine which tags to use when adding this series
                 use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
@@ -532,7 +532,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                 if (rating is None or movieRating is None) or movieRating >= rating:
                     log.info("Adding: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
                              movie['movie']['year'],
-                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
+                             ', '.join(movie['movie']['genres']), (movie['movie']['country'] or 'N/A').upper())
                     # add movie to radarr
                     if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
                                         movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder,
@@ -546,7 +546,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                 else:
                     log.info("SKIPPING: %s (%d) | Genres: %s | Country: %s", movie['movie']['title'],
                              movie['movie']['year'],
-                             ', '.join(movie['movie']['genres']), movie['movie']['country'].upper())
+                             ', '.join(movie['movie']['genres']), (movie['movie']['country'] or 'N/A').upper())
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
                     break
