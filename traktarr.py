@@ -185,7 +185,8 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
-              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config')
+              help='Specify which user to authenticate with to retrieve Trakt lists. ' 
+                   'Default: first user in the config')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing shows from recommended.')
@@ -347,8 +348,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 @app.command(help='Add a single movie to Radarr.', context_settings=dict(max_content_width=100))
 @click.option('--movie-id', '-id', help='Trakt Movie ID.', required=True)
 @click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
+@click.option('--minimum-availability', '-ma', default='released',
+              type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
+              help='Add movies with this minimum availability to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
-def movie(movie_id, folder=None, no_search=False):
+def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
 
@@ -377,7 +381,8 @@ def movie(movie_id, folder=None, no_search=False):
 
     # add movie to radarr
     if radarr.add_movie(trakt_movie['ids']['tmdb'], trakt_movie['title'], trakt_movie['year'],
-                        trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder, not no_search):
+                        trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder,
+                        cfg.radarr.minimum_availability, not no_search):
         log.info("ADDED %s (%d)", trakt_movie['title'], trakt_movie['year'])
     else:
         log.error("FAILED adding %s (%d)", trakt_movie['title'], trakt_movie['year'])
@@ -397,17 +402,21 @@ def movie(movie_id, folder=None, no_search=False):
               help='Set a minimum rating threshold (according to Rotten Tomatoes)')
 @click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
+@click.option('--minimum-availability', '-ma', default='released',
+              type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
+              help='Add movies with this minimum availability to Radarr.')
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
-              help='Specify which user to authenticate with to retrieve Trakt lists. Default: first user in the config.')
+              help='Specify which user to authenticate with to retrieve Trakt lists. '
+              'Default: first user in the config.')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
 def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None, actor=None,
-           no_search=False,
-           notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
+           minimum_availability=None, no_search=False, notifications=False, authenticate_user=None,
+           ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -536,7 +545,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                     # add movie to radarr
                     if radarr.add_movie(movie['movie']['ids']['tmdb'], movie['movie']['title'], movie['movie']['year'],
                                         movie['movie']['ids']['slug'], profile_id, cfg.radarr.root_folder,
-                                        not no_search):
+                                        cfg.radarr.minimum_availability, not no_search):
                         log.info("ADDED %s (%d)", movie['movie']['title'], movie['movie']['year'])
                         if notifications:
                             callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': movie['movie']})

@@ -95,6 +95,7 @@
   "radarr": {
     "api_key": "",
     "profile": "HD-1080p",
+    "minimum_availability": "released",
     "url": "http://localhost:7878/",
     "root_folder": "/movies/"
   },

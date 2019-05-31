@@ -42,18 +42,19 @@ class Config(object, metaclass=Singleton):
             'client_secret': ''
         },
         'sonarr': {
-            'url': 'http://localhost:8989/',
             'api_key': '',
             'profile': 'HD-1080p',
             'root_folder': '/tv/',
             'tags': {
-            }
+            },
+            'url': 'http://localhost:8989/'
         },
         'radarr': {
-            'url': 'http://localhost:7878/',
             'api_key': '',
+            'minimum_availability': 'released',
             'profile': 'HD-1080p',
-            'root_folder': '/movies/'
+            'root_folder': '/movies/',
+            'url': 'http://localhost:7878/'
         },
         'omdb': {
             'api_key': ''

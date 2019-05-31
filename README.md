@@ -16,40 +16,40 @@
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Installation](#installation)
-	- [1. Base Install](#1-base-install)
-	- [2. Create a Trakt Application](#2-create-a-trakt-application)
-	- [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
+  - [1. Base Install](#1-base-install)
+  - [2. Create a Trakt Application](#2-create-a-trakt-application)
+  - [3. Authenticate User(s) (optional)](#3-authenticate-users-optional)
 - [Configuration](#configuration)
-	- [Sample Configuration](#sample-configuration)
-	- [Core](#core)
-	- [Automatic](#automatic)
-		- [Personal Watchlists](#personal-watchlists)
-		- [Custom Lists](#custom-lists)
-			- [Public Lists](#public-lists)
-			- [Private Lists](#private-lists)
-	- [Filters](#filters)
-		- [Movies](#movies)
-		- [Shows](#shows)
-	- [Notifications](#notifications)
-		- [Pushover](#pushover)
-		- [Slack](#slack)
-	- [Radarr](#radarr)
-	- [Sonarr](#sonarr)
-		- [Tags](#tags)
-	- [Trakt](#trakt)
+  - [Sample Configuration](#sample-configuration)
+  - [Core](#core)
+  - [Automatic](#automatic)
+    - [Personal Watchlists](#personal-watchlists)
+    - [Custom Lists](#custom-lists)
+      - [Public Lists](#public-lists)
+      - [Private Lists](#private-lists)
+  - [Filters](#filters)
+    - [Movies](#movies)
+    - [Shows](#shows)
+  - [Notifications](#notifications)
+    - [Pushover](#pushover)
+    - [Slack](#slack)
+  - [Radarr](#radarr)
+  - [Sonarr](#sonarr)
+    - [Tags](#tags)
+  - [Trakt](#trakt)
 - [Usage](#usage)
-	- [Automatic (Scheduled)](#automatic-scheduled)
-		- [Setup](#setup)
-		- [Customize](#customize)
-	- [Manual (CLI)](#manual-cli)
-		- [General](#general)
-		- [Movie (Single Movie)](#movie-single-movie)
-		- [Movies (Multiple Movies)](#movies-multiple-movies)
-		- [Show (Single Show)](#show-single-show)
-		- [Shows (Multiple Shows)](#shows-multiple-shows)
-	- [Examples (CLI)](#examples-cli)
-		- [Movies](#movies)
-		- [Shows](#shows)
+  - [Automatic (Scheduled)](#automatic-scheduled)
+    - [Setup](#setup)
+    - [Customize](#customize)
+  - [Manual (CLI)](#manual-cli)
+    - [General](#general)
+    - [Movie (Single Movie)](#movie-single-movie)
+    - [Movies (Multiple Movies)](#movies-multiple-movies)
+    - [Show (Single Show)](#show-single-show)
+    - [Shows (Multiple Shows)](#shows-multiple-shows)
+  - [Examples (CLI)](#examples-cli)
+    - [Movies](#movies)
+    - [Shows](#shows)
 - [Donate](#donate)
 
 <!-- /TOC -->
@@ -281,6 +281,7 @@ You can repeat this process for as many users as you like.
   },
   "radarr": {
     "api_key": "",
+    "minimum_availability": "released",
     "profile": "HD-1080p",
     "root_folder": "/movies/",
     "url": "http://localhost:7878/"
@@ -714,6 +715,7 @@ Radarr configuration.
 ```json
 "radarr": {
   "api_key": "",
+  "minimum_availability": "released",
   "profile": "HD-1080p",
   "root_folder": "/movies/",
   "url": "http://localhost:7878"
@@ -722,6 +724,12 @@ Radarr configuration.
 `api_key` - Radarr's API Key.
 
 `profile` - Profile that movies are assigned to.
+
+`minimum_availability` - The minimum availability the movies are set to.
+
+  - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+
+  - Default is `released` (Physical/Web).
 
 `root_folder` - Root folder for movies.
 
@@ -936,11 +944,26 @@ Usage: traktarr movie [OPTIONS]
 Options:
   -id, --movie-id TEXT  Trakt Movie ID.  [required]
   -f, --folder TEXT     Add movie with this root folder to Radarr.
+  -ma, --minimum-availability [announced|in_cinemas|released|predb]
+                        Add movies with this minimum availability to Radarr.
   --no-search           Disable search when adding movie to Radarr.
   --help                Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show-id` specified (i.e. not with lists), and supports both Trakt and IMDB IDs._
+`-id`, `--movie-id` -  ID/slug of the movie to add to Radarr. Supports both Trakt and IMDB IDs. This arguent is required.
+
+`-f`, `--folder` -  Add movie to a specific root folder in Radarr.
+
+ - Example: `-f /mnt/unionfs/Media/Movies/Movies-Kids/`
+
+`minimum_availability` - The minimum availability the movies are set to.
+
+   - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+
+   - Default is `released` (Physical/Web).
+
+`--no-search` - Tells Radarr to not automatically search for added movies.
+
 
 ### Movies (Multiple Movies)
 
@@ -965,6 +988,8 @@ Options:
   -r, --rating INTEGER            Set a minimum rating threshold (according to Rotten Tomatoes)
   -g, --genre TEXT                Only add movies from this genre to Radarr.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
+  -ma, --minimum-availability [announced|in_cinemas|released|predb]
+                                  Add movies with this minimum availability to Radarr.
   -a, --actor TEXT                Only add movies from this actor to Radarr.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
@@ -1016,9 +1041,15 @@ Options:
 
 - Can find a list [here](assets/list_of_movie_genres.md).
 
-`-f`, `--folder` -  Add shows to a specific root folder in Radarr.
+`-f`, `--folder` -  Add movies to a specific root folder in Radarr.
 
  - Example: `-f /mnt/unionfs/Media/Movies/Movies-Kids/`
+
+`minimum_availability` - The minimum availability the movies are set to.
+
+  - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+
+  - Default is `released` (Physical/Web).
 
 `-a`, `--actor` - Only add movies with a specific actor to Radarr.
 
@@ -1028,7 +1059,9 @@ Options:
 
 `--authenticate-user` - Specify which authenticated user to retrieve Trakt lists as. Default is the first user in the config.
 
-`--ignore-blacklist` - Ignores blacklist filtering. Equivalent of `disabled_for` in `config.json`.
+`--ignore-blacklist` - Ignores blacklist filtering.
+
+ - Equivalent of `disabled_for` in `config.json`.
 
 `--remove-rejected-from-recommended` - Removes rejected/existing shows from the recommended list, so that it will be removed from further recommendations.
 
@@ -1052,7 +1085,7 @@ Options:
   --help               Show this message and exit.
 ```
 
-_Note: This command only works with `-id` or `--show-id` specified (i.e. not with lists), and supports both Trakt and IMDB IDs._
+`-id`, `--show-id` -  ID/slug of the show to add to Sonarr. Supports both Trakt and IMDB IDs. This argument is required.
 
 
 ### Shows (Multiple Shows)
