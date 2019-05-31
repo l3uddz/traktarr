@@ -950,10 +950,10 @@ Options:
 Commands:
   movie                 Add a single movie to Radarr.
   movies                Add multiple movies to Radarr.
-  run                   Run in automatic mode.
+  run                   Run Traktarr in automatic mode.
   show                  Add a single show to Sonarr.
   shows                 Add multiple shows to Sonarr.
-  trakt_authentication  Authenticate traktarr.
+  trakt_authentication  Authenticate Traktarr.
   ```
 
 ### Movie (Single Movie)

@@ -18,7 +18,7 @@ notify = None
 
 # Click
 @click.group(help='Add new shows & movies to Sonarr/Radarr from Trakt.')
-@click.version_option('1.2.3', prog_name='traktarr')
+@click.version_option('1.2.4', prog_name='Traktarr')
 @click.option(
     '--config',
     envvar='TRAKTARR_CONFIG',
@@ -45,7 +45,7 @@ def app(config, logfile):
 
     # Load logger
     from misc.log import logger
-    log = logger.get_logger('traktarr')
+    log = logger.get_logger('Traktarr')
 
     # Load notifications
     from notifications import Notifications
@@ -59,13 +59,13 @@ def app(config, logfile):
 # Trakt OAuth
 ############################################################
 
-@app.command(help='Authenticate traktarr.')
+@app.command(help='Authenticate Traktarr.')
 def trakt_authentication():
     from media.trakt import Trakt
     trakt = Trakt(cfg)
 
     if trakt.oauth_authentication():
-        log.info("Authentication information saved; please restart the application")
+        log.info("Authentication information saved. Please restart the application.")
         exit()
 
 
@@ -185,7 +185,7 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
 @click.option('--authenticate-user',
-              help='Specify which user to authenticate with to retrieve Trakt lists. ' 
+              help='Specify which user to authenticate with to retrieve Trakt lists. '
                    'Default: first user in the config')
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
@@ -807,7 +807,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
     return
 
 
-@app.command(help='Run in automatic mode.')
+@app.command(help='Run Traktarr in automatic mode.')
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
               show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
@@ -896,7 +896,7 @@ if __name__ == "__main__":
     print("")
 
     f = Figlet(font='graffiti')
-    print(f.renderText('traktarr'))
+    print(f.renderText('Traktarr'))
 
     print("""
 #########################################################################
