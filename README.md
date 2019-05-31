@@ -523,7 +523,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_countries` - Only add movies from these countries. Listed as two-letter country codes.
 
-- [List of available country codes](list_of_country_codes.md).
+- [List of available country codes](assets/list_of_country_codes.md).
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
@@ -531,13 +531,13 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
-- [List of available language codes](list_of_language_codes.md).
+- [List of available language codes](assets/list_of_language_codes.md).
 
 `blacklist_title_keywords` - blacklist certain words in titles.
 
 `blacklisted_genres` - Blacklist certain genres.
 
-  - [List of available genres](list_of_movie_genres.md).
+  - [List of available genres](assets/list_of_movie_genres.md).
 
   - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
@@ -621,7 +621,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_countries` - Only add shows from these countries. Listed as two-letter country codes.
 
-- [List of available country codes](list_of_country_codes.md).
+- [List of available country codes](assets/list_of_country_codes.md).
 
 `allowed_languages` - Only add shows with these languages.
 
@@ -629,11 +629,11 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
-- [List of available language codes](list_of_language_codes.md).
+- [List of available language codes](assets/list_of_language_codes.md).
 
 `blacklisted_genres` - Blacklist certain genres.
 
-- [List of available genres](list_of_show_genres.md).
+- [List of available genres](assets/list_of_show_genres.md).
 
 - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
@@ -1014,7 +1014,7 @@ Options:
 
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
-- Can find a list [here](list_of_movie_genres.md).
+- Can find a list [here](assets/list_of_movie_genres.md).
 
 `-f`, `--folder` -  Add shows to a specific root folder in Radarr.
 
@@ -1123,7 +1123,7 @@ Options:
 
 `-g`, `--genre` - Only add shows from this genre to Sonarr.
 
-- Can find a list [here](list_of_show_genres.md).
+- Can find a list [here](assets/list_of_tv_show_genres.md).
 
 `-f`, `--folder` -  Add shows to a specific root folder in Sonarr.
 
