@@ -1,5 +1,5 @@
 # User-specific stuff:
-.idea
+/.idea
 
 ## File-based project format:
 *.iws
@@ -17,11 +17,11 @@ __pycache__/
 *.log*
 
 # databases
-*.db
+/cache.db
 
 # configs
 *.cfg
-*.json
+/config.json
 
 # generators
 *.bat
