@@ -96,33 +96,67 @@ Click to enlarge.
 
 # Requirements
 
-1. Ubuntu/Debian
+1. Debian OS (can work in other operating systems as well).
 
-2. Python 3.5 or higher (`sudo apt install python3 python3-pip`).
+2. Python 3.5+
 
-3. requirements.txt modules (see below).
+3. Required Python modules.
+
 
 # Installation
 
 ## 1. Base Install
 
-Install Traktarr to be run with `traktarr` command:
+Installs Traktarr to the system so that it can be ran with the `traktarr` command.
 
-1. `cd /opt`
 
-2. `sudo git clone https://github.com/l3uddz/traktarr`
+1. Clone the Traktarr repo.
 
-3. `sudo chown -R user:group traktarr` (run `id` to find your user / group)
+   ```
+   sudo git clone https://github.com/l3uddz/traktarr /opt/traktarr
+   ```
 
-4. `cd traktarr`
+1. Fix permissions of the `traktarr` folder (replace `user`/`group` with your info; run `id` to check).
 
-5. `sudo python3 -m pip install -r requirements.txt`
+   ```
+   sudo chown -R user:group /opt/traktarr
+   ```
 
-6. `sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr`
+1. Go into the `traktarr` folder.
 
-7. `traktarr run` - run once to generate a sample a config.json file.
+   ```
+   cd /opt/traktarr
+   ```
 
-8. `nano config.json` - edit preferences.
+1. Install Python and PIP.
+
+   ```
+   sudo apt-get install python3 python3-pip
+   ```
+
+1. Install the required python modules.
+
+   ```
+   sudo python3 -m pip install -r requirements.txt
+   ```
+
+1. Create a shortcut for `traktarr`.
+
+   ```
+   sudo ln -s /opt/traktarr/traktarr.py /usr/local/bin/traktarr
+   ```
+
+1. Generate a basic `config.json` file.
+
+   ```
+   traktarr run
+   ```
+
+1. Configure the `config.json` file.
+
+   ```
+   nano config.json
+   ```
 
 ## 2. Create a Trakt Application
 
@@ -134,15 +168,13 @@ Install Traktarr to be run with `traktarr` command:
 
 4. Click "SAVE APP".
 
-5. Open the Traktarr configuration file `config.json` and insert the Client ID in the `client_id` and the Client Secret in the `client_secret`, like this:
+5. Open the Traktarr configuration file `config.json` and insert your Trakt Client ID in the `client_id` and your Trakt Client Secret in the `client_secret`, like this:
 
-   ```
-       {
-           "trakt": {
-               "client_id": "my_client_id",
-               "client_secret": "my_client_secret_key"
-           }
-       }
+   ```json
+   "trakt": {
+       "client_id": "your_trakt_client_id",
+       "client_secret": "your_trakt_client_secret"
+   }
    ```
 
 ## 3. Authenticate User(s) (optional)
