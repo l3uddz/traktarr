@@ -1,11 +1,13 @@
 from misc.log import logger
 
+from .apprise import Apprise
 from .pushover import Pushover
 from .slack import Slack
 
 log = logger.get_logger(__name__)
 
 SERVICES = {
+    'apprise': Apprise,
     'pushover': Pushover,
     'slack': Slack
 }

@@ -31,6 +31,7 @@
     - [Movies](#movies)
     - [Shows](#shows)
   - [Notifications](#notifications)
+    - [Apprise](#apprise)
     - [Pushover](#pushover)
     - [Slack](#slack)
   - [Radarr](#radarr)
@@ -664,15 +665,79 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ## Notifications
 
+```json
+"notifications": {
+  "apprise": {
+    "service": "apprise",
+    "url": "",
+    "title": ""
+  },
+  "verbose": false
+},
+```
+
 Notification alerts for Traktarr tasks.
 
-_Note: Manual commands need the `--notifications` flag._
+For auto (i.e. scheduled) runs, notifications are enabled automatically when notification services are listed in this section. 
 
-Currently, only Pushover and Slack are supported; others can be added in the future.
+For manual (i.e. CLI) commands, you need to add the  `--notifications` flag.
 
-_Note: The key name (i.e the name right under notifications) can be anything, but the `"service":` must be the exact service name (e.g. `"pushover"`)._
+Supported `services`:
+ - `apprise`
+ - `pushover`
+ - `slack`
+
+_Note: The key name can be anything, but the `service` key must be must be the exact service name (e.g. `pushover`). See below for example._
 
 
+```json
+"notifications": {
+  "anyname": {
+    "service": "pushover",
+  }
+},
+```
+
+
+### General
+
+`verbose` - Toggle detailed notifications. 
+
+  - Default is `true`.
+
+  - Set to `false` if you want to reduce the amount of detailed notifications (e.g. just the total vs the names of the movies/shows added).
+
+```json
+"notifications": {
+  "verbose": true
+},
+```
+
+### Apprise
+
+```json
+"notifications": {
+  "apprise": {
+    "service": "apprise",
+    "url": "",
+    "title": ""
+  },
+  "verbose": false
+},
+```
+
+`url` - Apprise service URL (see [here](https://github.com/caronc/apprise)).
+
+ - Required.
+
+`title` - Notification Title.
+
+ - Optional. 
+ 
+ - Default is `Traktarr`.
+ 
+
+### Pushover
 
 ```json
 "notifications": {
@@ -682,26 +747,21 @@ _Note: The key name (i.e the name right under notifications) can be anything, bu
     "user_token": "",
     "priority": 0
   },
-  "slack": {
-    "service": "slack",
-    "webhook_url": ""
-  },
-  "verbose": true
+  "verbose": false
 },
 ```
 
-`verbose` - Toggle detailed notifications. Default is `true`.
+`app_token`  - App Token from [Pushover.net](https://pushover.net).
 
-  - Set to `false`, if you want to reduce the amount of detailed notifications (e.g. the names of the movies/shows added vs just the total).
+ - Required.
 
+`user_token` - User Token from [Pushover.net](https://pushover.net).
 
-### Pushover
+ - Required.
 
-`app_token`  - Retrieve from Pushover.net. Required.
+`priority` - [Priority](https://pushover.net/api#priority) of the notifications. 
 
-`user_token` - Retrieve from Pushover.net. Required.
-
-`priority` - Priority for the messages (see https://pushover.net/api#priority). Optional.
+ - Optional.
 
  - Choices are: `-2`, `-1`, `0`, `1`, `2`.
 
@@ -713,6 +773,7 @@ _Note: The key name (i.e the name right under notifications) can be anything, bu
 ### Slack
 
 ```json
+"notifications": {
   "slack": {
     "service": "slack",
     "webhook_url": "",
@@ -720,17 +781,31 @@ _Note: The key name (i.e the name right under notifications) can be anything, bu
     "sender_name": "Traktarr",
     "sender_icon": ":movie_camera:"
   },
-  "verbose": true
+  "verbose": false
 },
 ```
 
-`webhook_url` - Webhook URL you get after creating an "Incoming Webhook" under "Custom Integrations" on Slack's Website. Required.
+`webhook_url` - [Webhook URL](https://my.slack.com/services/new/incoming-webhook/).
 
-`channel` - Slack channel. Optional. Default is none.
+ - Required.
+ 
+`channel` - Slack channel to send the notifications to. 
 
-`sender_name` - Name the sender of the message. Optional. Default is `Traktarr`.
+ - Optional. 
+ 
+ - Default is blank.
 
-`sender_icon` - Icon to use for the message. Optional. Default is `:movie_camera:`
+`sender_name` - Sender's name for the notifications. 
+
+ - Optional. 
+ 
+ - Default is `Traktarr`.
+
+`sender_icon` - Icon to use for the notifications. 
+
+ - Optional. 
+ 
+ - Default is `:movie_camera:`
 
 
 
