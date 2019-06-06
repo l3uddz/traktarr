@@ -647,7 +647,11 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
     total_shows_added = 0
     # noinspection PyBroadException
     try:
-        log.info("Started")
+        log.info("Automatic Shows task started.")
+
+        # send notification
+        if notifications and cfg.notifications.verbose:
+            notify.send(message="Automatic Shows task started.")
 
         for list_type, value in cfg.automatic.shows.items():
             added_shows = None
@@ -738,7 +742,11 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
     total_movies_added = 0
     # noinspection PyBroadException
     try:
-        log.info("Started")
+        log.info("Automatic Movies task started.")
+
+        # send notification
+        if notifications and cfg.notifications.verbose:
+            notify.send(message="Automatic Movies task started.")
 
         for list_type, value in cfg.automatic.movies.items():
             added_movies = None
@@ -833,7 +841,11 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifications=False, ignore_blacklist=False):
-    log.info("Automatic mode is now running...")
+    log.info("Automatic mode is now running.")
+
+    # send notification
+    if not no_notifications and cfg.notifications.verbose:
+        notify.send(message="Automatic mode is now running.")
 
     # Add tasks to schedule and do first run if enabled
     if cfg.automatic.movies.interval:
