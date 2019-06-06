@@ -175,7 +175,7 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, person, watched, played, '
                    'recommended, watchlist or any URL to a list', required=True)
-@click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.', show_default=True)
+@click.option('--add-limit', '-l', default=0, help='Limit number of shows added to Sonarr.')
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['rating', 'release', 'votes']),
               help='Sort list to process.', show_default=True)
@@ -351,7 +351,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 @click.option('--folder', '-f', default=None, help='Add movie with this root folder to Radarr.')
 @click.option('--minimum-availability', '-ma', default='released',
               type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
-              help='Add movies with this minimum availability to Radarr.')
+              help='Add movies with this minimum availability to Radarr.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
 def movie(movie_id, folder=None, min_avail=None, no_search=False):
     from media.radarr import Radarr
@@ -399,7 +399,7 @@ def movie(movie_id, folder=None, min_avail=None, no_search=False):
 @click.option('--list-type', '-t',
               help='Trakt list to process. For example, anticipated, trending, popular, boxoffice, person, watched, '
                    'recommended, played, watchlist or any URL to a list', required=True)
-@click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.', show_default=True)
+@click.option('--add-limit', '-l', default=0, help='Limit number of movies added to Radarr.')
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Radarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['rating', 'release', 'votes']),
               help='Sort list to process.', show_default=True)
@@ -409,7 +409,7 @@ def movie(movie_id, folder=None, min_avail=None, no_search=False):
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--minimum-availability', '-ma', default='released',
               type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
-              help='Add movies with this minimum availability to Radarr.')
+              help='Add movies with this minimum availability to Radarr.', show_default=True)
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding movies to Radarr.')
 @click.option('--notifications', is_flag=True, help='Send notifications.')
@@ -835,7 +835,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr / Radarr.',
               show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['votes', 'rating', 'release']),
-              help='Sort list to process.')
+              help='Sort list to process.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding to Sonarr / Radarr.')
 @click.option('--run-now', is_flag=True, help="Do a first run immediately without waiting.")
 @click.option('--no-notifications', is_flag=True, help="Disable notifications.")
@@ -933,9 +933,9 @@ if __name__ == "__main__":
 # Author:   l3uddz                                                      #
 # URL:      https://github.com/l3uddz/traktarr                          #
 # --                                                                    #
-# Part of the Cloudbox project: https://cloudbox.works                  #
+#         Part of the Cloudbox project: https://cloudbox.works          #
 #########################################################################
-# GNU General Public License v3.0                                       #
+#                   GNU General Public License v3.0                     #
 #########################################################################
 """)
 
