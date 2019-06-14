@@ -183,7 +183,12 @@ For each user you want to access the private lists for (i.e. watchlist and/or cu
 
 Repeat the following steps for every user you want to authenticate:
 
-1. Run `traktarr trakt_authentication`
+1. Run the following command:
+
+   ```
+   traktarr trakt_authentication
+   ```
+
 
 2. You wil get the following prompt:
 
@@ -195,11 +200,11 @@ Repeat the following steps for every user you want to authenticate:
 
 4. Enter the code you see in your terminal.
 
-5. Click continue.
+5. Click **Continue**.
 
-6. If you are not logged in to Trakt, login now.
+6. If you are not logged in to Trakt.tv, login now.
 
-7. Click "Accept".
+7. Click **Accept**.
 
 8. You will get the message: "Woohoo! Your device is now connected and will automatically refresh in a few seconds.".
 
@@ -442,6 +447,8 @@ You can also schedule any number of public or private custom lists.
 
 For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser.
 
+_Note: These are for non-watchlist lists. If you want to add a watchlist list, use the section above._
+
 #### Public Lists
 
 Public lists can be added by specifying the url and the item limit like this:
@@ -559,6 +566,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - [List of available country codes](assets/list_of_country_codes.md).
 
+- Special keywords (used as the only list item):
+
+  - `any` - Add movies from any country.
+
+  - `ignore` (also empty list i.e. `[]`) - Like `any`, but also add movies even if it is missing a country.
+
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
 - By default, Traktarr will only query movies in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
@@ -656,6 +669,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 `allowed_countries` - Only add shows from these countries. Listed as two-letter country codes.
 
 - [List of available country codes](assets/list_of_country_codes.md).
+
+- Special keywords (used as the only list item):
+
+  - `any` - Add shows from any country.
+
+  - `ignore` (also empty list i.e. `[]`) - Like `any`, but also add shows even if it is missing a country.
 
 `allowed_languages` - Only add shows with these languages.
 
