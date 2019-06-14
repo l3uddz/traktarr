@@ -353,7 +353,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
               type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
               help='Add movies with this minimum availability to Radarr.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
-def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
+def movie(movie_id, folder=None, minimum_availability='released', no_search=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
 
@@ -422,7 +422,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
 def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None,
-           minimum_availability=None, actor=None, no_search=False, notifications=False, authenticate_user=None,
+           minimum_availability='released', actor=None, no_search=False, notifications=False, authenticate_user=None,
            ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
