@@ -83,7 +83,7 @@ class PVR(ABC):
                 resp_json = req.json()
                 for profile in resp_json:
                     if profile['name'].lower() == profile_name.lower():
-                        log.debug("Found id of %s profile: %d", profile_name, profile['id'])
+                        log.debug("Found ID of %s profile: %d", profile_name, profile['id'])
                         return profile['id']
                     log.debug("Profile %s with id %d did not match %s", profile['name'], profile['id'], profile_name)
             else:

@@ -353,17 +353,19 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
               type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
               help='Add movies with this minimum availability to Radarr.', show_default=True)
 @click.option('--no-search', is_flag=True, help='Disable search when adding movie to Radarr.')
-def movie(movie_id, folder=None, min_avail=None, no_search=False):
+def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
 
     # replace radarr root_folder if folder is supplied
     if folder:
         cfg['radarr']['root_folder'] = folder
+    log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
-    # replace radarr minimum_availability if min_avail is supplied
-    if min_avail:
-        cfg['radarr']['minimum_availability'] = min_avail
+    # replace radarr.minimum_availability if minimum_availability is supplied
+    if minimum_availability:
+        cfg['radarr']['minimum_availability'] = minimum_availability
+    log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 
     # validate trakt api_key
     trakt = Trakt(cfg)
@@ -419,8 +421,8 @@ def movie(movie_id, folder=None, min_avail=None, no_search=False):
 @click.option('--ignore-blacklist', is_flag=True, help='Ignores the blacklist when running the command.')
 @click.option('--remove-rejected-from-recommended', is_flag=True,
               help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None, actor=None,
-           min_avail=None, no_search=False, notifications=False, authenticate_user=None,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None,
+           minimum_availability=None, actor=None, no_search=False, notifications=False, authenticate_user=None,
            ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
@@ -438,10 +440,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     # replace radarr root_folder if folder is supplied
     if folder:
         cfg['radarr']['root_folder'] = folder
+    log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
-    # replace radarr minimum_availability if min_avail is supplied
-    if min_avail:
-        cfg['radarr']['minimum_availability'] = min_avail
+    # replace radarr.minimum_availability if minimum_availability is supplied
+    if minimum_availability:
+        cfg['radarr']['minimum_availability'] = minimum_availability
+    log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 
     # validate trakt api_key
     trakt = Trakt(cfg)
