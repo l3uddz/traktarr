@@ -7,6 +7,7 @@ log = logger.get_logger(__name__)
 
 def get_rating(apikey, movie):
 
+    ratings_exist = False
     imdb_id = movie['movie']['ids']['imdb']
     if imdb_id:
         log.debug("Requesting info from OMDB for %s (%d) | Genres: %s | Country: %s | IMDB ID: %s",
@@ -19,11 +20,17 @@ def get_rating(apikey, movie):
                       ', '.join(movie['movie']['genres']), (movie['movie']['country'] or 'N/A').upper(), imdb_id)
             for source in json.loads(r.text)["Ratings"]:
                 if source['Source'] == 'Rotten Tomatoes':
+                    # noinspection PyUnusedLocal
+                    ratings_exist = True
                     log.debug("Rotten Tomatoes score of %s for %s (%d) | Genres: %s | Country: %s | IMDB ID: %s ",
                               source['Value'], movie['movie']['title'], movie['movie']['year'],
                               ', '.join(movie['movie']['genres']), (movie['movie']['country'] or 'N/A').upper(),
                               imdb_id)
                     return int(source['Value'].split('%')[0])
+            if not ratings_exist:
+                log.debug("No Rotten Tomatoes score found for %s (%d) | Genres: %s | Country: %s | IMDB ID: %s ",
+                          movie['movie']['title'], movie['movie']['year'], ', '.join(movie['movie']['genres']),
+                          (movie['movie']['country'] or 'N/A').upper(), imdb_id)
         else:
             log.debug("Error encountered when requesting ratings from OMDB for %s (%d) | Genres: %s | Country: %s" +
                       " | IMDB ID: %s", movie['movie']['title'], movie['movie']['year'],

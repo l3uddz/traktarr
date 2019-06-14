@@ -532,7 +532,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
 
     # display specified RT score
     if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-        log.debug("Minimum Rotten Tomatoes score specified: %s%%", rating)
+        log.debug("Minimum Rotten Tomatoes score of %d%% requested.", rating)
 
     # loop movies
     log.info("Processing list now...")
@@ -554,8 +554,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                 if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
                     movie_rating = rating_helper.get_rating(cfg['omdb']['api_key'], sorted_movie)
                     if movie_rating == -1:
-                        log.debug("Skipping: %s because it did not have a Rotten Tomatoes rating/lacked IMDB ID",
-                                  sorted_movie['movie']['title'])
+                        log.info("SKIPPED %s (%d)", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
                         continue
                 if (rating is None or movie_rating is None) or movie_rating >= rating:
                     log.info("Adding: %s (%d) | Genres: %s | Country: %s", sorted_movie['movie']['title'],
@@ -574,10 +573,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                         log.error("FAILED adding %s (%d)", sorted_movie['movie']['title'],
                                   sorted_movie['movie']['year'])
                 else:
-                    log.info("Minimum Rotten Tomatoes score was not met. " +
-                             "Skipping: %s (%d) | Genres: %s | Country: %s", sorted_movie['movie']['title'],
-                             sorted_movie['movie']['year'], ', '.join(sorted_movie['movie']['genres']),
-                             (sorted_movie['movie']['country'] or 'N/A').upper())
+                    log.debug("Minimum Rotten Tomatoes score of %d%% was not met.", rating)
+                    log.info("SKIPPED %s (%d)", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
                     break
