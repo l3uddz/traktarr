@@ -129,17 +129,17 @@ class PVR(ABC):
             if (req.status_code == 201 or req.status_code == 200) \
                     and (response_json and identifier_field in response_json) \
                     and response_json[identifier_field] == identifier:
-                log.debug("Successfully added %s (%d)", payload['title'], identifier)
+                log.debug("Successfully added \'%s (%d)\'", payload['title'], identifier)
                 return True
             elif response_json and ('errorMessage' in response_json or 'message' in response_json):
                 message = response_json['errorMessage'] if 'errorMessage' in response_json else response_json['message']
 
-                log.error("Failed to add %s (%d) - status_code: %d, reason: %s", payload['title'], identifier,
+                log.error("Failed to add \'%s (%d)\' - status_code: %d, reason: %s", payload['title'], identifier,
                           req.status_code, message)
                 return False
             else:
-                log.error("Failed to add %s (%d), unexpected response:\n%s", payload['title'], identifier, req.text)
+                log.error("Failed to add \'%s (%d)\', unexpected response:\n%s", payload['title'], identifier, req.text)
                 return False
         except Exception:
-            log.exception("Exception adding %s (%d): ", payload['title'], identifier)
+            log.exception("Exception adding \'%s (%d)\': ", payload['title'], identifier)
         return None

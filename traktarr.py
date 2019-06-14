@@ -153,7 +153,7 @@ def show(show_id, folder=None, no_search=False):
         log.error("Aborting due to failure to retrieve Trakt show")
         return None
     else:
-        log.info("Retrieved Trakt show information for %s: %s (%d)", show_id, trakt_show['title'],
+        log.info("Retrieved Trakt show information for %s: \'%s (%d)\'", show_id, trakt_show['title'],
                  trakt_show['year'])
 
     # determine which tags to use when adding this series
@@ -162,10 +162,10 @@ def show(show_id, folder=None, no_search=False):
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
                          cfg.sonarr.root_folder, use_tags, not no_search):
-        log.info("ADDED %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
+        log.info("ADDED \'%s (%d)\' with tags: %s", trakt_show['title'], trakt_show['year'],
                  sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
     else:
-        log.error("FAILED adding %s (%d) with tags: %s", trakt_show['title'], trakt_show['year'],
+        log.error("FAILED adding \'%s (%d)\' with tags: %s", trakt_show['title'], trakt_show['year'],
                   sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
     return
@@ -314,13 +314,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
-                    log.info("ADDED %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
+                    log.info("ADDED \'%s (%d)\' with tags: %s", series['show']['title'], series['show']['year'],
                              sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
-                    log.error("FAILED adding %s (%d) with tags: %s", series['show']['title'], series['show']['year'],
+                    log.error("FAILED adding \'%s (%d)\' with tags: %s", series['show']['title'], series['show']['year'],
                               sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
@@ -383,16 +383,16 @@ def movie(movie_id, folder=None, minimum_availability='released', no_search=Fals
         log.error("Aborting due to failure to retrieve Trakt movie")
         return None
     else:
-        log.info("Retrieved Trakt movie information for %s: %s (%d)", movie_id, trakt_movie['title'],
+        log.info("Retrieved Trakt movie information for %s: \'%s (%d)\'", movie_id, trakt_movie['title'],
                  trakt_movie['year'])
 
     # add movie to radarr
     if radarr.add_movie(trakt_movie['ids']['tmdb'], trakt_movie['title'], trakt_movie['year'],
                         trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder,
                         cfg.radarr.minimum_availability, not no_search):
-        log.info("ADDED %s (%d)", trakt_movie['title'], trakt_movie['year'])
+        log.info("ADDED \'%s (%d)\'", trakt_movie['title'], trakt_movie['year'])
     else:
-        log.error("FAILED adding %s (%d)", trakt_movie['title'], trakt_movie['year'])
+        log.error("FAILED adding \'%s (%d)\'", trakt_movie['title'], trakt_movie['year'])
 
     return
 
@@ -554,27 +554,27 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                 if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
                     movie_rating = rating_helper.get_rating(cfg['omdb']['api_key'], sorted_movie)
                     if movie_rating == -1:
-                        log.info("SKIPPED %s (%d)", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
+                        log.info("SKIPPED \'%s (%d)\'", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
                         continue
                 if (rating is None or movie_rating is None) or movie_rating >= rating:
-                    log.info("Adding: %s (%d) | Genres: %s | Country: %s", sorted_movie['movie']['title'],
+                    log.info("Adding: \'%s (%d)\' | Genres: %s | Country: %s", sorted_movie['movie']['title'],
                              sorted_movie['movie']['year'], ', '.join(sorted_movie['movie']['genres']),
                              (sorted_movie['movie']['country'] or 'N/A').upper())
                     # add movie to radarr
                     if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
                                         sorted_movie['movie']['year'], sorted_movie['movie']['ids']['slug'], profile_id,
                                         cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
-                        log.info("ADDED %s (%d)", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
+                        log.info("ADDED \'%s (%d)\'", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
                         if notifications:
                             callback_notify({'event': 'add_movie', 'list_type': list_type,
                                              'movie': sorted_movie['movie']})
                         added_movies += 1
                     else:
-                        log.error("FAILED adding %s (%d)", sorted_movie['movie']['title'],
+                        log.error("FAILED adding \'%s (%d)\'", sorted_movie['movie']['title'],
                                   sorted_movie['movie']['year'])
                 else:
                     log.debug("Minimum Rotten Tomatoes score of %d%% was not met.", rating)
-                    log.info("SKIPPED %s (%d)", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
+                    log.info("SKIPPED \'%s (%d)\'", sorted_movie['movie']['title'], sorted_movie['movie']['year'])
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
                     break
@@ -609,7 +609,7 @@ def callback_remove_recommended(media_type, media_info):
                   media_info)
         return
 
-    media_name = '%s (%d)' % (media_info[media_type]['title'], media_info[media_type]['year'])
+    media_name = '\'%s (%d)\'' % (media_info[media_type]['title'], media_info[media_type]['year'])
 
     if trakt.remove_recommended_item(media_type, media_info[media_type]['ids']['trakt']):
         log.info("Removed rejected recommended %s: %s", media_type, media_name)
@@ -624,12 +624,12 @@ def callback_notify(data):
     if data['event'] == 'add_movie':
         if cfg.notifications.verbose:
             notify.send(
-                message="Added %s movie: %s (%d)" % (data['list_type'], data['movie']['title'], data['movie']['year']))
+                message="Added %s movie: \'%s (%d)\'" % (data['list_type'], data['movie']['title'], data['movie']['year']))
         return
     elif data['event'] == 'add_show':
         if cfg.notifications.verbose:
             notify.send(
-                message="Added %s show: %s (%d)" % (data['list_type'], data['show']['title'], data['show']['year']))
+                message="Added %s show: \'%s (%d)\'" % (data['list_type'], data['show']['title'], data['show']['year']))
         return
     elif data['event'] == 'abort':
         notify.send(message="Aborted adding Trakt %s %s due to: %s" % (data['list_type'], data['type'], data['reason']))
