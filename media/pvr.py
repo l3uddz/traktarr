@@ -85,11 +85,11 @@ class PVR(ABC):
                     if profile['name'].lower() == profile_name.lower():
                         log.debug("Found ID of %s profile: %d", profile_name, profile['id'])
                         return profile['id']
-                    log.debug("Profile %s with id %d did not match %s", profile['name'], profile['id'], profile_name)
+                    log.debug("Profile %s with ID %d did not match %s", profile['name'], profile['id'], profile_name)
             else:
                 log.error("Failed to retrieve all quality profiles, request response: %d", req.status_code)
         except Exception:
-            log.exception("Exception retrieving id of profile %s: ", profile_name)
+            log.exception("Exception retrieving ID of profile %s: ", profile_name)
         return None
 
     def _prepare_add_object_payload(self, title, title_slug, profile_id, root_folder):

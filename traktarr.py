@@ -530,6 +530,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'votes')
         log.info("Sorted movies list to process by highest votes")
 
+    # display specified RT score
+    if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
+        log.debug("Minimum Rotten Tomatoes score specified: %s%%", rating)
+
     # loop movies
     log.info("Processing list now...")
     for sorted_movie in sorted_movies_list:
@@ -550,7 +554,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                 if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
                     movie_rating = rating_helper.get_rating(cfg['omdb']['api_key'], sorted_movie)
                     if movie_rating == -1:
-                        log.debug("Skipping: %s because it did not have a rating/lacked imdbID",
+                        log.debug("Skipping: %s because it did not have a Rotten Tomatoes rating/lacked IMDB ID",
                                   sorted_movie['movie']['title'])
                         continue
                 if (rating is None or movie_rating is None) or movie_rating >= rating:

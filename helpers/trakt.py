@@ -95,15 +95,15 @@ def blacklisted_show_id(show, blacklisted_ids):
     blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
         if not show['show']['ids']['tvdb'] or not isinstance(show['show']['ids']['tvdb'], int):
-            log.debug("%s was blacklisted because it had an invalid tvdb id", show['show']['title'])
+            log.debug("%s was blacklisted because it had an invalid TVDB ID", show['show']['title'])
             blacklisted = True
         elif show['show']['ids']['tvdb'] in blacklisted_ids:
-            log.debug("%s was blacklisted because it had a blacklisted tvdb id of: %d", show['show']['title'],
+            log.debug("%s was blacklisted because it had a blacklisted TVDB ID of: %d", show['show']['title'],
                       show['show']['ids']['tvdb'])
             blacklisted = True
 
     except Exception:
-        log.exception("Exception determining if show had a blacklisted tvdb id %s: ", show)
+        log.exception("Exception determining if show had a blacklisted TVDB ID %s: ", show)
     return blacklisted
 
 
@@ -162,7 +162,7 @@ def blacklisted_movie_year(movie, earliest_year, latest_year):
             blacklisted = True
         else:
             if int(year) < earliest_year or int(year) > latest_year:
-                log.debug("%s was blacklisted because it's year is: %d", movie['movie']['title'], int(year))
+                log.debug("%s was blacklisted because its year is: %d", movie['movie']['title'], int(year))
                 blacklisted = True
     except Exception:
         log.exception("Exception determining if movie is within min_year and max_year ranger %s:", movie)
@@ -225,15 +225,15 @@ def blacklisted_movie_id(movie, blacklisted_ids):
     blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
         if not movie['movie']['ids']['tmdb'] or not isinstance(movie['movie']['ids']['tmdb'], int):
-            log.debug("%s was blacklisted because it had an invalid tmdb id", movie['movie']['title'])
+            log.debug("%s was blacklisted because it had an invalid TMDB ID", movie['movie']['title'])
             blacklisted = True
         elif movie['movie']['ids']['tmdb'] in blacklisted_ids:
-            log.debug("%s was blacklisted because it had a blacklisted tmdb id of: %d", movie['movie']['title'],
+            log.debug("%s was blacklisted because it had a blacklisted TMDB ID of: %d", movie['movie']['title'],
                       movie['movie']['ids']['tmdb'])
             blacklisted = True
 
     except Exception:
-        log.exception("Exception determining if show had a blacklisted tmdb id %s: ", movie)
+        log.exception("Exception determining if show had a blacklisted TMDB ID %s: ", movie)
     return blacklisted
 
 
