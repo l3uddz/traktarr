@@ -574,7 +574,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                         log.error("FAILED adding %s (%d)", sorted_movie['movie']['title'],
                                   sorted_movie['movie']['year'])
                 else:
-                    log.info("SKIPPING: %s (%d) | Genres: %s | Country: %s", sorted_movie['movie']['title'],
+                    log.info("Minimum Rotten Tomatoes score was not met. " +
+                             "Skipping: %s (%d) | Genres: %s | Country: %s", sorted_movie['movie']['title'],
                              sorted_movie['movie']['year'], ', '.join(sorted_movie['movie']['genres']),
                              (sorted_movie['movie']['country'] or 'N/A').upper())
                 # stop adding movies, if added_movies >= add_limit
