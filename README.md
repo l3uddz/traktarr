@@ -571,7 +571,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `blacklisted_genres` - Blacklist certain genres.
 
-  - [List of available genres](assets/list_of_movie_genres.md).
+  - [List of available movie genres](assets/list_of_movie_genres.md).
 
   - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
@@ -667,7 +667,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `blacklisted_genres` - Blacklist certain genres.
 
-- [List of available genres](assets/list_of_show_genres.md).
+- [List of available TV show genres](assets/list_of_tv_show_genres.md).
 
 - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
@@ -710,7 +710,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 Notification alerts for Traktarr tasks.
 
-For auto (i.e. scheduled) runs, notifications are enabled automatically when notification services are listed in this section. 
+For auto (i.e. scheduled) runs, notifications are enabled automatically when notification services are listed in this section.
 
 For manual (i.e. CLI) commands, you need to add the  `--notifications` flag.
 
@@ -733,7 +733,7 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 
 ### General
 
-`verbose` - Toggle detailed notifications. 
+`verbose` - Toggle detailed notifications.
 
   - Default is `true`.
 
@@ -764,10 +764,10 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 
 `title` - Notification Title.
 
- - Optional. 
- 
+ - Optional.
+
  - Default is `Traktarr`.
- 
+
 
 ### Pushover
 
@@ -791,14 +791,14 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 
  - Required.
 
-`priority` - [Priority](https://pushover.net/api#priority) of the notifications. 
+`priority` - [Priority](https://pushover.net/api#priority) of the notifications.
 
  - Optional.
 
  - Choices are: `-2`, `-1`, `0`, `1`, `2`.
 
- - Values are not quoted. 
- 
+ - Values are not quoted.
+
  - Default is `0`.
 
 
@@ -820,23 +820,23 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 `webhook_url` - [Webhook URL](https://my.slack.com/services/new/incoming-webhook/).
 
  - Required.
- 
-`channel` - Slack channel to send the notifications to. 
 
- - Optional. 
- 
+`channel` - Slack channel to send the notifications to.
+
+ - Optional.
+
  - Default is blank.
 
-`sender_name` - Sender's name for the notifications. 
+`sender_name` - Sender's name for the notifications.
 
- - Optional. 
- 
+ - Optional.
+
  - Default is `Traktarr`.
 
-`sender_icon` - Icon to use for the notifications. 
+`sender_icon` - Icon to use for the notifications.
 
- - Optional. 
- 
+ - Optional.
+
  - Default is `:movie_camera:`
 
 
