@@ -61,7 +61,7 @@ def allowed_genres(genre, object_type, trakt_object):
     genres = genre.split(',')
 
     for item in genres:
-        if item.lower() in trakt_object[object_type]['genres']:
+        if (item.lower() == 'ignore') or (item.lower() in trakt_object[object_type]['genres']):
             allowed_object = True
             break
     return allowed_object

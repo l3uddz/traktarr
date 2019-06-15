@@ -179,7 +179,9 @@ def show(show_id, folder=None, no_search=False):
 @click.option('--add-delay', '-d', default=2.5, help='Seconds between each add request to Sonarr.', show_default=True)
 @click.option('--sort', '-s', default='votes', type=click.Choice(['rating', 'release', 'votes']),
               help='Sort list to process.', show_default=True)
-@click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr.')
+@click.option('--genre', '-g', default=None, help='Only add shows from this genre to Sonarr. ' 
+                                                  'Use \'ignore\' to add shows from any genre, '
+                                                  'including ones with no genre specified.')
 @click.option('--folder', '-f', default=None, help='Add shows with this root folder to Sonarr.')
 @click.option('--actor', '-a', default=None, help='Only add movies from this actor to Radarr.')
 @click.option('--no-search', is_flag=True, help='Disable search when adding shows to Sonarr.')
@@ -200,8 +202,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 
     added_shows = 0
 
+    # set special genre keyword 'ignore' if supplied
+    if genre and genre.lower == 'ignore':
+        cfg['filters']['shows']['blacklisted_genres'] = ['ignore']
     # remove genre from shows blacklisted_genres if supplied
-    if genre:
+    elif genre:
         misc_helper.unblacklist_genres(genre, cfg['filters']['shows']['blacklisted_genres'])
 
     # replace sonarr root_folder if folder is supplied
@@ -222,27 +227,34 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 
     # get trakt series list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_anticipated_shows(genres=genre if 'ignore' not in genre.lower() else None,
+                                                         languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_trending_shows(genres=genre if 'ignore' not in genre.lower() else None,
+                                                      languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_shows(genres=genre, languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_popular_shows(genres=genre if 'ignore' not in genre.lower() else None,
+                                                     languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'person':
         if not actor:
             log.error("You must specify an actor with the --actor / -a parameter when using the person list type!")
             return None
-        trakt_objects_list = trakt.get_person_shows(person=actor, genres=genre,
+        trakt_objects_list = trakt.get_person_shows(person=actor,
+                                                    genres=genre if 'ignore' not in genre.lower() else None,
                                                     languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower() == 'recommended':
-        trakt_objects_list = trakt.get_recommended_shows(authenticate_user, genres=genre,
+        trakt_objects_list = trakt.get_recommended_shows(authenticate_user,
+                                                         genres=genre if 'ignore' not in genre else None,
                                                          languages=cfg.filters.shows.allowed_languages)
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_played_shows(genres=genre, languages=cfg.filters.shows.allowed_languages,
+        trakt_objects_list = trakt.get_most_played_shows(genres=genre if 'ignore' not in genre.lower() else None,
+                                                         languages=cfg.filters.shows.allowed_languages,
                                                          most_type=most_type if most_type else None)
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_watched_shows(genres=genre, languages=cfg.filters.shows.allowed_languages,
+        trakt_objects_list = trakt.get_most_watched_shows(genres=genre if 'ignore' not in genre.lower() else None,
+                                                          languages=cfg.filters.shows.allowed_languages,
                                                           most_type=most_type if most_type else None)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
@@ -304,7 +316,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                                     callback_remove_recommended
                                                     if remove_rejected_from_recommended else None):
                 log.info("Adding: %s | Genres: %s | Network: %s | Country: %s", series['show']['title'],
-                         ', '.join(series['show']['genres']), series['show']['network'],
+                         (', '.join(series['show']['genres'])) if series['show']['genres'] else 'N/A',
+                         series['show']['network'],
                          (series['show']['country'] or 'N/A').upper())
 
                 # determine which tags to use when adding this series
@@ -320,7 +333,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
-                    log.error("FAILED adding \'%s (%d)\' with tags: %s", series['show']['title'], series['show']['year'],
+                    log.error("FAILED adding \'%s (%d)\' with tags: %s", series['show']['title'],
+                              series['show']['year'],
                               sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
@@ -407,7 +421,9 @@ def movie(movie_id, folder=None, minimum_availability='released', no_search=Fals
               help='Sort list to process.', show_default=True)
 @click.option('--rating', '-r', default=None, type=int,
               help='Set a minimum rating threshold (according to Rotten Tomatoes)')
-@click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.')
+@click.option('--genre', '-g', default=None, help='Only add movies from this genre to Radarr.'
+                                                  'Use \'ignore\' to add movies from any genre, '
+                                                  'including ones with no genre specified.')
 @click.option('--folder', '-f', default=None, help='Add movies with this root folder to Radarr.')
 @click.option('--minimum-availability', '-ma', default='released',
               type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
@@ -433,8 +449,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
 
     added_movies = 0
 
+    # set special genre keyword 'ignore' if supplied
+    if genre and genre.lower() == 'ignore':
+        cfg['filters']['movies']['blacklisted_genres'] = ['ignore']
     # remove genre from movies blacklisted_genres if supplied
-    if genre:
+    elif genre:
         misc_helper.unblacklist_genres(genre, cfg['filters']['movies']['blacklisted_genres'])
 
     # replace radarr root_folder if folder is supplied
@@ -460,30 +479,37 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_anticipated_movies(genres=genre if 'ignore' not in genre else None,
+                                                          languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_trending_movies(genres=genre if 'ignore' not in genre else None,
+                                                       languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_movies(genres=genre, languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_popular_movies(genres=genre if 'ignore' not in genre else None,
+                                                      languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies()
     elif list_type.lower() == 'person':
         if not actor:
             log.error("You must specify an actor with the --actor / -a parameter when using the person list type!")
             return None
-        trakt_objects_list = trakt.get_person_movies(person=actor, genres=genre,
+        trakt_objects_list = trakt.get_person_movies(person=actor,
+                                                     genres=genre if 'ignore' not in genre.lower() else None,
                                                      languages=cfg.filters.movies.allowed_languages)
 
     elif list_type.lower() == 'recommended':
-        trakt_objects_list = trakt.get_recommended_movies(authenticate_user, genres=genre,
+        trakt_objects_list = trakt.get_recommended_movies(authenticate_user,
+                                                          genres=genre if 'ignore' not in genre.lower() else None,
                                                           languages=cfg.filters.movies.allowed_languages)
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_played_movies(genres=genre, languages=cfg.filters.movies.allowed_languages,
+        trakt_objects_list = trakt.get_most_played_movies(genres=genre if 'ignore' not in genre.lower() else None,
+                                                          languages=cfg.filters.movies.allowed_languages,
                                                           most_type=most_type if most_type else None)
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_watched_movies(genres=genre, languages=cfg.filters.movies.allowed_languages,
+        trakt_objects_list = trakt.get_most_watched_movies(genres=genre if 'ignore' not in genre.lower() else None,
+                                                           languages=cfg.filters.movies.allowed_languages,
                                                            most_type=most_type if most_type else None)
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_movies(authenticate_user)
@@ -558,7 +584,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                         continue
                 if (rating is None or movie_rating is None) or movie_rating >= rating:
                     log.info("Adding: \'%s (%d)\' | Genres: %s | Country: %s", sorted_movie['movie']['title'],
-                             sorted_movie['movie']['year'], ', '.join(sorted_movie['movie']['genres']),
+                             sorted_movie['movie']['year'],
+                             (', '.join(sorted_movie['movie']['genres']) if sorted_movie['movie']['genres'] else 'N/A'),
                              (sorted_movie['movie']['country'] or 'N/A').upper())
                     # add movie to radarr
                     if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],

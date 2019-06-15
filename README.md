@@ -588,6 +588,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
+  - Special Keywords:
+
+    - Blank list (i.e. `[]`) - Add movies from any genre.
+
+    - `ignore` (used as the only list item) - Add movies from any genre, including ones with no genre specified.
+
 `blacklisted_max_year` - Blacklist release dates after specified year.
 
 `blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
@@ -689,6 +695,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 - [List of available TV show genres](assets/list_of_tv_show_genres.md).
 
 - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
+
+- Special Keywords:
+
+  - Blank list (i.e. `[]`) - Add shows from any genre.
+
+  - `ignore` (used as the only list item) - Add shows from any genre, including ones with no genre specified.
 
 `blacklisted_max_year` - Blacklist release dates after specified year.
 
