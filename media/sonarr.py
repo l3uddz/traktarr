@@ -31,7 +31,7 @@ class Sonarr(PVR):
 
             if req.status_code == 200:
                 resp_json = req.json()
-                log.debug("Found %d tags", len(resp_json))
+                log.debug("Found Sonarr Tags: %d", len(resp_json))
                 for tag in resp_json:
                     tags[tag['label']] = tag['id']
                 return tags

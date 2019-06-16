@@ -145,13 +145,13 @@ class Trakt:
 
                     # check if we have fetched the last page, break if so
                     if total_pages == 0:
-                        log.debug("There were no more pages to retrieve")
+                        log.debug("There were no more pages left to retrieve")
                         break
                     elif current_page >= total_pages:
-                        log.debug("There are no more pages to retrieve results from")
+                        log.debug("There are no more pages left to retrieve results from")
                         break
                     else:
-                        log.info("There are %d pages left to retrieve results from", total_pages - current_page)
+                        log.info("There are %d page(s) left to retrieve results from", total_pages - current_page)
                         payload['page'] += 1
                         time.sleep(sleep_between)
 
