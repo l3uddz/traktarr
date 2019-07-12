@@ -1,13 +1,15 @@
 # /etc/systemd/system/traktarr.service
 
 [Unit]
-Description=traktarr
+Description=Traktarr
 After=network-online.target
 
 [Service]
 User=seed
 Group=seed
 Type=simple
+Environment="LC_ALL=C.UTF-8"
+Environment="LANG=C.UTF-8"
 WorkingDirectory=/opt/traktarr/
 ExecStart=/usr/bin/python3 /opt/traktarr/traktarr.py run
 Restart=always
