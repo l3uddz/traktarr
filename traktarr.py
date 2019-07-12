@@ -445,10 +445,14 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
     # replace radarr.minimum_availability if minimum_availability is supplied
-    if cfg['radarr']['minimum_availability'].strip() == '':
+    valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
+
+    if cfg['radarr']['minimum_availability'] not in valid_min_avail:
         cfg['radarr']['minimum_availability'] = 'released'
+
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
+
     log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 
     # validate trakt api_key
@@ -571,10 +575,14 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
     # replace radarr.minimum_availability if minimum_availability is supplied
-    if cfg['radarr']['minimum_availability'].strip() == '':
+    valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
+
+    if cfg['radarr']['minimum_availability'] not in valid_min_avail:
         cfg['radarr']['minimum_availability'] = 'released'
+
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
+
     log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 
     # validate trakt api_key
