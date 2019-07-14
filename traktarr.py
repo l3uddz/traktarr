@@ -795,8 +795,8 @@ def callback_notify(data):
         if cfg.notifications.verbose:
             notify.send(
                 message="Added \'%s\' show: \'%s (%s)\'" % (data['list_type'].capitalize(), data['show']['title'],
-                                                            str(data['movie']['year'])
-                                                            if data['movie']['year'] else '????'))
+                                                            str(data['show']['year'])
+                                                            if data['show']['year'] else '????'))
         return
     elif data['event'] == 'abort':
         notify.send(message="Aborted adding Trakt \'%s\' %s due to: %s" % (data['list_type'].capitalize(), data['type'],
