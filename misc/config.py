@@ -39,7 +39,8 @@ class Config(object, metaclass=Singleton):
         },
         'trakt': {
             'client_id': '',
-            'client_secret': ''
+            'client_secret': '',
+            'limit_list_results': 'false'
         },
         'sonarr': {
             'api_key': '',
