@@ -258,13 +258,6 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         return None
     else:
         log.info("Retrieved Trakt %s shows list, shows found: %d", list_type, len(trakt_objects_list))
-        
-        if cfg.trakt.limit_list_results == "true":
-            limited_trakt_objects_list = []
-            for x in range(0,add_limit):
-                limited_trakt_objects_list.append(trakt_objects_list[x])
-            trakt_objects_list = limited_trakt_objects_list
-            log.info("Limited Trakt %s movies List, movies left: %d", list_type, len(limited_trakt_objects_list))
 
     # set remove_rejected_recommended to False if this is not the recommended list
     if list_type.lower() != 'recommended':
@@ -506,13 +499,6 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         return None
     else:
         log.info("Retrieved Trakt %s movies list, movies found: %d", list_type, len(trakt_objects_list))
-        
-        if cfg.trakt.limit_list_results == "true":
-            limited_trakt_objects_list = []
-            for x in range(0,add_limit):
-                limited_trakt_objects_list.append(trakt_objects_list[x])
-            trakt_objects_list = limited_trakt_objects_list
-            log.info("Limited Trakt %s movies List, movies left: %d", list_type, len(limited_trakt_objects_list))
 
     # set remove_rejected_recommended to False if this is not the recommended list
     if list_type.lower() != 'recommended':

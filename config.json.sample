@@ -108,7 +108,6 @@
   },
   "trakt": {
     "client_id": "",
-    "client_secret": "",
-    "limit_list_results": "false"
+    "client_secret": ""
   }
 }
