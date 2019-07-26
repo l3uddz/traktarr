@@ -728,9 +728,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 ## Notifications
 
+
 ```json
 "notifications": {
-  "apprise": {
+  "Apprise": {
     "service": "apprise",
     "url": "",
     "title": ""
@@ -780,7 +781,7 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 
 ```json
 "notifications": {
-  "apprise": {
+  "Apprise": {
     "service": "apprise",
     "url": "",
     "title": ""
@@ -1165,7 +1166,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list).
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
 
 - Watched Lists: Movies that are the most watched by unique Trakt users (multiple viewings excluded).
 
@@ -1216,6 +1217,8 @@ Options:
   - Default is `released` (Physical/Web).
 
 `-a`, `--actor` - Only add movies with a specific actor to Radarr.
+
+  - Requires the list type `person`.
 
 `--no-search` - Tells Radarr to not automatically search for added movies.
 
@@ -1286,7 +1289,7 @@ Options:
 ```
 
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list).
+`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
 
 - Watched Lists: Shows that are the most watched by unique Trakt users (multiple viewings excluded).
 
@@ -1326,7 +1329,9 @@ Options:
 
  - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
 
- `-a`, `--actor` - Only add shows with a specific actor to Sonarr.
+`-a`, `--actor` - Only add shows with a specific actor to Sonarr.
+
+   - Requires the list type `person`.
 
 `--no-search` - Tells Sonarr to not automatically search for added shows.
 
@@ -1389,6 +1394,12 @@ Options:
 
   ```
   traktarr movies -t trending -r 80
+  ```
+
+- Add movies, with actor 'Tom Cruise', limited to 10 items.
+
+  ```
+  traktarr movies -t person -a 'tom cruise' -l 10
   ```
 
 ### Shows
