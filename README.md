@@ -483,7 +483,7 @@ Private lists can be added in two ways:
    },
    ```
 
-2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_as`.
+2. If there are multiple authenticated users you want to fetch the lists from, you'll need to specify the username under `authenticate_user`.
 
    _Note: The user should have access to the list (either own the list or a list that was shared to them by a friend)._
 
@@ -492,7 +492,7 @@ Private lists can be added in two ways:
      "movies": {
        "lists": {
            "https://trakt.tv/users/user/lists/my-private-movies-list": {
-               "authenticate_as": "user2",
+               "authenticate_user": "user2",
                "limit": 10
            }
        }
@@ -500,7 +500,7 @@ Private lists can be added in two ways:
      "shows": {
        "lists": {
            "https://trakt.tv/users/user/lists/my-private-shows-list": {
-               "authenticate_as": "user2",
+               "authenticate_user": "user2",
                "limit": 10
            }
        }
