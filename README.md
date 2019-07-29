@@ -508,6 +508,98 @@ Private lists can be added in two ways:
    },
    ```
 
+### Limited Results Lists
+
+These settings are only needed if you plan to limit Trakt results. You define a dictionary where you normally would a value, and use 'add_limit' to send the amount of movies\shows you want to add to Radarr\Sonarr from the results returned, and results_limit to send the amount you want to limit your results to. Below is an example of each list type and how to limit the results to 1.
+
+```json
+  "automatic": {
+    "movies": {
+      "interval": 1,
+      "anticipated": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "boxoffice": {
+        "add_limit": 1,
+        "results_limit": 1
+	  },
+      "played": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "popular": {
+        "add_limit": 1,
+        "results_limit": 1
+	  },
+      "recommended": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "trending": {
+        "add_limit": 1,
+        "results_limit": 1
+	  },
+      "watched": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "watchlist": {
+        "User1": {
+		"add_limit": 1,
+        "results_limit": 1
+		}
+      },
+      "lists": {
+		"https://trakt.tv/users/asterlea/lists/pixar": {
+		"authenticate_user": "User1",
+        "add_limit": 1,
+        "results_limit": 1
+      }
+    }
+	},
+    "shows": {
+      "interval": 1,
+      "anticipated": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "played": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "popular": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "recommended": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "trending": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "watched": {
+        "add_limit": 1,
+        "results_limit": 1
+      },
+      "watchlist": {
+        "User1": {
+		"add_limit": 1,
+        "results_limit": 1
+		}
+      },
+      "lists": {
+		"https://trakt.tv/users/claireaa/lists/top-100-tv-shows-of-all-time-ign": {
+		"authenticate_user": "User1",
+        "add_limit": 1,
+        "results_limit": 1
+      }
+    }
+    }
+  },
+  ```
 
 ## Filters
 
