@@ -8,9 +8,10 @@ from cashier import cache
 from helpers.misc import backoff_handler, dict_merge
 from helpers.trakt import extract_list_user_and_key_from_url
 from misc.log import logger
+from misc.config import Config
 
 log = logger.get_logger(__name__)
-
+cachefile = Config().cachefile
 
 class Trakt:
     non_user_lists = ['anticipated', 'trending', 'popular', 'boxoffice', 'watched', 'played']
@@ -378,7 +379,7 @@ class Trakt:
             object_name='show',
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_trending_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/trending',
@@ -389,7 +390,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_popular_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/popular',
@@ -400,7 +401,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_anticipated_shows(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/anticipated',
@@ -411,7 +412,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_shows(self, person, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/shows' % person,
@@ -422,7 +423,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_most_played_shows(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/played/%s' % ('weekly' if not most_type else most_type),
@@ -433,7 +434,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_most_watched_shows(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/shows/watched/%s' % ('weekly' if not most_type else most_type),
@@ -444,7 +445,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_recommended_shows(self, authenticate_user=None, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/recommendations/shows',
@@ -490,7 +491,7 @@ class Trakt:
             object_name='movie',
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_trending_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/trending',
@@ -501,7 +502,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_popular_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/popular',
@@ -512,7 +513,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_anticipated_movies(self, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/anticipated',
@@ -523,7 +524,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_movies(self, person, limit=1000, languages=None, genres=None):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/movies' % person,
@@ -534,7 +535,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_most_played_movies(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/played/%s' % ('weekly' if not most_type else most_type),
@@ -545,7 +546,7 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file='cache.db', retry_if_blank=True)
+    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_most_watched_movies(self, limit=1000, languages=None, genres=None, most_type=None):
         return self._make_items_request(
             url='https://api.trakt.tv/movies/watched/%s' % ('weekly' if not most_type else most_type),

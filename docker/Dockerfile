@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.7
+FROM python:3.7-alpine3.10
 
 # Arguments for build tracking
 ARG BRANCH=
@@ -9,6 +9,7 @@ ENV \
   BRANCH=${BRANCH} \
   COMMIT=${COMMIT} \
   TRAKTARR_CONFIG=/config/config.json \
+  TRAKTARR_CACHEFILE=/config/cache.db \
   TRAKTARR_LOGFILE=/config/traktarr.log
 
 COPY . /${APP_DIR}

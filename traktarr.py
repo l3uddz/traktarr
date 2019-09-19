@@ -28,6 +28,14 @@ notify = None
     default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "config.json")
 )
 @click.option(
+    '--cachefile',
+    envvar='TRAKTARR_CACHEFILE',
+    type=click.Path(file_okay=True, dir_okay=False),
+    help='Cache file',
+    show_default=True,
+    default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "cache.db")
+)
+@click.option(
     '--logfile',
     envvar='TRAKTARR_LOGFILE',
     type=click.Path(file_okay=True, dir_okay=False),
@@ -35,13 +43,13 @@ notify = None
     show_default=True,
     default=os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "activity.log")
 )
-def app(config, logfile):
+def app(config, cachefile, logfile):
     # Setup global variables
     global cfg, log, notify
 
     # Load config
     from misc.config import Config
-    cfg = Config(config_path=config, logfile=logfile).cfg
+    cfg = Config(configfile=config, cachefile=cachefile ,logfile=logfile).cfg
 
     # Load logger
     from misc.log import logger

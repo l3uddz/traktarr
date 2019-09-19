@@ -104,11 +104,12 @@ class Config(object, metaclass=Singleton):
         }
     }
 
-    def __init__(self, config_path, logfile):
+    def __init__(self, configfile, cachefile, logfile):
         """Initializes config"""
         self.conf = None
 
-        self.config_path = config_path
+        self.config_path = configfile
+        self.cache_path = cachefile
         self.log_path = logfile
 
     @property
@@ -133,6 +134,10 @@ class Config(object, metaclass=Singleton):
                 sys.exit(0)
 
             return self.conf
+
+    @property
+    def cachefile(self):
+        return self.cache_path
 
     @property
     def logfile(self):
