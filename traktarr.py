@@ -700,8 +700,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         log.info("Sorted movies list to process by highest 'votes'")
 
     # display specified min RT score
-    if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-        log.info("Minimum Rotten Tomatoes score of %d%% requested.", rating)
+    if rating is not None:
+        if 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
+            log.info("Minimum Rotten Tomatoes score of %d%% requested.", rating)
+        else:
+            log.info("Skipping minimum Rotten Tomatoes score check as OMDb api key is missing.")
 
     # loop movies
     log.info("Processing list now...")
