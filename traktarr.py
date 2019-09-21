@@ -574,6 +574,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     from helpers import radarr as radarr_helper
     from helpers import trakt as trakt_helper
     from helpers import rating as rating_helper
+    from helpers import tmdb as tmdb_helper
 
     added_movies = 0
 
@@ -716,6 +717,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
             if sorted_movie['movie']['genres'] else 'N/A'
 
         try:
+            # check if movie exists on TMDb website
+            if not tmdb_helper.does_movie_exist_on_tmdb(sorted_movie):
+                continue
+
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
                 log.debug("SKIPPING: \'%s (%s)\' because it was not from genre: %s", sorted_movie['movie']['title'],
