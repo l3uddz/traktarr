@@ -455,11 +455,10 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     # replace radarr.minimum_availability if minimum_availability is supplied
     valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
 
-    if cfg['radarr']['minimum_availability'] not in valid_min_avail:
-        cfg['radarr']['minimum_availability'] = 'released'
-
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
+    elif cfg['radarr']['minimum_availability'] not in valid_min_avail:
+        cfg['radarr']['minimum_availability'] = 'released'
 
     log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 
@@ -585,11 +584,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     # replace radarr.minimum_availability if minimum_availability is supplied
     valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
 
-    if cfg['radarr']['minimum_availability'] not in valid_min_avail:
-        cfg['radarr']['minimum_availability'] = 'released'
-
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
+    elif cfg['radarr']['minimum_availability'] not in valid_min_avail:
+        cfg['radarr']['minimum_availability'] = 'released'
 
     log.debug('Set minimum availability to: \'%s\'', cfg['radarr']['minimum_availability'])
 

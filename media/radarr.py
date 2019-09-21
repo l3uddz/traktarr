@@ -13,15 +13,15 @@ class Radarr(PVR):
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def add_movie(self, movie_tmdbid, movie_title, movie_year, movie_title_slug, profile_id, root_folder,
-                  min_avail, search_missing=False):
+                  min_availability_temp, search_missing=False):
         payload = self._prepare_add_object_payload(movie_title, movie_title_slug, profile_id, root_folder)
 
         # replace radarr minimum_availability if supplied
-        if min_avail == 'announced':
+        if min_availability_temp == 'announced':
             minimum_availability = 'announced'
-        elif min_avail == 'in_cinemas':
+        elif min_availability_temp == 'in_cinemas':
             minimum_availability = 'inCinemas'
-        elif min_avail == 'predb':
+        elif min_availability_temp == 'predb':
             minimum_availability = 'preDB'
         else:
             minimum_availability = 'released'
