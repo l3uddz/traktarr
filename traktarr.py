@@ -372,6 +372,9 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         series_year = str(series['show']['year']) \
             if series['show']['year'] else '????'
 
+        # build list of genres
+        series_genres = (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A'
+
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'show', series):
@@ -388,7 +391,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                          series_year,
                          (series['show']['country'] or 'N/A').upper(),
                          (series['show']['language'] or 'N/A').upper(),
-                         (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A',
+                         series_genres,
                          series['show']['network'])
 
                 # determine which tags to use when adding this series
@@ -707,6 +710,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         movie_year = str(sorted_movie['movie']['year']) \
             if sorted_movie['movie']['year'] else '????'
 
+        # build list of genres
+        movie_genres = (', '.join(sorted_movie['movie']['genres'])).title() \
+            if sorted_movie['movie']['genres'] else 'N/A'
+
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
@@ -732,8 +739,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                              movie_year,
                              (sorted_movie['movie']['country'] or 'N/A').upper(),
                              (sorted_movie['movie']['language'] or 'N/A').upper(),
-                             (', '.join(sorted_movie['movie']['genres'])).title()
-                             if sorted_movie['movie']['genres'] else 'N/A')
+                             movie_genres)
                     # add movie to radarr
                     if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
                                         movie_year,
