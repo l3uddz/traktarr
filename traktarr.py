@@ -697,9 +697,9 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'votes')
         log.info("Sorted movies list to process by highest 'votes'")
 
-    # display specified RT score
+    # display specified min RT score
     if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-        log.debug("Minimum Rotten Tomatoes score of %d%% requested.", rating)
+        log.info("Minimum Rotten Tomatoes score of %d%% requested.", rating)
 
     # loop movies
     log.info("Processing list now...")
@@ -725,43 +725,41 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
             if not trakt_helper.is_movie_blacklisted(sorted_movie, cfg.filters.movies, ignore_blacklist,
                                                      callback_remove_recommended if remove_rejected_from_recommended
                                                      else None):
-                # Assuming the movie is not blacklisted, proceed to pull RT score if the user wishes to restrict
-                movie_rating = None
-                if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-                    movie_rating = rating_helper.get_rating(cfg['omdb']['api_key'], sorted_movie)
-                    if movie_rating == -1:
-                        log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'],
-                                 movie_year)
-                        continue
-                if (rating is None or movie_rating is None) or movie_rating >= rating:
-                    log.info("Adding: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
-                             sorted_movie['movie']['title'],
-                             movie_year,
-                             (sorted_movie['movie']['country'] or 'N/A').upper(),
-                             (sorted_movie['movie']['language'] or 'N/A').upper(),
-                             movie_genres)
-                    # add movie to radarr
-                    if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
-                                        movie_year,
-                                        sorted_movie['movie']['ids']['slug'], profile_id,
-                                        cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
-                        log.info("ADDED: \'%s (%s)\'", sorted_movie['movie']['title'],
-                                 movie_year)
-                        if notifications:
-                            callback_notify({'event': 'add_movie', 'list_type': list_type,
-                                             'movie': sorted_movie['movie']})
-                        added_movies += 1
-                    else:
-                        log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
-                else:
-                    log.debug("Minimum Rotten Tomatoes score of %d%% was not met.", rating)
-                    log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
-                # stop adding movies, if added_movies >= add_limit
-                if add_limit and added_movies >= add_limit:
-                    break
 
-                # sleep before adding any more
-                time.sleep(add_delay)
+                # Skip movie if below user specified min RT rating
+                if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
+                    if not rating_helper.does_movie_have_min_req_rating(cfg['omdb']['api_key'], sorted_movie, rating):
+                        continue
+
+                log.info("Adding: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
+                         sorted_movie['movie']['title'], movie_year,
+                         (sorted_movie['movie']['country'] or 'N/A').upper(),
+                         (sorted_movie['movie']['language'] or 'N/A').upper(), movie_genres)
+
+                # add movie to radarr
+                if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
+                                    movie_year, sorted_movie['movie']['ids']['slug'], profile_id,
+                                    cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
+
+                    log.info("ADDED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+
+                    if notifications:
+                        callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': sorted_movie['movie']})
+
+                    added_movies += 1
+
+                else:
+                    log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+
+            else:
+                log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+
+            # stop adding movies, if added_movies >= add_limit
+            if add_limit and added_movies >= add_limit:
+                break
+
+            # sleep before adding any more
+            time.sleep(add_delay)
 
         except Exception:
             log.exception("Exception while processing movie \'%s\': ", sorted_movie['movie']['title'])
