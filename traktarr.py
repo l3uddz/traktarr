@@ -78,6 +78,7 @@ def trakt_authentication():
 
 
 def validate_trakt(trakt, notifications):
+    log.info("Validating Trakt API Key...")
     if not trakt.validate_client_id():
         log.error("Aborting due to failure to validate Trakt API Key")
         if notifications:
@@ -378,7 +379,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'show', series):
-                log.debug("Skipping: \'%s\' because it was not from genre: %s", series['show']['title'],
+                log.debug("SKIPPING: \'%s\' because it was not from genre: %s", series['show']['title'],
                           genre.title())
                 continue
 
@@ -386,7 +387,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
             if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist,
                                                     callback_remove_recommended
                                                     if remove_rejected_from_recommended else None):
-                log.info("Adding: %s (%s) | Country: %s | Language: %s | Genre: %s | Network: %s",
+                log.info("ADDING: %s (%s) | Country: %s | Language: %s | Genre: %s | Network: %s",
                          series['show']['title'],
                          series_year,
                          (series['show']['country'] or 'N/A').upper(),
@@ -496,7 +497,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
                         cfg.radarr.minimum_availability, not no_search):
         log.info("ADDED \'%s (%s)\'", trakt_movie['title'], movie_year)
     else:
-        log.error("FAILED adding \'%s (%s)\'", trakt_movie['title'], movie_year)
+        log.error("FAILED ADDING \'%s (%s)\'", trakt_movie['title'], movie_year)
 
     return
 
@@ -717,7 +718,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
-                log.debug("Skipping: \'%s (%s)\' because it was not from genre: %s", sorted_movie['movie']['title'],
+                log.debug("SKIPPING: \'%s (%s)\' because it was not from genre: %s", sorted_movie['movie']['title'],
                           movie_year, genre.title())
                 continue
 
@@ -731,7 +732,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                     if not rating_helper.does_movie_have_min_req_rating(cfg['omdb']['api_key'], sorted_movie, rating):
                         continue
 
-                log.info("Adding: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
+                log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
                          sorted_movie['movie']['title'], movie_year,
                          (sorted_movie['movie']['country'] or 'N/A').upper(),
                          (sorted_movie['movie']['language'] or 'N/A').upper(), movie_genres)
@@ -821,11 +822,11 @@ def callback_notify(data):
 
         if cfg.notifications.verbose:
             notify.send(
-                message="Added \'%s\' show: \'%s (%s)\'" % (data['list_type'].capitalize(), data['show']['title'],
+                message="ADDED \'%s\' show: \'%s (%s)\'" % (data['list_type'].capitalize(), data['show']['title'],
                                                             series_year))
         return
     elif data['event'] == 'abort':
-        notify.send(message="Aborted adding Trakt \'%s\' %s due to: %s" % (data['list_type'].capitalize(), data['type'],
+        notify.send(message="ABORTED ADDING Trakt \'%s\' %s due to: %s" % (data['list_type'].capitalize(), data['type'],
                                                                            data['reason']))
         return
     elif data['event'] == 'error':
@@ -864,10 +865,10 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                 limit = value
 
                 if limit <= 0:
-                    log.info("Skipped Trakt's \'%s\' shows list", list_type.capitalize())
+                    log.info("SKIPPED Trakt's \'%s\' shows list", list_type.capitalize())
                     continue
                 else:
-                    log.info("Adding %d show(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
+                    log.info("ADDING %d show(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
 
                 local_ignore_blacklist = ignore_blacklist
 
@@ -881,10 +882,10 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
-                        log.info("Skipped Trakt user \'%s\''s \'%s\'", authenticate_user, list_type.capitalize)
+                        log.info("SKIPPED Trakt user \'%s\''s \'%s\'", authenticate_user, list_type.capitalize)
                         continue
                     else:
-                        log.info("Adding %d show(s) from Trakt user \'%s\''s \'%s\'", limit, authenticate_user,
+                        log.info("ADDING %d show(s) from Trakt user \'%s\''s \'%s\'", limit, authenticate_user,
                                  list_type.capitalize)
 
                     local_ignore_blacklist = ignore_blacklist
@@ -918,7 +919,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                                                  ignore_blacklist=local_ignore_blacklist)
 
             if added_shows is None:
-                log.error("Failed adding shows from Trakt's \'%s\' list", list_type)
+                log.error("FAILED ADDING shows from Trakt's \'%s\' list", list_type)
                 time.sleep(10)
                 continue
             total_shows_added += added_shows
@@ -960,10 +961,10 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                 limit = value
 
                 if limit <= 0:
-                    log.info("Skipped Trakt's \'%s\' movies list", list_type.capitalize())
+                    log.info("SKIPPED Trakt's \'%s\' movies list", list_type.capitalize())
                     continue
                 else:
-                    log.info("Adding %d movie(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
+                    log.info("ADDING %d movie(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
 
                 local_ignore_blacklist = ignore_blacklist
 
@@ -981,7 +982,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                         log.info("Skipped Trakt user \'%s\''s \'%s\'", authenticate_user, list_type.capitalize)
                         continue
                     else:
-                        log.info("Adding %d movie(s) from Trakt user \'%s\''s \'%s\'", limit,
+                        log.info("ADDING %d movie(s) from Trakt user \'%s\''s \'%s\'", limit,
                                  authenticate_user, list_type.capitalize())
 
                     local_ignore_blacklist = ignore_blacklist
@@ -1015,7 +1016,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                                                    ignore_blacklist=local_ignore_blacklist, rating=rating_limit)
 
             if added_movies is None:
-                log.error("Failed adding movies from Trakt's \'%s\' list", list_type.capitalize())
+                log.error("FAILED ADDING movies from Trakt's \'%s\' list", list_type.capitalize())
                 time.sleep(10)
                 continue
             total_movies_added += added_movies
