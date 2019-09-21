@@ -38,6 +38,7 @@
   - [Sonarr](#sonarr)
     - [Tags](#tags)
   - [Trakt](#trakt)
+  - [OMDb](#omdb)
 - [Usage](#usage)
   - [Automatic (Scheduled)](#automatic-scheduled)
     - [Setup](#setup)
@@ -611,7 +612,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     ],
     ```
 
-`rating_limit` - Only add movies above this Rotten Tomatoes score.
+`rating_limit` - Only add movies that are equal to or above this Rotten Tomatoes score. Requires an OMDb API Key (see [below](#omdb)).
 
 ### Shows
 
@@ -981,20 +982,25 @@ Trakt Authentication info:
 }
 ```
 
-`client_id` - Fill in your Trakt API key (_Client ID_).
+`client_id` - Your Trakt API Key (_Client ID_).
 
-`client_secret` - Fill in your Trakt Secret key (_Client Secret_)
+`client_secret` - Your Trakt Secret Key (_Client Secret_).
 
-## OMDB
+## OMDb
 
-OMDB Authentication info:
+[OMDb](https://www.omdbapi.com/) Authentication info.
 
 ```json
 "omdb": {
   "api_key":""
 }
 ```
-`api_key` - Fill in your OMDB API key (*This is only needed if you wish to use rating filtering on adding movies from command line/automatic*)
+
+`api_key` - Your [OMDb](https://www.omdbapi.com/) API Key.
+
+- This is only needed if you wish to use a minimum Rotten Tomatoes score to filter out movies.  
+    
+- Use `rating_limit` in config for automatic scheduling or `--rating` as an argument for CLI.
 
 # Usage
 

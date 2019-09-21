@@ -704,7 +704,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         if 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
             log.info("Minimum Rotten Tomatoes score of %d%% requested.", rating)
         else:
-            log.info("Skipping minimum Rotten Tomatoes score check as OMDb api key is missing.")
+            log.info("Skipping minimum Rotten Tomatoes score check as OMDb API Key is missing.")
 
     # loop movies
     log.info("Processing list now...")
