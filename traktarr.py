@@ -169,9 +169,12 @@ def show(show_id, folder=None, no_search=False):
     if not trakt_show:
         log.error("Aborting due to failure to retrieve Trakt show")
         return None
-    else:
-        log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, trakt_show['title'],
-                 str(trakt_show['year']) if trakt_show['year'] else '????')
+
+    # convert series year to string
+    series_year = str(trakt_show['year']) if trakt_show['year'] else '????'
+
+    log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, trakt_show['title'],
+             series_year)
 
     # determine which tags to use when adding this series
     use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
@@ -179,12 +182,10 @@ def show(show_id, folder=None, no_search=False):
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
                          cfg.sonarr.root_folder, use_tags, not no_search):
-        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'],
-                 str(trakt_show['year']) if trakt_show['year'] else '????',
+        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
                  sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
     else:
-        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'],
-                  str(trakt_show['year']) if trakt_show['year'] else '????',
+        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
                   sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
     return
@@ -366,6 +367,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     log.info("Processing list now...")
     for series in sorted_series_list:
         # noinspection PyBroadException
+
+        # convert series year to string
+        series_year = str(series['show']['year']) \
+            if series['show']['year'] else '????'
+
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'show', series):
@@ -379,7 +385,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                                     if remove_rejected_from_recommended else None):
                 log.info("Adding: %s (%s) | Country: %s | Language: %s | Genre: %s | Network: %s",
                          series['show']['title'],
-                         str(series['show']['year']) if series['show']['year'] else '????',
+                         series_year,
                          (series['show']['country'] or 'N/A').upper(),
                          (series['show']['language'] or 'N/A').upper(),
                          (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A',
@@ -392,15 +398,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
-                    log.info("ADDED: \'%s (%s)\' with tags: %s", series['show']['title'],
-                             str(series['show']['year']) if series['show']['year'] else '????',
+                    log.info("ADDED: \'%s (%s)\' with tags: %s", series['show']['title'], series_year,
                              sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
-                    log.error("FAILED ADDING: \'%s (%s)\' with tags: %s", series['show']['title'],
-                              str(series['show']['year']) if series['show']['year'] else '????',
+                    log.error("FAILED ADDING: \'%s (%s)\' with tags: %s", series['show']['title'], series_year,
                               sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
 
                 # stop adding shows, if added_shows >= add_limit
@@ -477,19 +481,19 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     if not trakt_movie:
         log.error("Aborting due to failure to retrieve Trakt movie")
         return None
-    else:
-        log.info("Retrieved Trakt movie information for \'%s\': \'%s (%s)\'", movie_id, trakt_movie['title'],
-                 str(trakt_movie['year']) if trakt_movie['year'] else '????')
+
+    # convert movie year to string
+    movie_year = str(trakt_movie['year']) if trakt_movie['year'] else '????'
+
+    log.info("Retrieved Trakt movie information for \'%s\': \'%s (%s)\'", movie_id, trakt_movie['title'], movie_year)
 
     # add movie to radarr
     if radarr.add_movie(trakt_movie['ids']['tmdb'], trakt_movie['title'], trakt_movie['year'],
                         trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder,
                         cfg.radarr.minimum_availability, not no_search):
-        log.info("ADDED \'%s (%s)\'", trakt_movie['title'],
-                 str(trakt_movie['year']) if trakt_movie['year'] else '????')
+        log.info("ADDED \'%s (%s)\'", trakt_movie['title'], movie_year)
     else:
-        log.error("FAILED adding \'%s (%s)\'", trakt_movie['title'],
-                  str(trakt_movie['year']) if trakt_movie['year'] else '????')
+        log.error("FAILED adding \'%s (%s)\'", trakt_movie['title'], movie_year)
 
     return
 
@@ -698,11 +702,16 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     log.info("Processing list now...")
     for sorted_movie in sorted_movies_list:
         # noinspection PyBroadException
+
+        # convert movie year to string
+        movie_year = str(sorted_movie['movie']['year']) \
+            if sorted_movie['movie']['year'] else '????'
+
         try:
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
-                log.debug("Skipping: \'%s\' because it was not from genre: %s", sorted_movie['movie']['title'],
-                          genre.title())
+                log.debug("Skipping: \'%s (%s)\' because it was not from genre: %s", sorted_movie['movie']['title'],
+                          movie_year, genre.title())
                 continue
 
             # check if movie passes out blacklist criteria inspection
@@ -715,34 +724,32 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                     movie_rating = rating_helper.get_rating(cfg['omdb']['api_key'], sorted_movie)
                     if movie_rating == -1:
                         log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'],
-                                 str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????')
+                                 movie_year)
                         continue
                 if (rating is None or movie_rating is None) or movie_rating >= rating:
                     log.info("Adding: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
                              sorted_movie['movie']['title'],
-                             str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????',
+                             movie_year,
                              (sorted_movie['movie']['country'] or 'N/A').upper(),
                              (sorted_movie['movie']['language'] or 'N/A').upper(),
                              (', '.join(sorted_movie['movie']['genres'])).title()
                              if sorted_movie['movie']['genres'] else 'N/A')
                     # add movie to radarr
                     if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
-                                        str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????',
+                                        movie_year,
                                         sorted_movie['movie']['ids']['slug'], profile_id,
                                         cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
                         log.info("ADDED: \'%s (%s)\'", sorted_movie['movie']['title'],
-                                 str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????')
+                                 movie_year)
                         if notifications:
                             callback_notify({'event': 'add_movie', 'list_type': list_type,
                                              'movie': sorted_movie['movie']})
                         added_movies += 1
                     else:
-                        log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'],
-                                  str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????')
+                        log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
                 else:
                     log.debug("Minimum Rotten Tomatoes score of %d%% was not met.", rating)
-                    log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'],
-                             str(sorted_movie['movie']['year']) if sorted_movie['movie']['year'] else '????')
+                    log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
                 # stop adding movies, if added_movies >= add_limit
                 if add_limit and added_movies >= add_limit:
                     break
@@ -777,8 +784,10 @@ def callback_remove_recommended(media_type, media_info):
                   media_info)
         return
 
-    media_name = '\'%s (%s)\'' % (media_info[media_type]['title'],
-                                  str(media_info[media_type]['year']) if media_info[media_type]['year'] else '????')
+    # convert media year to string
+    media_year = str(media_info[media_type]['year']) if media_info[media_type]['year'] else '????'
+
+    media_name = '\'%s (%s)\'' % (media_info[media_type]['title'], media_year)
 
     if trakt.remove_recommended_item(media_type, media_info[media_type]['ids']['trakt']):
         log.info("Removed rejected recommended %s: \'%s\'", media_type, media_name)
@@ -791,18 +800,25 @@ def callback_notify(data):
 
     # handle event
     if data['event'] == 'add_movie':
+
+        # convert movie year to string
+        movie_year = str(data['movie']['year']) \
+            if data['movie']['year'] else '????'
+
         if cfg.notifications.verbose:
             notify.send(
                 message="Added \'%s\' movie: \'%s (%s)\'" % (data['list_type'].capitalize(), data['movie']['title'],
-                                                             str(data['movie']['year'])
-                                                             if data['movie']['year'] else '????'))
+                                                             movie_year))
         return
     elif data['event'] == 'add_show':
+
+        # convert series year to string
+        series_year = str(data['show']['year']) if data['show']['year'] else '????'
+
         if cfg.notifications.verbose:
             notify.send(
                 message="Added \'%s\' show: \'%s (%s)\'" % (data['list_type'].capitalize(), data['show']['title'],
-                                                            str(data['show']['year'])
-                                                            if data['show']['year'] else '????'))
+                                                            series_year))
         return
     elif data['event'] == 'abort':
         notify.send(message="Aborted adding Trakt \'%s\' %s due to: %s" % (data['list_type'].capitalize(), data['type'],

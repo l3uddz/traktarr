@@ -70,8 +70,8 @@ def remove_existing_series(sonarr_series, trakt_series, callback=None):
                 continue
             # check if show exists in processed_series
             if tmp['show']['ids']['tvdb'] in processed_series:
-                log.debug("Removing existing show: \'%s (%s)\'", tmp['show']['title'],
-                          str(tmp['show']['year']) if tmp['show']['year'] else '????')
+                show_year = str(tmp['show']['year']) if tmp['show']['year'] else '????'
+                log.debug("Removing existing show: \'%s (%s)\'", tmp['show']['title'], show_year)
                 if callback:
                     callback('show', tmp)
                 continue

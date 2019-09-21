@@ -39,8 +39,8 @@ def remove_existing_movies(radarr_movies, trakt_movies, callback=None):
                 continue
             # check if movie exists in processed_movies
             if tmp['movie']['ids']['tmdb'] in processed_movies:
-                log.debug("Removing existing movie: \'%s (%s)\'", tmp['movie']['title'],
-                          str(tmp['movie']['year']) if tmp['movie']['year'] else '????')
+                movie_year = str(tmp['movie']['year']) if tmp['movie']['year'] else '????'
+                log.debug("Removing existing movie: \'%s (%s)\'", tmp['movie']['title'], movie_year)
                 if callback:
                     callback('movie', tmp)
                 continue
