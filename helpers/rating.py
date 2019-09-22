@@ -5,76 +5,77 @@ import requests
 log = logger.get_logger(__name__)
 
 
-def get_rating(omdb_apikey, movie):
+def get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id):
     """
     Lookup movie ratings via OMDb
 
-    :param omdb_apikey: OMDb api key
-    :param movie: sorted_movie item
-    :return: rating or false if no rating found
+    :param omdb_api_key: OMDb API Key
+    :param movie_title: Movie Title
+    :param movie_year: Movie Year
+    :param movie_imdb_id: Movie IMDb ID
+    :return: Rating score (int) or False if no rating found
     """
 
     ratings_exist = False
-    movie_imdbid = movie['movie']['ids']['imdb']
-    movie_year = str(movie['movie']['year']) if movie['movie']['year'] else '????'
 
-    if movie_imdbid:
+    if movie_imdb_id:
         log.debug("Requesting info from OMDb for: \'%s (%s)\' [IMDb ID: %s]",
-                  movie['movie']['title'],
+                  movie_title,
                   movie_year,
-                  movie_imdbid)
-        r = requests.get('http://www.omdbapi.com/?i=' + movie_imdbid + '&apikey=' + omdb_apikey)
+                  movie_imdb_id)
+        r = requests.get('http://www.omdbapi.com/?i=' + movie_imdb_id + '&apikey=' + omdb_api_key)
         if r.status_code == 200 and json.loads(r.text)["Response"] == 'True':
             log.debug("Successfully requested ratings from OMDB for \'%s (%s)\' [IMDb ID: %s]",
-                      movie['movie']['title'],
+                      movie_title,
                       movie_year,
-                      movie_imdbid)
+                      movie_imdb_id)
             for source in json.loads(r.text)["Ratings"]:
                 if source['Source'] == 'Rotten Tomatoes':
                     # noinspection PyUnusedLocal
                     ratings_exist = True
-                    log.debug("Rotten Tomatoes score of %s for: \'%s (%s)\' [IMDb ID: %s]",
-                              source['Value'],
-                              movie['movie']['title'],
+                    log.debug("Rotten Tomatoes score for \'%s (%s)\' [IMDb ID: %s]: %s",
+                              movie_title,
                               movie_year,
-                              movie_imdbid)
+                              movie_imdb_id,
+                              source['Value'])
                     return int(source['Value'].split('%')[0])
             if not ratings_exist:
                 log.debug("No Rotten Tomatoes score found for: \'%s (%s)\' [IMDb ID: %s]",
-                          movie['movie']['title'],
+                          movie_title,
                           movie_year,
-                          movie_imdbid)
+                          movie_imdb_id)
         else:
             log.debug("Error encountered when requesting ratings from OMDb for: \'%s (%s)\' [IMDb ID: %s]",
-                      movie['movie']['title'],
+                      movie_title,
                       movie_year,
-                      movie_imdbid)
+                      movie_imdb_id)
     else:
         log.debug("Skipping OMDb ratings lookup because no IMDb ID was found for: \'%s (%s)\'",
-                  movie['movie']['title'],
+                  movie_title,
                   movie_year)
 
     return False
 
 
-def does_movie_have_min_req_rating(api_key, sorted_movie, rating):
+def does_movie_have_min_req_rating(omdb_api_key, sorted_movie, req_rating):
 
-    # pull RT score
-    movie_rating = get_rating(api_key, sorted_movie)
-
-    # convert movie year to string
+    movie_title = sorted_movie['movie']['title']
     movie_year = str(sorted_movie['movie']['year']) \
         if sorted_movie['movie']['year'] else '????'
+    movie_imdb_id = sorted_movie['movie']['ids']['imdb']
+
+    # pull RT score
+    movie_rating = get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id)
 
     if not movie_rating:
-        log.info("SKIPPING: \'%s (%s)\' because a Rotten Tomatoes score could not be found.", sorted_movie['movie']['title'],
+        log.info("SKIPPING: \'%s (%s)\' because a Rotten Tomatoes score could not be found.", movie_title,
                  movie_year)
         return False
-    elif movie_rating < rating:
+    elif movie_rating < req_rating:
         log.info("SKIPPING: \'%s (%s)\' because its Rotten Tomatoes score of %d%% is below the required score of %d%%.",
-                 sorted_movie['movie']['title'], movie_year, movie_rating, rating)
+                 movie_title, movie_year, movie_rating, req_rating)
         return False
-    elif movie_rating >= rating:
+    elif movie_rating >= req_rating:
         log.info("ADDING: \'%s (%s)\' because its Rotten Tomatoes score of %d%% is above the required score of %d%%.",
-                 sorted_movie['movie']['title'], movie_year, movie_rating, rating)
+                 movie_title, movie_year, movie_rating, req_rating)
         return True
