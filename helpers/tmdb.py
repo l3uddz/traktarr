@@ -1,29 +1,47 @@
-from helpers import str as misc_str
 from misc.log import logger
-
 import requests
 
 log = logger.get_logger(__name__)
 
 
-def does_movie_exist_on_tmdb(sorted_movie):
+def validate_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id):
     try:
-        movie_title = sorted_movie['movie']['title']
-        movie_year = str(sorted_movie['movie']['year']) \
-            if sorted_movie['movie']['year'] else '????'
-        movie_tmdbid = sorted_movie['movie']['ids']['tmdb']
-
-        req = requests.get('https://www.themoviedb.org/movie/%s' % movie_tmdbid)
-
-        if req.status_code == 200:
-            log.debug("\'%s (%s)\' [TMDb ID: %s] exists on TMDb.", movie_title, movie_year, movie_tmdbid)
+        if not movie_tmdb_id or not isinstance(movie_tmdb_id, int):
+            log.debug("SKIPPING: \'%s (%s)\' blacklisted it has an invalid TMDb ID", movie_title, movie_year)
+            return False
+        else:
             return True
-
-        log.debug("SKIPPING: \'%s (%s)\' [TMDb ID: %s] because it does not exist on TMDb.", movie_title, movie_year,
-                  movie_tmdbid)
-        return False
-
     except Exception:
-        log.exception("Exception validating TMDb ID: ")
+        log.exception("Exception validating TMDb ID for \'%s (%s)\'.", movie_title, movie_year)
+    return False
 
+
+def verify_movie_exists_on_tmdb(movie_title, movie_year, movie_tmdb_id):
+    try:
+        req = requests.get('https://www.themoviedb.org/movie/%s' % movie_tmdb_id)
+        if req.status_code == 200:
+            log.debug("\'%s (%s)\' [TMDb ID: %s] exists on TMDb.", movie_title, movie_year, movie_tmdb_id)
+            return True
+        else:
+            log.debug("SKIPPING: \'%s (%s)\' [TMDb ID: %s] because it does not exist on TMDb.", movie_title, movie_year,
+                      movie_tmdb_id)
+            return False
+    except Exception:
+        log.exception("Exception verifying TMDb ID for \'%s (%s)\'.", movie_title, movie_year)
+    return False
+
+
+def check_movie_tmdb_id(sorted_movie):
+
+    movie_title = sorted_movie['movie']['title']
+    movie_year = str(sorted_movie['movie']['year']) \
+        if sorted_movie['movie']['year'] else '????'
+    movie_tmdb_id = sorted_movie['movie']['ids']['tmdb']
+
+    try:
+        if validate_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id) and \
+                verify_movie_exists_on_tmdb(movie_title, movie_year, movie_tmdb_id):
+            return True
+    except Exception:
+        log.exception("Exception verifying/validating TMDb ID for \'%s (%s)\'.", movie_title, movie_year)
     return False

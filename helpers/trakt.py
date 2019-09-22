@@ -250,16 +250,13 @@ def blacklisted_movie_id(movie, blacklisted_ids):
     blacklisted = False
     blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
-        if not movie['movie']['ids']['tmdb'] or not isinstance(movie['movie']['ids']['tmdb'], int):
-            log.debug("\'%s\' was blacklisted because it had an invalid TMDb ID", movie['movie']['title'])
-            blacklisted = True
-        elif movie['movie']['ids']['tmdb'] in blacklisted_ids:
+        if movie['movie']['ids']['tmdb'] in blacklisted_ids:
             log.debug("\'%s\' was blacklisted because it had a blacklisted TMDb ID of: %d", movie['movie']['title'],
                       movie['movie']['ids']['tmdb'])
             blacklisted = True
 
     except Exception:
-        log.exception("Exception determining if show had a blacklisted TMDb ID %s: ", movie)
+        log.exception("Exception determining if movie had a blacklisted TMDb ID %s: ", movie)
     return blacklisted
 
 

@@ -720,8 +720,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
             if sorted_movie['movie']['genres'] else 'N/A'
 
         try:
-            # check if movie exists on TMDb website
-            if not tmdb_helper.does_movie_exist_on_tmdb(sorted_movie):
+            # check if movie has a valid TMDb ID and that it exists on TMDb
+            if not tmdb_helper.check_movie_tmdb_id(sorted_movie):
                 continue
 
             # check if genre matches genre supplied via argument
