@@ -569,9 +569,11 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords (used as the only list item):
 
-  - `any` - Add movies from any country.
+  - Blank list (i.e. `[]`) - Add movies from any country.
 
-  - `ignore` (also empty list i.e. `[]`) - Like `any`, but also add movies even if it is missing a country.
+  - `ignore` (i.e. `["ignore"]`) Add movies from any country, including ones with no country specified.
+
+    - No other list item should be present. 
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
@@ -585,15 +587,17 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `blacklisted_genres` - Blacklist certain genres.
 
-  - [List of available movie genres](assets/list_of_movie_genres.md).
+- [List of available movie genres](assets/list_of_movie_genres.md).
 
-  - For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
+- For an updated list, visit [here](https://trakt.docs.apiary.io/#reference/genres/list/get-genres).
 
-  - Special Keywords:
+- Special Keywords:
 
-    - Blank list (i.e. `[]`) - Add movies from any genre.
+  - Blank list (i.e. `[]`) - Add movies from any genre.
 
-    - `ignore` (used as the only list item) - Add movies from any genre, including ones with no genre specified.
+  - `ignore` (i.e. `["ignore"]`) - Add movies from any genre, including ones with no genre specified.
+    
+    - No other list item should be present. 
 
 `blacklisted_max_year` - Blacklist release dates after specified year.
 
@@ -679,10 +683,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords (used as the only list item):
 
-  - `any` - Add shows from any country.
+  - Blank list (i.e. `[]`) - Add shows from any country.
 
-  - `ignore` (also empty list i.e. `[]`) - Like `any`, but also add shows even if it is missing a country.
+  - `ignore` (i.e. `["ignore"]`) Add shows from any country, including ones with no country specified.
 
+    - No other list item should be present. 
+    
 `allowed_languages` - Only add shows with these languages.
 
 - By default, Traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
@@ -701,8 +707,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Blank list (i.e. `[]`) - Add shows from any genre.
 
-  - `ignore` (used as the only list item) - Add shows from any genre, including ones with no genre specified.
+  - `ignore` (i.e. `["ignore"]`) - Add shows from any genre, including ones with no genre specified.
 
+    - No other list item should be present. 
+      
 `blacklisted_max_year` - Blacklist release dates after specified year.
 
 `blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).

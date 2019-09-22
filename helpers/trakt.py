@@ -10,10 +10,12 @@ def blacklisted_show_genre(show, genres):
         # ["ignore"] - add show item even if it is missing a genre
         if len(genres) == 1 and genres[0].lower() == 'ignore':
             log.debug("Skipping valid genre check for: \'%s\'", show['show']['title'])
-        # [] - add show item with any valid genre
         elif not show['show']['genres']:
             log.debug("\'%s\' was blacklisted because it had no genre", show['show']['title'])
             blacklisted = True
+        # [] - add show item with any valid genre
+        elif not genres:
+            log.debug("Skipping blacklisted genre check for: \'%s\'", show['show']['title'])
         # List provided - skip adding show item if the genre is blacklisted
         else:
             for genre in genres:
@@ -47,16 +49,16 @@ def blacklisted_show_year(show, earliest_year, latest_year):
 def blacklisted_show_country(show, allowed_countries):
     blacklisted = False
     try:
-        # [] or ["ignore"] - add show item even if it is missing a country
-        if (not allowed_countries) or (len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore'):
+        # ["ignore"] - add show item even if it is missing a country
+        if len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore':
             log.debug("Skipping valid countries check for: \'%s\'", show['show']['title'])
         # List provided - skip adding show item because it is missing a country
         elif not show['show']['country']:
             log.debug("\'%s\' was blacklisted because it had no country", show['show']['title'])
             blacklisted = True
-        # ["any"] - add show item with any valid country
-        elif len(allowed_countries) == 1 and allowed_countries[0].lower() == 'any':
-            log.debug("Skipping allowed countries check for: \'%s\'")
+        # [] - add show item from any valid country
+        elif not allowed_countries:
+            log.debug("Skipping allowed countries check for: \'%s\'", show['show']['title'])
         # List provided - skip adding show item if the country is blacklisted
         elif show['show']['country'].lower() not in allowed_countries:
             log.debug("\'%s\' was blacklisted because it's from the country: %s", show['show']['title'],
@@ -154,10 +156,12 @@ def blacklisted_movie_genre(movie, genres):
         # ["ignore"] - add movie item even if it is missing a genre
         if len(genres) == 1 and genres[0].lower() == 'ignore':
             log.debug("Skipping valid genre check for: \'%s\'", movie['movie']['title'])
-        # [] - add movie item with any valid genre
         elif not movie['movie']['genres']:
             log.debug("\'%s\' was blacklisted because it had no genre", movie['movie']['title'])
             blacklisted = True
+        # [] - add movie item with any valid genre
+        elif not genres:
+            log.debug("Skipping blacklisted genre check for: \'%s\'", movie['movie']['title'])
         # List provided - skip adding movie item if the genre is blacklisted
         else:
             for genre in genres:
@@ -191,16 +195,16 @@ def blacklisted_movie_year(movie, earliest_year, latest_year):
 def blacklisted_movie_country(movie, allowed_countries):
     blacklisted = False
     try:
-        # [] or ["ignore"] - add movie item even if it is missing a country
-        if (not allowed_countries) or (len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore'):
+        # ["ignore"] - add movie item even if it is missing a country
+        if len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore':
             log.debug("Skipping valid countries check for: \'%s\'", movie['movie']['title'])
         # List provided - skip adding movie item because it is missing a country
         elif not movie['movie']['country']:
             log.debug("\'%s\' was blacklisted because it had no country", movie['movie']['title'])
             blacklisted = True
-        # ["any"] - add movie item with any valid country
-        elif len(allowed_countries) == 1 and allowed_countries[0].lower() == 'any':
-            log.debug("Skipping allowed countries check.")
+        # [] - add movie item with from any valid country
+        elif not allowed_countries:
+            log.debug("Skipping allowed countries check for: \'%s\'", movie['movie']['title'])
         # List provided - skip adding movie item if the country is blacklisted
         elif movie['movie']['country'].lower() not in allowed_countries:
             log.debug("\'%s\' was blacklisted because it's from the country: %s", movie['movie']['title'],
