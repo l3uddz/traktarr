@@ -1078,7 +1078,7 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
         notify.send(message="Automatic mode is now running.")
 
     # Add tasks to schedule and do first run if enabled
-    if cfg.automatic.movies.interval:
+    if cfg.automatic.movies.interval and cfg.automatic.movies.interval > 0:
         movie_schedule = schedule.every(cfg.automatic.movies.interval).hours.do(
             automatic_movies,
             add_delay,
@@ -1094,7 +1094,7 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
             # Sleep between tasks
             time.sleep(add_delay)
 
-    if cfg.automatic.shows.interval:
+    if cfg.automatic.shows.interval and cfg.automatic.shows.interval > 0:
         shows_schedule = schedule.every(cfg.automatic.shows.interval).hours.do(
             automatic_shows,
             add_delay,
