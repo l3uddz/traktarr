@@ -122,7 +122,9 @@ class Trakt:
                 log.debug("Response Page: %d of %d", current_page, total_pages)
 
                 if req.status_code == 200 and len(resp_data):
-                    if resp_data.startswith("[{") and resp_data.endswith("}]"):
+                    if (resp_data.startswith("[{") and resp_data.endswith("}]")) or \
+                            (resp_data.startswith("{") and resp_data.endswith("}")):
+
                         resp_json = json.loads(resp_data)
 
                         if type_name == 'person' and 'cast' in resp_json:
@@ -415,7 +417,7 @@ class Trakt:
     @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_shows(self, person, limit=1000, languages=None, genres=None):
         return self._make_items_request(
-            url='https://api.trakt.tv/people/%s/shows' % person,
+            url='https://api.trakt.tv/people/%s/shows' % person.replace(' ', '-').lower(),
             limit=limit,
             languages=languages,
             object_name='shows',
@@ -527,7 +529,7 @@ class Trakt:
     @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_movies(self, person, limit=1000, languages=None, genres=None):
         return self._make_items_request(
-            url='https://api.trakt.tv/people/%s/movies' % person,
+            url='https://api.trakt.tv/people/%s/movies' % person.replace(' ', '-').lower(),
             limit=limit,
             languages=languages,
             object_name='movies',

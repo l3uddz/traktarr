@@ -50,8 +50,8 @@
     - [Show (Single Show)](#show-single-show)
     - [Shows (Multiple Shows)](#shows-multiple-shows)
   - [Examples (CLI)](#examples-cli)
-    - [Movies](#movies)
-    - [Shows](#shows)
+    - [Movies](#movies-1)
+    - [Shows](#shows-1)
 - [Donate](#donate)
 
 <!-- /TOC -->
