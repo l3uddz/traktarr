@@ -85,7 +85,7 @@ def validate_trakt(trakt, notifications):
             callback_notify({'event': 'error', 'reason': 'Failure to validate Trakt API Key'})
         exit()
     else:
-        log.info("Validated Trakt API Key")
+        log.info("...Validated Trakt API Key.")
 
 
 def validate_pvr(pvr, pvr_type, notifications):
@@ -95,7 +95,7 @@ def validate_pvr(pvr, pvr_type, notifications):
             callback_notify({'event': 'error', 'reason': 'Failure to validate %s URL / API Key' % pvr_type})
         return None
     else:
-        log.info("Validated %s URL & API Key", pvr_type)
+        log.info("Validated %s URL & API Key.", pvr_type)
 
 
 def get_profile_id(pvr, profile):
