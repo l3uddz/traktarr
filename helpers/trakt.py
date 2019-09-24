@@ -8,7 +8,7 @@ def extract_list_user_and_key_from_url(list_url):
     try:
         import re
         list_user = re.search('\/users\/([^/]*)', list_url).group(1)
-        list_key = re.search('\/lists\/([^/]*)', list_url).group(1)
+        list_key = re.search('\/lists\/([^/?]*)', list_url).group(1)
 
         return list_user, list_key
     except:
