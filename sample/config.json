@@ -59,7 +59,7 @@
         "fox sports",
         "yahoo!"
       ],
-      "disabled_for": [],
+      "disabled_for": []
     },
     "movies": {
       "allowed_countries": [
@@ -89,7 +89,7 @@
         "gb",
         "ca"
       ],
-      "disabled_for": [],
+      "disabled_for": []
     }
   },
   "radarr": {
