@@ -370,7 +370,7 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
     "boxoffice": 10,
     "interval": 24,
     "popular": 3,
-    "trending": 2,
+    "trending": 0,
     "watched": 2,
     "played_all": 2,
     "watchlist": {},
@@ -389,7 +389,9 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 },
 ```
 
-`interval` - Specify how often (in hours) to run Traktarr task.
+`interval` - Specify how often (in hours) to run Traktarr task. 
+
+  - Setting `interval` to `0`, will skip the schedule for that task. For example, if you only want to add movies and not TV shows, you can set show's `interval` to `0`.
 
 `anticipated`, `popular`, `trending`, `boxoffice` (movies only) - Specify how many items from each Trakt list to find.
 
