@@ -72,7 +72,7 @@ class Trakt:
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=6, on_backoff=backoff_handler)
     def _make_items_request(self, url, limit, languages, type_name, object_name, authenticate_user=None, payload={},
-                            sleep_between=5, genres=None):
+                            sleep_between=5, genres=None, include_non_acting_roles=False):
         if not languages:
             languages = ['en']
 
@@ -128,8 +128,13 @@ class Trakt:
                         resp_json = json.loads(resp_data)
 
                         if type_name == 'person' and 'cast' in resp_json:
-                            # handle person results
                             for item in resp_json['cast']:
+                                # filter out non-acting roles
+                                if not include_non_acting_roles and \
+                                        ((item['character'].strip() == '') or
+                                         'narrat' in item['character'].lower() or
+                                         'himself' in item['character'].lower()):
+                                    continue
                                 if item not in processed:
                                     if object_name.rstrip('s') not in item and 'title' in item:
                                         processed.append({object_name.rstrip('s'): item})
@@ -415,14 +420,15 @@ class Trakt:
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
-    def get_person_shows(self, person, limit=1000, languages=None, genres=None):
+    def get_person_shows(self, person, limit=1000, languages=None, genres=None, include_non_acting_roles=False):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/shows' % person.replace(' ', '-').lower(),
             limit=limit,
             languages=languages,
             object_name='shows',
             type_name='person',
-            genres=genres
+            genres=genres,
+            include_non_acting_roles=include_non_acting_roles
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -527,14 +533,15 @@ class Trakt:
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
-    def get_person_movies(self, person, limit=1000, languages=None, genres=None):
+    def get_person_movies(self, person, limit=1000, languages=None, genres=None, include_non_acting_roles=False):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/movies' % person.replace(' ', '-').lower(),
             limit=limit,
             languages=languages,
             object_name='movies',
             type_name='person',
-            genres=genres
+            genres=genres,
+            include_non_acting_roles=include_non_acting_roles
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)

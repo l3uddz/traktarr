@@ -226,7 +226,13 @@ def show(show_id, folder=None, no_search=False):
 @click.option(
     '--actor', '-a',
     default=None,
-    help='Only add movies from this actor to Radarr.')
+    help='Only add movies from this actor to Radarr. '
+         'Requires the \'person\' list option.')
+@click.option(
+    '--include-non-acting-roles',
+    is_flag=True,
+    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list option with the \'actor\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -248,7 +254,8 @@ def show(show_id, folder=None, no_search=False):
     is_flag=True,
     help='Removes rejected/existing shows from recommended.')
 def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, actor=None, no_search=False,
-          notifications=False, authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
+          include_non_acting_roles=False, notifications=False, authenticate_user=None, ignore_blacklist=False,
+          remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -301,7 +308,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_person_shows(person=actor,
                                                     genres=genre if genre and
                                                     'ignore' not in genre.lower() else None,
-                                                    languages=cfg.filters.shows.allowed_languages)
+                                                    languages=cfg.filters.shows.allowed_languages,
+                                                    include_non_acting_roles=include_non_acting_roles)
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_shows(authenticate_user,
                                                          genres=genre if genre
@@ -544,7 +552,13 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
 @click.option(
     '--actor', '-a',
     default=None,
-    help='Only add movies from this actor to Radarr.')
+    help='Only add movies from this actor to Radarr. '
+         'Requires the \'person\' list.')
+@click.option(
+    '--include-non-acting-roles',
+    is_flag=True,
+    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list option with the \'actor\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -566,8 +580,8 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     is_flag=True,
     help='Removes rejected/existing movies from recommended.')
 def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None,
-           minimum_availability=None, actor=None, no_search=False, notifications=False, authenticate_user=None,
-           ignore_blacklist=False, remove_rejected_from_recommended=False):
+           minimum_availability=None, actor=None, include_non_acting_roles=False, no_search=False, notifications=False,
+           authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -634,7 +648,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         trakt_objects_list = trakt.get_person_movies(person=actor,
                                                      genres=genre if genre
                                                      and 'ignore' not in genre.lower() else None,
-                                                     languages=cfg.filters.movies.allowed_languages)
+                                                     languages=cfg.filters.movies.allowed_languages,
+                                                     include_non_acting_roles=include_non_acting_roles)
 
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_movies(authenticate_user,
