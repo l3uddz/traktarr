@@ -12,7 +12,7 @@ class Radarr(PVR):
         return self._get_objects('api/movie')
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def add_movie(self, movie_tmdbid, movie_title, movie_year, movie_title_slug, profile_id, root_folder,
+    def add_movie(self, movie_tmdb_id, movie_title, movie_year, movie_title_slug, profile_id, root_folder,
                   min_availability_temp, search_missing=False):
         payload = self._prepare_add_object_payload(movie_title, movie_title_slug, profile_id, root_folder)
 
@@ -27,7 +27,7 @@ class Radarr(PVR):
             minimum_availability = 'released'
 
         payload = dict_merge(payload, {
-            'tmdbId': movie_tmdbid,
+            'tmdbId': movie_tmdb_id,
             'year': movie_year,
             'minimumAvailability': minimum_availability,
             'addOptions': {
@@ -35,4 +35,4 @@ class Radarr(PVR):
             }
         })
 
-        return self._add_object('api/movie', payload, identifier_field='tmdbId', identifier=movie_tmdbid)
+        return self._add_object('api/movie', payload, identifier_field='tmdbId', identifier=movie_tmdb_id)

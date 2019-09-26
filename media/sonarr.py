@@ -42,12 +42,12 @@ class Sonarr(PVR):
         return None
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
-    def add_series(self, series_tvdbid, series_title, series_title_slug, profile_id, root_folder, tag_ids=None,
+    def add_series(self, series_tvdb_id, series_title, series_title_slug, profile_id, root_folder, tag_ids=None,
                    search_missing=False):
         payload = self._prepare_add_object_payload(series_title, series_title_slug, profile_id, root_folder)
 
         payload = dict_merge(payload, {
-            'tvdbId': series_tvdbid,
+            'tvdbId': series_tvdb_id,
             'tags': [] if not tag_ids or not isinstance(tag_ids, list) else tag_ids,
             'seasons': [],
             'seasonFolder': True,
@@ -56,4 +56,4 @@ class Sonarr(PVR):
             }
         })
 
-        return self._add_object('api/series', payload, identifier_field='tvdbId', identifier=series_tvdbid)
+        return self._add_object('api/series', payload, identifier_field='tvdbId', identifier=series_tvdb_id)
