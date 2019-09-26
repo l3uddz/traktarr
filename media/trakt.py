@@ -419,7 +419,6 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_shows(self, person, limit=1000, languages=None, genres=None, include_non_acting_roles=False):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/shows' % person.replace(' ', '-').lower(),
@@ -532,7 +531,6 @@ class Trakt:
             genres=genres
         )
 
-    @cache(cache_file=cachefile, retry_if_blank=True)
     def get_person_movies(self, person, limit=1000, languages=None, genres=None, include_non_acting_roles=False):
         return self._make_items_request(
             url='https://api.trakt.tv/people/%s/movies' % person.replace(' ', '-').lower(),
