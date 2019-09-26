@@ -1097,10 +1097,14 @@ Usage: traktarr [OPTIONS] COMMAND [ARGS]...
   Add new shows & movies to Sonarr/Radarr from Trakt.
 
 Options:
-  --version       Show the version and exit.
-  --config PATH   Configuration file  [default: /opt/traktarr/config.json]
-  --logfile PATH  Log file  [default: /opt/traktarr/activity.log]
-  --help          Show this message and exit.
+  --version         Show the version and exit.
+  --config PATH     Configuration file  [default: /Users/macuser/Documents/Git
+                    Hub/l3uddz/traktarr/config.json]
+  --cachefile PATH  Cache file  [default:
+                    /Users/macuser/Documents/GitHub/l3uddz/traktarr/cache.db]
+  --logfile PATH    Log file  [default: /Users/macuser/Documents/GitHub/l3uddz
+                    /traktarr/activity.log]
+  --help            Show this message and exit.
 
 Commands:
   movie                 Add a single movie to Radarr.
