@@ -1163,28 +1163,32 @@ Usage: traktarr movies [OPTIONS]
   Add multiple movies to Radarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example, 'anticipated', 'trending',
+  -t, --list-type TEXT            Trakt list to process. 
+                                  For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
-                                  'watchlist', or any URL to a list  [required]
+                                  'watchlist', or any URL to a list.  [required]
   -l, --add-limit INTEGER         Limit number of movies added to Radarr.
   -d, --add-delay FLOAT           Seconds between each add request to Radarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
   -r, --rating INTEGER            Set a minimum Rotten Tomatoes score.
-  -g, --genre TEXT                Only add movies from this genre to Radarr. Use 'ignore' to add
-                                  movies from any genre, including ones with no genre specified.
+  -g, --genre TEXT                Only add movies from this genre to Radarr. Only one genre can be
+                                  specified. 
+                                  Use 'ignore' to add movies from any genre, including
+                                  ones with no genre specified.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   -ma, --minimum-availability [announced|in_cinemas|released|predb]
                                   Add movies with this minimum availability to Radarr. Default is
                                   'released'.
-  -a, --actor TEXT                Only add movies from this actor to Radarr. Requires the 'person'
-                                  list.
+  -a, --actor TEXT                Only add movies from this actor to Radarr.Only one actor can be
+                                  specified. 
+                                  Requires the 'person' list.
   --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
                                   Requires the 'person' list option with the 'actor' argument.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
   --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
-                                  Default: first user in the config.
+                                  Defaults to first user in the config.
   --ignore-blacklist              Ignores the blacklist when running the command.
   --remove-rejected-from-recommended
                                   Removes rejected/existing movies from recommended.
@@ -1297,18 +1301,22 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. For example, 'anticipated', 'trending',
+  -t, --list-type TEXT            Trakt list to process. 
+                                  For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
-                                  'watchlist', or any URL to a list  [required]
+                                  'watchlist', or any URL to a list.  [required]
   -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
-  -g, --genre TEXT                Only add shows from this genre to Sonarr. Use 'ignore' to add
-                                  shows from any genre, including ones with no genre specified.
+  -g, --genre TEXT                Only add shows from this genre to Sonarr. Only one genre can be
+                                  specified. 
+                                  Use 'ignore' to add shows from any genre, including
+                                  ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
-  -a, --actor TEXT                Only add movies from this actor to Radarr. Requires the 'person'
-                                  list option.
+  -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
+                                  specified. 
+                                  Requires the 'person' list option.
   --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
                                   Requires the 'person' list option with the 'actor' argument.
   --no-search                     Disable search when adding shows to Sonarr.
