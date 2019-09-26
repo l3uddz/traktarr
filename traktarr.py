@@ -418,13 +418,18 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                 else:
                     log.error("FAILED ADDING: \'%s (%s)\' with tags: %s", series['show']['title'], series_year,
                               sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
+                    continue
 
-                # stop adding shows, if added_shows >= add_limit
-                if add_limit and added_shows >= add_limit:
-                    break
+            else:
+                log.info("SKIPPED: \'%s (%s)\'", series['show']['title'], series_year)
+                continue
 
-                # sleep before adding any more
-                time.sleep(add_delay)
+            # stop adding shows, if added_shows >= add_limit
+            if add_limit and added_shows >= add_limit:
+                break
+
+            # sleep before adding any more
+            time.sleep(add_delay)
 
         except Exception:
             log.exception("Exception while processing show \'%s\': ", series['show']['title'])
@@ -766,17 +771,15 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                                     cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
 
                     log.info("ADDED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
-
                     if notifications:
                         callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': sorted_movie['movie']})
-
                     added_movies += 1
-
                 else:
                     log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
-
+                    continue
             else:
                 log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+                continue
 
             # stop adding movies, if added_movies >= add_limit
             if add_limit and added_movies >= add_limit:
