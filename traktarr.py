@@ -196,6 +196,14 @@ def show(show_id, folder=None, no_search=False):
         use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
         readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
 
+    # series type
+    if any('anime' in s.lower() for s in trakt_show['genres']):
+        series_type = 'anime'
+    else:
+        series_type = 'standard'
+
+    log.debug("Set series type for \'%s (%s)\' to: %s", series_title, series_year, series_type.title())
+
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'],
                          series_title,
@@ -204,6 +212,7 @@ def show(show_id, folder=None, no_search=False):
                          cfg.sonarr.root_folder,
                          use_tags,
                          not no_search,
+                         series_type,
                          ):
         if profile_tags is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
@@ -417,6 +426,14 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         else:
             series_year = '????'
 
+        # series type
+        if any('anime' in s.lower() for s in series['show']['genres']):
+            series_type = 'anime'
+        else:
+            series_type = 'standard'
+
+        log.debug("Set series type for \'%s (%s)\' to: %s", series_title, series_year, series_type.title())
+
         # build list of genres
         series_genres = (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A'
 
@@ -462,6 +479,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                      cfg.sonarr.root_folder,
                                      use_tags,
                                      not no_search,
+                                     series_type,
                                      ):
                     if profile_tags is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
