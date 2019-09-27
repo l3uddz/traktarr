@@ -57,12 +57,7 @@ def get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id):
     return False
 
 
-def does_movie_have_min_req_rating(omdb_api_key, sorted_movie, req_rating):
-
-    movie_title = sorted_movie['movie']['title']
-    movie_year = str(sorted_movie['movie']['year']) \
-        if sorted_movie['movie']['year'] else '????'
-    movie_imdb_id = sorted_movie['movie']['ids']['imdb']
+def does_movie_have_min_req_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id, req_rating):
 
     # pull RT score
     movie_rating = get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id)

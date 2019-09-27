@@ -212,8 +212,7 @@ def show(show_id, folder=None, no_search=False):
                          cfg.sonarr.root_folder,
                          use_tags,
                          not no_search,
-                         series_type,
-                         ):
+                         series_type):
         if profile_tags is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                      readable_tags)
@@ -479,8 +478,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                      cfg.sonarr.root_folder,
                                      use_tags,
                                      not no_search,
-                                     series_type,
-                                     ):
+                                     series_type):
                     if profile_tags is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                                  readable_tags)
@@ -589,8 +587,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
                         profile_id,
                         cfg.radarr.root_folder,
                         cfg.radarr.minimum_availability,
-                        not no_search,
-                        ):
+                        not no_search):
         log.info("ADDED \'%s (%s)\'", trakt_movie['title'], movie_year)
     else:
         log.error("FAILED ADDING \'%s (%s)\'", trakt_movie['title'], movie_year)
@@ -816,6 +813,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         # set common series variables
         movie_title = sorted_movie['movie']['title']
         movie_tmdb_id = sorted_movie['movie']['ids']['tmdb']
+        movie_imdb_id = sorted_movie['movie']['ids']['imdb']
 
         # convert movie year to string
         movie_year = str(sorted_movie['movie']['year']) \
@@ -843,7 +841,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
 
                 # Skip movie if below user specified min RT rating
                 if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-                    if not rating_helper.does_movie_have_min_req_rating(cfg['omdb']['api_key'], sorted_movie, rating):
+                    if not rating_helper.does_movie_have_min_req_rating(
+                            cfg['omdb']['api_key'],
+                            movie_title,
+                            movie_year,
+                            movie_imdb_id,
+                            rating):
                         continue
 
                 log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
@@ -851,8 +854,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                          movie_year,
                          (sorted_movie['movie']['country'] or 'N/A').upper(),
                          (sorted_movie['movie']['language'] or 'N/A').upper(),
-                         movie_genres,
-                         )
+                         movie_genres)
 
                 # add movie to radarr
                 if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'],
@@ -862,8 +864,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                                     profile_id,
                                     cfg.radarr.root_folder,
                                     cfg.radarr.minimum_availability,
-                                    not no_search,
-                                    ):
+                                    not no_search):
 
                     log.info("ADDED: \'%s (%s)\'", movie_title, movie_year)
                     if notifications:
@@ -1048,7 +1049,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
             # sleep
             time.sleep(10)
 
-        log.info("Finished, added %d show(s) total to Sonarr!", total_shows_added)
+        log.info("FINISHED: Added %d show(s) total to Sonarr!", total_shows_added)
         # send notification
         if notifications and (cfg.notifications.verbose or total_shows_added > 0):
             notify.send(message="Added %d show(s) total to Sonarr!" % total_shows_added)
@@ -1100,7 +1101,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
-                        log.info("Skipped Trakt user \'%s\''s \'%s\'", authenticate_user, list_type.capitalize)
+                        log.info("SKIPPED Trakt user \'%s\''s \'%s\'", authenticate_user, list_type.capitalize)
                         continue
                     else:
                         log.info("ADDING %d movie(s) from Trakt user \'%s\''s \'%s\'", limit,
@@ -1145,7 +1146,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
             # sleep
             time.sleep(10)
 
-        log.info("Finished, added %d movie(s) total to Radarr!", total_movies_added)
+        log.info("FINISHED: Added %d movie(s) total to Radarr!", total_movies_added)
         # send notification
         if notifications and (cfg.notifications.verbose or total_movies_added > 0):
             notify.send(message="Added %d movie(s) total to Radarr!" % total_movies_added)
