@@ -52,6 +52,8 @@ def app(config, cachefile, logfile):
     cfg = Config(configfile=config, cachefile=cachefile, logfile=logfile).cfg
 
     # Legacy Support
+    if cfg.filters.movies.blacklist_title_keywords:
+        cfg['filters']['movies']['blacklisted_title_keywords'] = cfg['filters']['movies']['blacklist_title_keywords']
     if cfg.filters.movies.rating_limit:
         cfg['filters']['movies']['rotten_tomatoes'] = cfg['filters']['movies']['rating_limit']
 

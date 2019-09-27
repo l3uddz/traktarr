@@ -32,12 +32,19 @@ def blacklisted_show_id(show, blacklisted_ids):
     return blacklisted
 
 
-def blacklisted_show_title(show):
+def blacklisted_show_title(show, blacklisted_keywords):
     blacklisted = False
     try:
         if not show['show']['title']:
             log.debug("Blacklisted Titles Check     | Blacklisted show because it had no title: %s", show)
             blacklisted = True
+        else:
+            for keyword in blacklisted_keywords:
+                if keyword.lower() in show['show']['title'].lower():
+                    log.debug("\'%s\' | Blacklisted Titles Check     | Blacklisted because it had the title keyword: %s",
+                              show['show']['title'], keyword)
+                    blacklisted = True
+                    break
     except Exception:
         log.exception("Exception determining if show had a blacklisted title %s: ", show)
     return blacklisted
@@ -194,7 +201,7 @@ def is_show_blacklisted(show, blacklist_settings, ignore_blacklist, callback=Non
     try:
         if blacklisted_show_id(show, blacklist_settings.blacklisted_tvdb_ids):
             blacklisted = True
-        if blacklisted_show_title(show):
+        if blacklisted_show_title(show, blacklist_settings.blacklisted_title_keywords):
             blacklisted = True
         if blacklisted_show_year(show, blacklist_settings.blacklisted_min_year,
                                  blacklist_settings.blacklisted_max_year):
@@ -240,7 +247,7 @@ def blacklisted_movie_title(movie, blacklisted_keywords):
         else:
             for keyword in blacklisted_keywords:
                 if keyword.lower() in movie['movie']['title'].lower():
-                    log.debug("\'%s\' | Blacklisted Titles Check     | Blacklisted because it had title keyword: %s",
+                    log.debug("\'%s\' | Blacklisted Titles Check     | Blacklisted because it had the title keyword: %s",
                               movie['movie']['title'], keyword)
                     blacklisted = True
                     break
@@ -381,7 +388,7 @@ def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist, callback=N
     try:
         if blacklisted_movie_id(movie, blacklist_settings.blacklisted_tmdb_ids):
             blacklisted = True
-        if blacklisted_movie_title(movie, blacklist_settings.blacklist_title_keywords):
+        if blacklisted_movie_title(movie, blacklist_settings.blacklisted_title_keywords):
             blacklisted = True
         if blacklisted_movie_year(movie, blacklist_settings.blacklisted_min_year,
                                   blacklist_settings.blacklisted_max_year):

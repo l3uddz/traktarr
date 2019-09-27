@@ -249,19 +249,19 @@ You can repeat this process for as many users as you like.
       "allowed_languages": [
         "en"
       ],
-      "blacklist_title_keywords": [
-        "untitled",
-        "barbie",
-        "ufc"
-      ],
       "blacklisted_genres": [
         "documentary",
         "music",
         "animation"
       ],
-      "blacklisted_max_year": 2019,
       "blacklisted_min_runtime": 60,
+      "blacklisted_max_year": 2019,
       "blacklisted_min_year": 2000,
+      "blacklisted_title_keywords": [
+        "untitled",
+        "barbie",
+        "ufc"
+      ],
       "blacklisted_tmdb_ids": [],
       "rotten_tomatoes": ""
     },
@@ -285,9 +285,6 @@ You can repeat this process for as many users as you like.
         "documentary",
         "special-interest"
       ],
-      "blacklisted_max_year": 2019,
-      "blacklisted_min_runtime": 15,
-      "blacklisted_min_year": 2000,
       "blacklisted_networks": [
         "twitch",
         "youtube",
@@ -304,6 +301,10 @@ You can repeat this process for as many users as you like.
         "yahoo!",
         "fox sports"
       ],
+      "blacklisted_max_year": 2019,
+      "blacklisted_min_runtime": 15,
+      "blacklisted_min_year": 2000,
+      "blacklisted_title_keywords": [],
       "blacklisted_tvdb_ids": []
     }
   },
@@ -536,10 +537,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       "ca"
     ],
     "allowed_languages": [],
-    "blacklist_title_keywords": [
-      "untitled",
-      "barbie"
-    ],
     "blacklisted_genres": [
       "documentary",
       "music",
@@ -548,6 +545,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_max_year": 2019,
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
+    "blacklisted_title_keywords": [
+      "untitled",
+      "barbie"
+    ],
     "blacklisted_tmdb_ids": [],
     "rotten_tomatoes": ""
   },
@@ -587,8 +588,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - [List of available language codes](assets/list_of_language_codes.md).
 
-`blacklist_title_keywords` - blacklist certain words in titles.
-
 `blacklisted_genres` - Blacklist certain genres.
 
 - [List of available movie genres](assets/list_of_movie_genres.md).
@@ -608,6 +607,8 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 `blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
 
 `blacklisted_min_year` - Blacklist release dates before specified year.
+
+`blacklisted_title_keywords` - Blacklist certain words in titles.
 
 `blacklisted_tmdb_ids` - Blacklist certain movies with their TMDB IDs.
 
@@ -644,9 +645,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "documentary",
     "special-interest"
   ],
-  "blacklisted_max_year": 2019,
-  "blacklisted_min_runtime": 15,
-  "blacklisted_min_year": 2000,
   "blacklisted_networks": [
     "twitch",
     "youtube",
@@ -663,6 +661,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "yahoo!",
     "fox sports"
   ],
+  "blacklisted_min_runtime": 15,
+  "blacklisted_max_year": 2019,
+  "blacklisted_min_year": 2000,
+  "blacklisted_title_keywords": [],
   "blacklisted_tvdb_ids": []
 }
 ```
@@ -715,13 +717,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
     - No other list item should be present. 
       
-`blacklisted_max_year` - Blacklist release dates after specified year.
+`blacklisted_networks` - Blacklist certain network.
 
 `blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
 
+`blacklisted_max_year` - Blacklist release dates after specified year.
+
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
-`blacklisted_networks` - Blacklist certain network.
+`blacklisted_title_keywords` - Blacklist certain words in titles.
 
 `blacklisted_tvdb_ids` - Blacklist certain shows with their TVDB IDs.
 

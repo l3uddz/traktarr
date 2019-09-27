@@ -62,26 +62,27 @@ class Config(object, metaclass=Singleton):
         'filters': {
             'shows': {
                 'disabled_for': [],
-                'blacklisted_genres': [],
-                'blacklisted_networks': [],
                 'allowed_countries': [],
                 'allowed_languages': [],
+                'blacklisted_genres': [],
+                'blacklisted_networks': [],
                 'blacklisted_min_runtime': 15,
                 'blacklisted_min_year': 2000,
                 'blacklisted_max_year': 2019,
+                'blacklisted_title_keywords': [],
                 'blacklisted_tvdb_ids': [],
             },
             'movies': {
                 'disabled_for': [],
+                'allowed_countries': [],
+                'allowed_languages': [],
                 'blacklisted_genres': [],
                 'blacklisted_min_runtime': 60,
                 'blacklisted_min_year': 2000,
                 'blacklisted_max_year': 2019,
-                'blacklist_title_keywords': [],
+                'blacklisted_title_keywords': [],
                 'blacklisted_tmdb_ids': [],
-                'allowed_countries': [],
-                'allowed_languages': [],
-                'rotten_tomatoes':""
+                'rotten_tomatoes': ""
             }
         },
         'automatic': {

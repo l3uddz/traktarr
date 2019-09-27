@@ -21,16 +21,42 @@
     "verbose": false
   },
   "filters": {
+    "movies": {
+      "disabled_for": [],
+      "allowed_countries": [
+        "us",
+        "gb",
+        "ca"
+      ],
+      "allowed_languages": [
+        "en"
+      ],
+      "blacklisted_genres": [
+        "documentary",
+        "music",
+        "short",
+        "sporting-event",
+        "film-noir",
+        "fan-film"
+      ],
+      "blacklisted_min_runtime": 60,
+      "blacklisted_min_year": 2000,
+      "blacklisted_max_year": 2019,
+      "blacklisted_title_keywords": [
+        "untitled",
+        "barbie",
+        "ufc"
+      ],
+      "rotten_tomatoes": 80
+    },
     "shows": {
+      "disabled_for": [],
       "allowed_countries": [
         "us",
         "gb",
         "ca"
       ],
       "allowed_languages": [],
-      "blacklisted_min_runtime": 15,
-      "blacklisted_min_year": 2010,
-      "blacklisted_max_year": 2019,
       "blacklisted_genres": [
         "animation",
         "game-show",
@@ -59,35 +85,10 @@
         "fox sports",
         "yahoo!"
       ],
-      "disabled_for": []
-    },
-    "movies": {
-      "allowed_countries": [
-        "us",
-        "gb",
-        "ca"
-      ],
-      "allowed_languages": [
-        "en"
-      ],
-      "blacklisted_genres": [
-        "documentary",
-        "music",
-        "short",
-        "sporting-event",
-        "film-noir",
-        "fan-film"
-      ],
-      "blacklist_title_keywords": [
-        "untitled",
-        "barbie",
-        "ufc"
-      ],
-      "blacklisted_min_runtime": 60,
-      "blacklisted_min_year": 2000,
+      "blacklisted_min_runtime": 15,
+      "blacklisted_min_year": 2010,
       "blacklisted_max_year": 2019,
-      "rotten_tomatoes": 80,
-      "disabled_for": []
+      "blacklisted_title_keywords": []
     }
   },
   "radarr": {
