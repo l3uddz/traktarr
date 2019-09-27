@@ -161,9 +161,6 @@ def show(show_id, folder=None, no_search=False):
     validate_trakt(trakt, False)
     validate_pvr(sonarr, 'Sonarr', False)
 
-    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
-    profile_tags = get_profile_tags(sonarr)
-
     # get trakt show
     trakt_show = trakt.get_show(show_id)
 
@@ -177,17 +174,34 @@ def show(show_id, folder=None, no_search=False):
     log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, trakt_show['title'],
              series_year)
 
-    # determine which tags to use when adding this series
-    use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
+    # profile id
+    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
+
+    # profile tags
+    profile_tags = None
+    use_tags = None
+    readable_tags = None
+
+    if cfg.sonarr.tags:
+        profile_tags = get_profile_tags(sonarr)
+        # determine which tags to use when adding this series
+        use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
+        readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
 
     # add show to sonarr
     if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
                          cfg.sonarr.root_folder, use_tags, not no_search):
-        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
-                 sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
+        if profile_tags is not None:
+            log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
+                     readable_tags)
+        else:
+            log.info("ADDED: \'%s (%s)\'", trakt_show['title'], series_year)
     else:
-        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
-                  sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
+        if profile_tags is not None:
+            log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
+                      readable_tags)
+        else:
+            log.info("FAILED ADDING: \'%s (%s)\'", trakt_show['title'], series_year)
 
     return
 
@@ -283,7 +297,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     validate_pvr(sonarr, 'Sonarr', notifications)
 
     profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
-    profile_tags = get_profile_tags(sonarr)
+    profile_tags = get_profile_tags(sonarr) if cfg.sonarr.tags else None
 
     pvr_objects_list = get_objects(sonarr, 'Sonarr', notifications)
 
@@ -403,21 +417,34 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                          series_genres,
                          series['show']['network'])
 
-                # determine which tags to use when adding this series
-                use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
-                                                                    series['show']['network'])
+                # profile tags
+                use_tags = None
+                readable_tags = None
+
+                if profile_tags is not None:
+                    # determine which tags to use when adding this series
+                    use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
+                                                                        series['show']['network'])
+                    readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
+
                 # add show to sonarr
                 if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
                                      series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
                                      not no_search):
-                    log.info("ADDED: \'%s (%s)\' with tags: %s", series['show']['title'], series_year,
-                             sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
+                    if profile_tags is not None:
+                        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series['show']['title'], series_year,
+                                 readable_tags)
+                    else:
+                        log.info("ADDED: \'%s (%s)\'", series['show']['title'], series_year)
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
-                    log.error("FAILED ADDING: \'%s (%s)\' with tags: %s", series['show']['title'], series_year,
-                              sonarr_helper.readable_tag_from_ids(profile_tags, use_tags))
+                    if profile_tags is not None:
+                        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series['show']['title'], series_year,
+                                  readable_tags)
+                    else:
+                        log.info("FAILED ADDING: \'%s (%s)\'", series['show']['title'], series_year)
                     continue
 
             else:
