@@ -150,6 +150,7 @@ def show(show_id, folder=None, no_search=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import sonarr as sonarr_helper
+    from helpers import str as misc_str
 
     # replace sonarr root_folder if folder is supplied
     if folder:
@@ -169,7 +170,12 @@ def show(show_id, folder=None, no_search=False):
         return None
 
     # convert series year to string
-    series_year = str(trakt_show['year']) if trakt_show['year'] else '????'
+    if trakt_show['year']:
+        series_year = str(trakt_show['year'])
+    elif trakt_show['first_aired']:
+        series_year = misc_str.get_year_from_timestamp(trakt_show['first_aired'])
+    else:
+        series_year = '????'
 
     log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, trakt_show['title'],
              series_year)
@@ -274,6 +280,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
           remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
     from media.trakt import Trakt
+    from helpers import str as misc_str
     from helpers import misc as misc_helper
     from helpers import sonarr as sonarr_helper
     from helpers import trakt as trakt_helper
@@ -391,8 +398,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         # noinspection PyBroadException
 
         # convert series year to string
-        series_year = str(series['show']['year']) \
-            if series['show']['year'] else '????'
+        if series['show']['year']:
+            series_year = str(series['show']['year'])
+        elif series['show']['first_aired']:
+            series_year = misc_str.get_year_from_timestamp(series['show']['first_aired'])
+        else:
+            series_year = '????'
 
         # build list of genres
         series_genres = (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A'
