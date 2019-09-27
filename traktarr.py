@@ -169,6 +169,9 @@ def show(show_id, folder=None, no_search=False):
         log.error("Aborting due to failure to retrieve Trakt show")
         return None
 
+    # set common series variables
+    series_title = trakt_show['title']
+
     # convert series year to string
     if trakt_show['year']:
         series_year = str(trakt_show['year'])
@@ -177,8 +180,7 @@ def show(show_id, folder=None, no_search=False):
     else:
         series_year = '????'
 
-    log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, trakt_show['title'],
-             series_year)
+    log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, series_title, series_year)
 
     # profile id
     profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
@@ -195,19 +197,25 @@ def show(show_id, folder=None, no_search=False):
         readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
 
     # add show to sonarr
-    if sonarr.add_series(trakt_show['ids']['tvdb'], trakt_show['title'], trakt_show['ids']['slug'], profile_id,
-                         cfg.sonarr.root_folder, use_tags, not no_search):
+    if sonarr.add_series(trakt_show['ids']['tvdb'],
+                         series_title,
+                         trakt_show['ids']['slug'],
+                         profile_id,
+                         cfg.sonarr.root_folder,
+                         use_tags,
+                         not no_search,
+                         ):
         if profile_tags is not None:
-            log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
+            log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                      readable_tags)
         else:
-            log.info("ADDED: \'%s (%s)\'", trakt_show['title'], series_year)
+            log.info("ADDED: \'%s (%s)\'", series_title, series_year)
     else:
         if profile_tags is not None:
-            log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", trakt_show['title'], series_year,
+            log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                       readable_tags)
         else:
-            log.info("FAILED ADDING: \'%s (%s)\'", trakt_show['title'], series_year)
+            log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
 
     return
 
@@ -397,6 +405,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     for series in sorted_series_list:
         # noinspection PyBroadException
 
+        # set common series variables
+        series_tvdb_id = series['show']['ids']['tvdb']
+        series_title = series['show']['title']
+
         # convert series year to string
         if series['show']['year']:
             series_year = str(series['show']['year'])
@@ -410,12 +422,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 
         try:
             # check if movie has a valid TVDB ID and that it exists on TVDB
-            if not tvdb_helper.check_series_tvdb_id(series):
+            if not tvdb_helper.check_series_tvdb_id(series_title, series_year, series_tvdb_id):
                 continue
 
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'show', series):
-                log.debug("SKIPPING: \'%s\' because it was not from genre: %s", series['show']['title'],
+                log.debug("SKIPPING: \'%s\' because it was not from genre: %s", series_title,
                           genre.title())
                 continue
 
@@ -424,12 +436,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                                     callback_remove_recommended
                                                     if remove_rejected_from_recommended else None):
                 log.info("ADDING: %s (%s) | Country: %s | Language: %s | Genre: %s | Network: %s",
-                         series['show']['title'],
+                         series_title,
                          series_year,
                          (series['show']['country'] or 'N/A').upper(),
                          (series['show']['language'] or 'N/A').upper(),
                          series_genres,
-                         series['show']['network'])
+                         (series['show']['network'] or 'N/A').upper(),
+                         )
 
                 # profile tags
                 use_tags = None
@@ -442,27 +455,32 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                     readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
 
                 # add show to sonarr
-                if sonarr.add_series(series['show']['ids']['tvdb'], series['show']['title'],
-                                     series['show']['ids']['slug'], profile_id, cfg.sonarr.root_folder, use_tags,
-                                     not no_search):
+                if sonarr.add_series(series['show']['ids']['tvdb'],
+                                     series_title,
+                                     series['show']['ids']['slug'],
+                                     profile_id,
+                                     cfg.sonarr.root_folder,
+                                     use_tags,
+                                     not no_search,
+                                     ):
                     if profile_tags is not None:
-                        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series['show']['title'], series_year,
+                        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                                  readable_tags)
                     else:
-                        log.info("ADDED: \'%s (%s)\'", series['show']['title'], series_year)
+                        log.info("ADDED: \'%s (%s)\'", series_title, series_year)
                     if notifications:
                         callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
                     added_shows += 1
                 else:
                     if profile_tags is not None:
-                        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series['show']['title'], series_year,
+                        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                                   readable_tags)
                     else:
-                        log.info("FAILED ADDING: \'%s (%s)\'", series['show']['title'], series_year)
+                        log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
                     continue
 
             else:
-                log.info("SKIPPED: \'%s (%s)\'", series['show']['title'], series_year)
+                log.info("SKIPPED: \'%s (%s)\'", series_title, series_year)
                 continue
 
             # stop adding shows, if added_shows >= add_limit
@@ -473,7 +491,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
             time.sleep(add_delay)
 
         except Exception:
-            log.exception("Exception while processing show \'%s\': ", series['show']['title'])
+            log.exception("Exception while processing show \'%s\': ", series_title)
 
     log.info("Added %d new show(s) to Sonarr", added_shows)
 
@@ -546,9 +564,15 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     log.info("Retrieved Trakt movie information for \'%s\': \'%s (%s)\'", movie_id, trakt_movie['title'], movie_year)
 
     # add movie to radarr
-    if radarr.add_movie(trakt_movie['ids']['tmdb'], trakt_movie['title'], trakt_movie['year'],
-                        trakt_movie['ids']['slug'], profile_id, cfg.radarr.root_folder,
-                        cfg.radarr.minimum_availability, not no_search):
+    if radarr.add_movie(trakt_movie['ids']['tmdb'],
+                        trakt_movie['title'],
+                        trakt_movie['year'],
+                        trakt_movie['ids']['slug'],
+                        profile_id,
+                        cfg.radarr.root_folder,
+                        cfg.radarr.minimum_availability,
+                        not no_search,
+                        ):
         log.info("ADDED \'%s (%s)\'", trakt_movie['title'], movie_year)
     else:
         log.error("FAILED ADDING \'%s (%s)\'", trakt_movie['title'], movie_year)
@@ -771,6 +795,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     for sorted_movie in sorted_movies_list:
         # noinspection PyBroadException
 
+        # set common series variables
+        movie_title = sorted_movie['movie']['title']
+        movie_tmdb_id = sorted_movie['movie']['ids']['tmdb']
+
         # convert movie year to string
         movie_year = str(sorted_movie['movie']['year']) \
             if sorted_movie['movie']['year'] else '????'
@@ -781,12 +809,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
 
         try:
             # check if movie has a valid TMDb ID and that it exists on TMDb
-            if not tmdb_helper.check_movie_tmdb_id(sorted_movie):
+            if not tmdb_helper.check_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id):
                 continue
 
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
-                log.debug("SKIPPING: \'%s (%s)\' because it was not from genre: %s", sorted_movie['movie']['title'],
+                log.debug("SKIPPING: \'%s (%s)\' because it was not from genre: %s", movie_title,
                           movie_year, genre.title())
                 continue
 
@@ -801,24 +829,33 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                         continue
 
                 log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
-                         sorted_movie['movie']['title'], movie_year,
+                         movie_title,
+                         movie_year,
                          (sorted_movie['movie']['country'] or 'N/A').upper(),
-                         (sorted_movie['movie']['language'] or 'N/A').upper(), movie_genres)
+                         (sorted_movie['movie']['language'] or 'N/A').upper(),
+                         movie_genres,
+                         )
 
                 # add movie to radarr
-                if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'], sorted_movie['movie']['title'],
-                                    movie_year, sorted_movie['movie']['ids']['slug'], profile_id,
-                                    cfg.radarr.root_folder, cfg.radarr.minimum_availability, not no_search):
+                if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'],
+                                    movie_title,
+                                    movie_year,
+                                    sorted_movie['movie']['ids']['slug'],
+                                    profile_id,
+                                    cfg.radarr.root_folder,
+                                    cfg.radarr.minimum_availability,
+                                    not no_search,
+                                    ):
 
-                    log.info("ADDED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+                    log.info("ADDED: \'%s (%s)\'", movie_title, movie_year)
                     if notifications:
                         callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': sorted_movie['movie']})
                     added_movies += 1
                 else:
-                    log.error("FAILED ADDING: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+                    log.error("FAILED ADDING: \'%s (%s)\'", movie_title, movie_year)
                     continue
             else:
-                log.info("SKIPPED: \'%s (%s)\'", sorted_movie['movie']['title'], movie_year)
+                log.info("SKIPPED: \'%s (%s)\'", movie_title, movie_year)
                 continue
 
             # stop adding movies, if added_movies >= add_limit
@@ -829,7 +866,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
             time.sleep(add_delay)
 
         except Exception:
-            log.exception("Exception while processing movie \'%s\': ", sorted_movie['movie']['title'])
+            log.exception("Exception while processing movie \'%s\': ", movie_title)
 
     log.info("Added %d new movie(s) to Radarr", added_movies)
 

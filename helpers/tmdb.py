@@ -31,13 +31,7 @@ def verify_movie_exists_on_tmdb(movie_title, movie_year, movie_tmdb_id):
     return False
 
 
-def check_movie_tmdb_id(sorted_movie):
-
-    movie_title = sorted_movie['movie']['title']
-    movie_year = str(sorted_movie['movie']['year']) \
-        if sorted_movie['movie']['year'] else '????'
-    movie_tmdb_id = sorted_movie['movie']['ids']['tmdb']
-
+def check_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id):
     try:
         if validate_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id) and \
                 verify_movie_exists_on_tmdb(movie_title, movie_year, movie_tmdb_id):

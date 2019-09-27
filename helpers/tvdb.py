@@ -31,13 +31,7 @@ def verify_series_exists_on_tvdb(series_title, series_year, series_tvdb_id):
     return False
 
 
-def check_series_tvdb_id(series):
-
-    series_title = series['show']['title']
-    series_year = str(series['show']['year']) \
-        if series['show']['year'] else '????'
-    series_tvdb_id = series['show']['ids']['tvdb']
-
+def check_series_tvdb_id(series_title, series_year, series_tvdb_id):
     try:
         if validate_series_tvdb_id(series_title, series_year, series_tvdb_id) and \
                 verify_series_exists_on_tvdb(series_title, series_year, series_tvdb_id):
