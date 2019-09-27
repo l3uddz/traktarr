@@ -101,7 +101,7 @@ def blacklisted_show_country(show, allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Skipping allowed countries check.",
                       show['show']['title'])
         # List provided - skip adding show item if the country is blacklisted
-        elif show['show']['country'].lower() not in allowed_countries:
+        elif not any(show['show']['country'].lower() in s.lower() for s in allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Blacklisted because it's from the country: %s",
                       show['show']['title'],
                       show['show']['country'].upper())
@@ -128,7 +128,7 @@ def blacklisted_show_language(show, allowed_languages):
                       show['show']['title'])
             blacklisted = True
         # List provided - skip adding show item if the language is blacklisted
-        elif show['show']['language'].lower() not in allowed_languages:
+        elif not any(show['show']['language'].lower() in c.lower() for c in allowed_languages):
             log.debug("\'%s\' | Blacklisted Languages Check  | Blacklisted because it's in the language: %s",
                       show['show']['title'], show['show']['language'].upper())
             blacklisted = True
@@ -288,7 +288,7 @@ def blacklisted_movie_country(movie, allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Skipping allowed countries check.",
                       movie['movie']['title'])
         # List provided - skip adding movie item if the country is blacklisted
-        elif movie['movie']['country'].lower() not in allowed_countries:
+        elif not any(movie['movie']['country'].lower() in s.lower() for s in allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Blacklisted because it's from the country: %s",
                       movie['movie']['title'], movie['movie']['country'].upper())
             blacklisted = True
@@ -315,7 +315,7 @@ def blacklisted_movie_language(movie, allowed_languages):
                       movie['movie']['title'])
             blacklisted = True
         # List provided - skip adding movie item if the language is blacklisted
-        elif movie['movie']['language'].lower() not in allowed_languages:
+        elif not any(movie['movie']['language'].lower() in s.lower() for s in allowed_languages):
             log.debug("\'%s\' | Blacklisted Languages Check  | Blacklisted because it's in the language: %s",
                       movie['movie']['title'], movie['movie']['language'].upper())
             blacklisted = True
