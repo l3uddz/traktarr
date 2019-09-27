@@ -275,6 +275,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     from helpers import misc as misc_helper
     from helpers import sonarr as sonarr_helper
     from helpers import trakt as trakt_helper
+    from helpers import tvdb as tvdb_helper
 
     added_shows = 0
 
@@ -399,6 +400,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         series_genres = (', '.join(series['show']['genres'])).title() if series['show']['genres'] else 'N/A'
 
         try:
+            # check if movie has a valid TVDB ID and that it exists on TVDB
+            if not tvdb_helper.check_series_tvdb_id(series):
+                continue
+
             # check if genre matches genre supplied via argument
             if genre and not misc_helper.allowed_genres(genre, 'show', series):
                 log.debug("SKIPPING: \'%s\' because it was not from genre: %s", series['show']['title'],

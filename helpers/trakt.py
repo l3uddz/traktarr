@@ -20,14 +20,10 @@ def blacklisted_show_id(show, blacklisted_ids):
     blacklisted = False
     blacklisted_ids = sorted(map(int, blacklisted_ids))
     try:
-        if not show['show']['ids']['tvdb'] or not isinstance(show['show']['ids']['tvdb'], int):
-            log.debug("\'%s\' was blacklisted because it had an invalid TVDB ID", show['show']['title'])
-            blacklisted = True
-        elif show['show']['ids']['tvdb'] in blacklisted_ids:
+        if show['show']['ids']['tvdb'] in blacklisted_ids:
             log.debug("\'%s\' was blacklisted because it had a blacklisted TVDB ID of: %d", show['show']['title'],
                       show['show']['ids']['tvdb'])
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining if show had a blacklisted TVDB ID %s: ", show)
     return blacklisted
@@ -62,7 +58,6 @@ def blacklisted_show_network(show, networks):
                               show['show']['network'])
                     blacklisted = True
                     break
-
     except Exception:
         log.exception("Exception determining if show is from a blacklisted network %s: ", show)
     return blacklisted
@@ -86,7 +81,6 @@ def blacklisted_show_country(show, allowed_countries):
             log.debug("\'%s\' was blacklisted because it's from the country: %s", show['show']['title'],
                       show['show']['country'].upper())
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining if show was from an allowed country %s: ", show)
     return blacklisted
@@ -110,7 +104,6 @@ def blacklisted_show_language(show, allowed_languages):
             log.debug("\'%s\' was blacklisted because it's in the language: %s", show['show']['title'],
                       show['show']['language'].upper())
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining what language the show was in %s: ", show)
     return blacklisted
@@ -136,7 +129,6 @@ def blacklisted_show_genre(show, genres):
                               genre.title())
                     blacklisted = True
                     break
-
     except Exception:
         log.exception("Exception determining if show has a blacklisted genre %s: ", show)
     return blacklisted
@@ -152,7 +144,6 @@ def blacklisted_show_runtime(show, lowest_runtime):
             log.debug("\'%s\' was blacklisted because it had a runtime of: %d", show['show']['title'],
                       show['show']['runtime'])
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining if show had sufficient runtime %s: ", show)
     return blacklisted
@@ -179,10 +170,8 @@ def is_show_blacklisted(show, blacklist_settings, ignore_blacklist, callback=Non
             blacklisted = True
         if blacklisted_show_runtime(show, blacklist_settings.blacklisted_min_runtime):
             blacklisted = True
-
         if blacklisted and callback:
             callback('show', show)
-
     except Exception:
         log.exception("Exception determining if show was blacklisted %s: ", show)
     return blacklisted
@@ -196,7 +185,6 @@ def blacklisted_movie_id(movie, blacklisted_ids):
             log.debug("\'%s\' was blacklisted because it had a blacklisted TMDb ID of: %d", movie['movie']['title'],
                       movie['movie']['ids']['tmdb'])
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining if movie had a blacklisted TMDb ID %s: ", movie)
     return blacklisted
@@ -215,7 +203,6 @@ def blacklisted_movie_title(movie, blacklisted_keywords):
                               keyword)
                     blacklisted = True
                     break
-
     except Exception:
         log.exception("Exception determining if movie had a blacklisted title %s: ", movie)
     return blacklisted
@@ -278,7 +265,6 @@ def blacklisted_movie_language(movie, allowed_languages):
             log.debug("\'%s\' was blacklisted because it's in the language: %s", movie['movie']['title'],
                       movie['movie']['language'].upper())
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining what language the movie was %s: ", movie)
     return blacklisted
@@ -304,7 +290,6 @@ def blacklisted_movie_genre(movie, genres):
                               genre.title())
                     blacklisted = True
                     break
-
     except Exception:
         log.exception("Exception determining if movie has a blacklisted genre %s: ", movie)
     return blacklisted
@@ -320,7 +305,6 @@ def blacklisted_movie_runtime(movie, lowest_runtime):
             log.debug("\'%s\' was blacklisted because it had a runtime of: %d", movie['movie']['title'],
                       movie['movie']['runtime'])
             blacklisted = True
-
     except Exception:
         log.exception("Exception determining if movie had sufficient runtime %s: ", movie)
     return blacklisted
@@ -347,10 +331,8 @@ def is_movie_blacklisted(movie, blacklist_settings, ignore_blacklist, callback=N
             blacklisted = True
         if blacklisted_movie_runtime(movie, blacklist_settings.blacklisted_min_runtime):
             blacklisted = True
-
         if blacklisted and callback:
             callback('movie', movie)
-
     except Exception:
         log.exception("Exception determining if movie was blacklisted %s: ", movie)
     return blacklisted
