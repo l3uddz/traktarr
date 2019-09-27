@@ -81,7 +81,7 @@ class Config(object, metaclass=Singleton):
                 'blacklisted_tmdb_ids': [],
                 'allowed_countries': [],
                 'allowed_languages': [],
-                'rating_limit':""
+                'rotten_tomatoes':""
             }
         },
         'automatic': {

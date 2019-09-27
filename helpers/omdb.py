@@ -5,7 +5,7 @@ import requests
 log = logger.get_logger(__name__)
 
 
-def get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id):
+def get_movie_rt_score(omdb_api_key, movie_title, movie_year, movie_imdb_id):
     """
     Lookup movie ratings via OMDb
 
@@ -57,20 +57,20 @@ def get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id):
     return False
 
 
-def does_movie_have_min_req_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id, req_rating):
+def does_movie_have_min_req_rt_score(omdb_api_key, movie_title, movie_year, movie_imdb_id, min_req_rt_score):
 
     # pull RT score
-    movie_rating = get_rating(omdb_api_key, movie_title, movie_year, movie_imdb_id)
+    movie_rt_score = get_movie_rt_score(omdb_api_key, movie_title, movie_year, movie_imdb_id)
 
-    if not movie_rating:
+    if not movie_rt_score:
         log.info("SKIPPING: \'%s (%s)\' because a Rotten Tomatoes score could not be found.", movie_title,
                  movie_year)
         return False
-    elif movie_rating < req_rating:
+    elif movie_rt_score < min_req_rt_score:
         log.info("SKIPPING: \'%s (%s)\' because its Rotten Tomatoes score of %d%% is below the required score of %d%%.",
-                 movie_title, movie_year, movie_rating, req_rating)
+                 movie_title, movie_year, movie_rt_score, min_req_rt_score)
         return False
-    elif movie_rating >= req_rating:
+    elif movie_rt_score >= min_req_rt_score:
         log.info("ADDING: \'%s (%s)\' because its Rotten Tomatoes score of %d%% is above the required score of %d%%.",
-                 movie_title, movie_year, movie_rating, req_rating)
+                 movie_title, movie_year, movie_rt_score, min_req_rt_score)
         return True

@@ -51,6 +51,10 @@ def app(config, cachefile, logfile):
     from misc.config import Config
     cfg = Config(configfile=config, cachefile=cachefile, logfile=logfile).cfg
 
+    # Legacy Support
+    if cfg.filters.movies.rating_limit:
+        cfg['filters']['movies']['rotten_tomatoes'] = cfg['filters']['movies']['rating_limit']
+
     # Load logger
     from misc.log import logger
     log = logger.get_logger('Traktarr')
@@ -617,7 +621,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     type=click.Choice(['rating', 'release', 'votes']),
     help='Sort list to process.', show_default=True)
 @click.option(
-    '--rating', '-r',
+    '--rotten_tomatoes', '-rt',
     default=None,
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
@@ -666,7 +670,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, genre=None, folder=None,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=None, genre=None, folder=None,
            minimum_availability=None, actor=None, include_non_acting_roles=False, no_search=False, notifications=False,
            authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
@@ -674,7 +678,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
     from helpers import misc as misc_helper
     from helpers import radarr as radarr_helper
     from helpers import trakt as trakt_helper
-    from helpers import rating as rating_helper
+    from helpers import omdb as omdb_helper
     from helpers import tmdb as tmdb_helper
 
     added_movies = 0
@@ -799,9 +803,9 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
         log.info("Sorted movies list to process by highest 'votes'")
 
     # display specified min RT score
-    if rating is not None:
-        if 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-            log.info("Minimum Rotten Tomatoes score of %d%% requested.", rating)
+    if rotten_tomatoes is not None:
+        if cfg.omdb.api_key:
+            log.info("Minimum Rotten Tomatoes score of %d%% requested.", rotten_tomatoes)
         else:
             log.info("Skipping minimum Rotten Tomatoes score check as OMDb API Key is missing.")
 
@@ -839,14 +843,14 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rating=None, gen
                                                      callback_remove_recommended if remove_rejected_from_recommended
                                                      else None):
 
-                # Skip movie if below user specified min RT rating
-                if rating is not None and 'omdb' in cfg and 'api_key' in cfg['omdb'] and cfg['omdb']['api_key']:
-                    if not rating_helper.does_movie_have_min_req_rating(
-                            cfg['omdb']['api_key'],
+                # Skip movie if below user specified min RT score
+                if rotten_tomatoes is not None and cfg.omdb.api_key:
+                    if not omdb_helper.does_movie_have_min_req_rt_score(
+                            cfg.omdb.api_key,
                             movie_title,
                             movie_year,
                             movie_imdb_id,
-                            rating):
+                            rotten_tomatoes):
                         continue
 
                 log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
@@ -1060,7 +1064,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
 
 
 def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False,
-                     rating_limit=None):
+                     rotten_tomatoes=None):
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -1097,7 +1101,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                 added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                add_delay=add_delay, sort=sort, no_search=no_search,
                                                notifications=notifications, ignore_blacklist=local_ignore_blacklist,
-                                               rating=rating_limit)
+                                               rotten_tomatoes=rotten_tomatoes)
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -1116,7 +1120,8 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list_type, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist, rating=rating_limit)
+                                                   ignore_blacklist=local_ignore_blacklist,
+                                                   rotten_tomatoes=rotten_tomatoes)
             elif list_type.lower() == 'lists':
                 for list_, v in value.items():
                     if isinstance(v, dict):
@@ -1135,7 +1140,8 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     added_movies = movies.callback(list_type=list_, add_limit=limit,
                                                    add_delay=add_delay, sort=sort, no_search=no_search,
                                                    notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist, rating=rating_limit)
+                                                   ignore_blacklist=local_ignore_blacklist,
+                                                   rotten_tomatoes=rotten_tomatoes)
 
             if added_movies is None:
                 log.error("FAILED ADDING movies from Trakt's \'%s\' list", list_type.capitalize())
@@ -1200,7 +1206,7 @@ def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifica
             no_search,
             not no_notifications,
             ignore_blacklist,
-            int(cfg.filters.movies.rating_limit) if cfg.filters.movies.rating_limit != "" else None
+            int(cfg.filters.movies.rotten_tomatoes) if cfg.filters.movies.rotten_tomatoes != "" else None,
         )
         if run_now:
             movie_schedule.run()

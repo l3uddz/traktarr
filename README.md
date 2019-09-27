@@ -246,7 +246,9 @@ You can repeat this process for as many users as you like.
         "gb",
         "ca"
       ],
-      "allowed_languages": [],
+      "allowed_languages": [
+        "en"
+      ],
       "blacklist_title_keywords": [
         "untitled",
         "barbie",
@@ -261,7 +263,7 @@ You can repeat this process for as many users as you like.
       "blacklisted_min_runtime": 60,
       "blacklisted_min_year": 2000,
       "blacklisted_tmdb_ids": [],
-      "rating_limit": ""
+      "rotten_tomatoes": ""
     },
     "shows": {
       "disabled_for": [],
@@ -547,7 +549,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
     "blacklisted_tmdb_ids": [],
-    "rating_limit": ""
+    "rotten_tomatoes": ""
   },
 ```
 
@@ -618,7 +620,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     ],
     ```
 
-`rating_limit` - Only add movies that are equal to or above this Rotten Tomatoes score. Requires an OMDb API Key (see [below](#omdb)).
+`rotten_tomatoes` - Only add movies that are equal to or above this Rotten Tomatoes score. Requires an OMDb API Key (see [below](#omdb)).
 
 ### Shows
 
@@ -1010,7 +1012,7 @@ Trakt Authentication info:
 
 - This is only needed if you wish to use a minimum Rotten Tomatoes score to filter out movies.  
     
-- Use `rating_limit` in config for automatic scheduling or `--rating` as an argument for CLI.
+- Use `rotten_tomatoes` in config for automatic scheduling or `--rotten_tomatoes` as an argument for CLI.
 
 # Usage
 
@@ -1171,7 +1173,7 @@ Options:
   -d, --add-delay FLOAT           Seconds between each add request to Radarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
-  -r, --rating INTEGER            Set a minimum Rotten Tomatoes score.
+  -rt, --rotten_tomatoes INTEGER  Set a minimum Rotten Tomatoes score.
   -g, --genre TEXT                Only add movies from this genre to Radarr. Only one genre can be
                                   specified. 
                                   Use 'ignore' to add movies from any genre, including
@@ -1227,9 +1229,9 @@ Options:
 
  - Example: `-s release`
 
-`-r`, `--rating` -  Only add movies above this Rotten Tomatoes score.
+`-rt`, `--rotten_tomatoes` -  Only add movies equal to or above this Rotten Tomatoes score.
 
- - Example: `-r 75`
+ - Example: `-rt 75`
 
 `-g`, `--genre` - Only add movies from this genre to Radarr.
 
@@ -1435,10 +1437,10 @@ Options:
   traktarr movies -t https://trakt.tv/users/user1/lists/private-movies-list --authenticate-user=user1
   ```
 
-- Add movies, from the trending list, with a minimum rating of 80% on Rotten Tomatoes.
+- Add movies, from the trending list, with a minimum Rotten Tomatoes score of 80%.
 
   ```
-  traktarr movies -t trending -r 80
+  traktarr movies -t trending -rt 80
   ```
 
 - Add movies, with actor 'Keanu Reeves', limited to 10 items.
