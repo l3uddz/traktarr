@@ -237,7 +237,7 @@ def show(show_id, folder=None, no_search=False):
                          use_tags,
                          not no_search,
                          series_type):
-        if profile_tags is not None:
+        if profile_tags is not None and readable_tags is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                      readable_tags)
         else:
@@ -509,7 +509,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                                      use_tags,
                                      not no_search,
                                      series_type):
-                    if profile_tags is not None:
+                    if profile_tags is not None and readable_tags is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                                  readable_tags)
                     else:
