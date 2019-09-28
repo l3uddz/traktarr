@@ -2,6 +2,9 @@
   "core": {
     "debug": false
   },
+  "notifications": {
+    "verbose": false
+  },
   "automatic": {
     "movies": {
       "anticipated": 3,
@@ -16,9 +19,6 @@
       "popular": 1,
       "trending": 2
     }
-  },
-  "notifications": {
-    "verbose": false
   },
   "filters": {
     "movies": {
@@ -93,17 +93,21 @@
   },
   "radarr": {
     "api_key": "",
-    "profile": "HD-1080p",
+    "quality": "HD-1080p",
     "minimum_availability": "released",
     "url": "http://localhost:7878/",
     "root_folder": "/movies/"
   },
   "sonarr": {
     "api_key": "",
-    "profile": "HD-1080p",
+    "language": "English",
+    "quality": "HD-1080p",
     "url": "http://localhost:8989/",
     "root_folder": "/tv/",
     "tags": {}
+  },
+  "omdb": {
+    "api_key": ""
   },
   "trakt": {
     "client_id": "",

@@ -56,6 +56,10 @@ def app(config, cachefile, logfile):
         cfg['filters']['movies']['blacklisted_title_keywords'] = cfg['filters']['movies']['blacklist_title_keywords']
     if cfg.filters.movies.rating_limit:
         cfg['filters']['movies']['rotten_tomatoes'] = cfg['filters']['movies']['rating_limit']
+    if cfg.radarr.profile:
+        cfg['radarr']['quality'] = cfg['radarr']['profile']
+    if cfg.sonarr.profile:
+        cfg['sonarr']['quality'] = cfg['sonarr']['profile']
 
     # Load logger
     from misc.log import logger
@@ -104,14 +108,24 @@ def validate_pvr(pvr, pvr_type, notifications):
         log.info("Validated %s URL & API Key.", pvr_type)
 
 
-def get_profile_id(pvr, profile):
-    # retrieve profile id for requested profile
-    profile_id = pvr.get_profile_id(profile)
-    if not profile_id or not profile_id > 0:
-        log.error("Aborting due to failure to retrieve Profile ID for: %s", profile)
+def get_quality_profile_id(pvr, quality_profile):
+    # retrieve profile id for requested quality profile
+    quality_profile_id = pvr.get_quality_profile_id(quality_profile)
+    if not quality_profile_id or not quality_profile_id > 0:
+        log.error("Aborting due to failure to retrieve Quality Profile ID for: %s", quality_profile)
         exit()
-    log.info("Retrieved Profile ID for \'%s\': %d", profile, profile_id)
-    return profile_id
+    log.info("Retrieved Quality Profile ID for \'%s\': %d", quality_profile, quality_profile_id)
+    return quality_profile_id
+
+
+def get_language_profile_id(pvr, language_profile):
+    # retrieve profile id for requested language profile
+    language_profile_id = pvr.get_language_profile_id(language_profile)
+    if not language_profile_id or not language_profile_id > 0:
+        log.error("No Language Profile ID for: %s", language_profile)
+    else:
+        log.info("Retrieved Language Profile ID for \'%s\': %d", language_profile, language_profile_id)
+    return language_profile_id
 
 
 def get_profile_tags(pvr):
@@ -188,8 +202,11 @@ def show(show_id, folder=None, no_search=False):
 
     log.info("Retrieved Trakt show information for \'%s\': \'%s (%s)\'", show_id, series_title, series_year)
 
-    # profile id
-    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
+    # quality profile id
+    quality_profile_id = get_quality_profile_id(sonarr, cfg.sonarr.quality)
+
+    # language profile id
+    language_profile_id = get_language_profile_id(sonarr, cfg.sonarr.language)
 
     # profile tags
     profile_tags = None
@@ -214,7 +231,8 @@ def show(show_id, folder=None, no_search=False):
     if sonarr.add_series(trakt_show['ids']['tvdb'],
                          series_title,
                          trakt_show['ids']['slug'],
-                         profile_id,
+                         quality_profile_id,
+                         language_profile_id,
                          cfg.sonarr.root_folder,
                          use_tags,
                          not no_search,
@@ -331,7 +349,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
     validate_trakt(trakt, notifications)
     validate_pvr(sonarr, 'Sonarr', notifications)
 
-    profile_id = get_profile_id(sonarr, cfg.sonarr.profile)
+    # quality profile id
+    quality_profile_id = get_quality_profile_id(sonarr, cfg.sonarr.quality)
+
+    # language profile id
+    language_profile_id = get_language_profile_id(sonarr, cfg.sonarr.language)
+
     profile_tags = get_profile_tags(sonarr) if cfg.sonarr.tags else None
 
     pvr_objects_list = get_objects(sonarr, 'Sonarr', notifications)
@@ -480,7 +503,8 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
                 if sonarr.add_series(series['show']['ids']['tvdb'],
                                      series_title,
                                      series['show']['ids']['slug'],
-                                     profile_id,
+                                     quality_profile_id,
+                                     language_profile_id,
                                      cfg.sonarr.root_folder,
                                      use_tags,
                                      not no_search,
@@ -571,7 +595,8 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     validate_trakt(trakt, False)
     validate_pvr(radarr, 'Radarr', False)
 
-    profile_id = get_profile_id(radarr, cfg.radarr.profile)
+    # quality profile id
+    quality_profile_id = get_quality_profile_id(radarr, cfg.radarr.quality)
 
     # get trakt movie
     trakt_movie = trakt.get_movie(movie_id)
@@ -590,7 +615,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
                         trakt_movie['title'],
                         trakt_movie['year'],
                         trakt_movie['ids']['slug'],
-                        profile_id,
+                        quality_profile_id,
                         cfg.radarr.root_folder,
                         cfg.radarr.minimum_availability,
                         not no_search):
@@ -717,7 +742,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     validate_trakt(trakt, notifications)
     validate_pvr(radarr, 'Radarr', notifications)
 
-    profile_id = get_profile_id(radarr, cfg.radarr.profile)
+    # quality profile id
+    quality_profile_id = get_quality_profile_id(radarr, cfg.radarr.quality)
 
     pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
 
@@ -867,7 +893,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                                     movie_title,
                                     movie_year,
                                     sorted_movie['movie']['ids']['slug'],
-                                    profile_id,
+                                    quality_profile_id,
                                     cfg.radarr.root_folder,
                                     cfg.radarr.minimum_availability,
                                     not no_search):

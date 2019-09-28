@@ -324,13 +324,14 @@ You can repeat this process for as many users as you like.
   "radarr": {
     "api_key": "",
     "minimum_availability": "released",
-    "profile": "HD-1080p",
+    "quality": "HD-1080p",
     "root_folder": "/movies/",
     "url": "http://localhost:7878/"
   },
   "sonarr": {
     "api_key": "",
-    "profile": "HD-1080p",
+    "language": "English",
+    "quality": "HD-1080p",
     "root_folder": "/tv/",
     "tags": {},
     "url": "http://localhost:8989/"
@@ -898,14 +899,14 @@ Radarr configuration.
 "radarr": {
   "api_key": "",
   "minimum_availability": "released",
-  "profile": "HD-1080p",
+  "quality": "HD-1080p",
   "root_folder": "/movies/",
   "url": "http://localhost:7878"
 },
 ```
 `api_key` - Radarr's API Key.
 
-`profile` - Profile that movies are assigned to.
+`quality` - Quality Profile that movies are assigned to.
 
 `minimum_availability` - The minimum availability the movies are set to.
 
@@ -926,7 +927,8 @@ Sonarr configuration.
 ```json
 "sonarr": {
   "api_key": "",
-  "profile": "HD-1080p",
+  "language": "English",
+  "quality": "HD-1080p",
   "root_folder": "/tv/",
   "tags": {},
   "url": "http://localhost:8989"
@@ -935,7 +937,9 @@ Sonarr configuration.
 
 `api_key` - Sonarr's API Key.
 
-`profile` - Profile that TV shows are assigned to.
+`language` - Language Profile that TV shows are assigned to. Only applies to Sonarr v3.
+
+`quality` - Quality Profile that TV shows are assigned to.
 
 `root_folder` - Root folder for TV shows.
 

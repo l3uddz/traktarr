@@ -37,27 +37,23 @@ class Config(object, metaclass=Singleton):
         'core': {
             'debug': False
         },
-        'trakt': {
-            'client_id': '',
-            'client_secret': ''
+        'notifications': {
+            'verbose': True
         },
-        'sonarr': {
-            'api_key': '',
-            'profile': 'HD-1080p',
-            'root_folder': '/tv/',
-            'tags': {
+        'automatic': {
+            'movies': {
+                'interval': 20,
+                'anticipated': 3,
+                'trending': 3,
+                'popular': 3,
+                'boxoffice': 10
             },
-            'url': 'http://localhost:8989/'
-        },
-        'radarr': {
-            'api_key': '',
-            'minimum_availability': 'released',
-            'profile': 'HD-1080p',
-            'root_folder': '/movies/',
-            'url': 'http://localhost:7878/'
-        },
-        'omdb': {
-            'api_key': ''
+            'shows': {
+                'interval': 48,
+                'anticipated': 10,
+                'trending': 1,
+                'popular': 1
+            }
         },
         'filters': {
             'shows': {
@@ -85,23 +81,28 @@ class Config(object, metaclass=Singleton):
                 'rotten_tomatoes': ""
             }
         },
-        'automatic': {
-            'movies': {
-                'interval': 20,
-                'anticipated': 3,
-                'trending': 3,
-                'popular': 3,
-                'boxoffice': 10
-            },
-            'shows': {
-                'interval': 48,
-                'anticipated': 10,
-                'trending': 1,
-                'popular': 1
-            }
+        'radarr': {
+            'api_key': '',
+            'minimum_availability': 'released',
+            'quality': 'HD-1080p',
+            'root_folder': '/movies/',
+            'url': 'http://localhost:7878/'
         },
-        'notifications': {
-            'verbose': True
+        'sonarr': {
+            'api_key': '',
+            'language': 'English',
+            'quality': 'HD-1080p',
+            'root_folder': '/tv/',
+            'tags': {
+            },
+            'url': 'http://localhost:8989/'
+        },
+        'omdb': {
+            'api_key': ''
+        },
+        'trakt': {
+            'client_id': '',
+            'client_secret': ''
         }
     }
 
