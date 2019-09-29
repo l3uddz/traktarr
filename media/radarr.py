@@ -11,6 +11,9 @@ class Radarr(PVR):
     def get_objects(self):
         return self._get_objects('api/movie')
 
+    def get_exclusions(self):
+        return self._get_objects('api/exclusions')
+
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def add_movie(self, movie_tmdb_id, movie_title, movie_year, movie_title_slug, quality_profile_id, root_folder,
                   min_availability_temp, search_missing=False):

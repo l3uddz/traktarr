@@ -139,12 +139,25 @@ def get_profile_tags(pvr):
 
 def get_objects(pvr, pvr_type, notifications):
     objects_list = pvr.get_objects()
-    if not objects_list:
-        log.error("Aborting due to failure to retrieve shows list from %s", pvr_type)
-        if notifications:
-            callback_notify({'event': 'error', 'reason': 'Failure to retrieve shows list from %s' % pvr_type})
-        exit()
     objects_type = 'movies' if pvr_type.lower() == 'radarr' else 'shows'
+    if not objects_list:
+        log.error("Aborting due to failure to retrieve %s list from %s", objects_type, pvr_type)
+        if notifications:
+            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s list from %s' % (objects_type, pvr_type)})
+        exit()
+    log.info("Retrieved %s %s list, %s found: %d", pvr_type, objects_type, objects_type, len(objects_list))
+    return objects_list
+
+
+def get_exclusions(pvr, pvr_type, notifications):
+    objects_list = pvr.get_exclusions()
+    objects_type = 'movie' if pvr_type.lower() == 'radarr' else 'show'
+    if not objects_list:
+        log.error("Aborting due to failure to retrieve %s exclusion list from %s", objects_type, pvr_type)
+        if notifications:
+            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s exclusions list from %s' %
+                                                         (objects_type, pvr_type)})
+        exit()
     log.info("Retrieved %s %s list, %s found: %d", pvr_type, objects_type, objects_type, len(objects_list))
     return objects_list
 
@@ -746,6 +759,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     quality_profile_id = get_quality_profile_id(radarr, cfg.radarr.quality)
 
     pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
+    pvr_exclusions_list = get_exclusions(radarr, 'Radarr', notifications)
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
@@ -805,9 +819,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         remove_rejected_from_recommended = False
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list = radarr_helper.remove_existing_movies(pvr_objects_list, trakt_objects_list,
-                                                                 callback_remove_recommended
-                                                                 if remove_rejected_from_recommended else None)
+    processed_movies_list = radarr_helper.remove_existing_and_excluded_movies(pvr_objects_list,
+                                                                              pvr_exclusions_list,
+                                                                              trakt_objects_list,
+                                                                              callback_remove_recommended
+                                                                              if remove_rejected_from_recommended else
+                                                                              None)
     if processed_movies_list is None:
         log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
         if notifications:
