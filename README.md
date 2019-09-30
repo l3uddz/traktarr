@@ -573,7 +573,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - [List of available country codes](assets/list_of_country_codes.md).
 
-- Special keywords (used as the only list item):
+- Special keywords:
 
   - Blank list (i.e. `[]`) - Add movies from any country.
 
@@ -583,11 +583,13 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
-- By default, Traktarr will only query movies in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
-
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 - [List of available language codes](assets/list_of_language_codes.md).
+
+- Special keywords:
+
+  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
 
 `blacklisted_genres` - Blacklist certain genres.
 
@@ -688,7 +690,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - [List of available country codes](assets/list_of_country_codes.md).
 
-- Special keywords (used as the only list item):
+- Special keywords:
 
   - Blank list (i.e. `[]`) - Add shows from any country.
 
@@ -698,11 +700,13 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     
 `allowed_languages` - Only add shows with these languages.
 
-- By default, Traktarr will only query shows in English. If you need to search for other languages (e.g. Japanese for anime), you must add those languages here.
-
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
 
 - [List of available language codes](assets/list_of_language_codes.md).
+
+- Special keywords:
+
+  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
 
 `blacklisted_genres` - Blacklist certain genres.
 
