@@ -143,7 +143,8 @@ def get_objects(pvr, pvr_type, notifications):
     if not objects_list:
         log.error("Aborting due to failure to retrieve %s list from %s", objects_type, pvr_type)
         if notifications:
-            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s list from %s' % (objects_type, pvr_type)})
+            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s list from %s' % (objects_type,
+                                                                                                  pvr_type)})
         exit()
     log.info("Retrieved %s %s list, %s found: %d", pvr_type, objects_type, objects_type, len(objects_list))
     return objects_list
@@ -374,37 +375,65 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 
     # get trakt series list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_shows(genres=genre,
-                                                         languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_anticipated_shows(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_shows(genres=genre,
-                                                      languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_trending_shows(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_shows(genres=genre,
-                                                     languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_popular_shows(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'person':
         if not actor:
             log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
                       " list type!")
             return None
-        trakt_objects_list = trakt.get_person_shows(person=actor,
-                                                    genres=genre,
-                                                    languages=cfg.filters.shows.allowed_languages,
-                                                    include_non_acting_roles=include_non_acting_roles)
+        trakt_objects_list = trakt.get_person_shows(
+            person=actor,
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            include_non_acting_roles=include_non_acting_roles,
+        )
+
     elif list_type.lower() == 'recommended':
-        trakt_objects_list = trakt.get_recommended_shows(authenticate_user,
-                                                         genres=genre,
-                                                         languages=cfg.filters.shows.allowed_languages)
+        trakt_objects_list = trakt.get_recommended_shows(
+            authenticate_user,
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_played_shows(genres=genre,
-                                                         languages=cfg.filters.shows.allowed_languages,
-                                                         most_type=most_type if most_type else None)
+        trakt_objects_list = trakt.get_most_played_shows(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            most_type=most_type if most_type else None,
+        )
+
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_watched_shows(genres=genre,
-                                                          languages=cfg.filters.shows.allowed_languages,
-                                                          most_type=most_type if most_type else None)
+        trakt_objects_list = trakt.get_most_watched_shows(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            most_type=most_type if most_type else None,
+        )
+
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_shows(authenticate_user)
     else:
@@ -763,41 +792,72 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
-        trakt_objects_list = trakt.get_anticipated_movies(genres=genre,
-                                                          languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_anticipated_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'trending':
-        trakt_objects_list = trakt.get_trending_movies(genres=genre,
-                                                       languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_trending_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'popular':
-        trakt_objects_list = trakt.get_popular_movies(genres=genre,
-                                                      languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_popular_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'boxoffice':
-        trakt_objects_list = trakt.get_boxoffice_movies(genres=genre,
-                                                        languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_boxoffice_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower() == 'person':
         if not actor:
             log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
                       " list type!")
             return None
-        trakt_objects_list = trakt.get_person_movies(person=actor,
-                                                     genres=genre,
-                                                     languages=cfg.filters.movies.allowed_languages,
-                                                     include_non_acting_roles=include_non_acting_roles)
+        trakt_objects_list = trakt.get_person_movies(
+            person=actor,
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            include_non_acting_roles=include_non_acting_roles,
+        )
 
     elif list_type.lower() == 'recommended':
-        trakt_objects_list = trakt.get_recommended_movies(authenticate_user,
-                                                          genres=genre,
-                                                          languages=cfg.filters.movies.allowed_languages)
+        trakt_objects_list = trakt.get_recommended_movies(
+            authenticate_user,
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+        )
+
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_played_movies(genres=genre,
-                                                          languages=cfg.filters.movies.allowed_languages,
-                                                          most_type=most_type if most_type else None)
+        trakt_objects_list = trakt.get_most_played_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            most_type=most_type if most_type else None,
+        )
+
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
-        trakt_objects_list = trakt.get_most_watched_movies(genres=genre,
-                                                           languages=cfg.filters.movies.allowed_languages,
-                                                           most_type=most_type if most_type else None)
+        trakt_objects_list = trakt.get_most_watched_movies(
+            countries=cfg.filters.shows.allowed_countries,
+            languages=cfg.filters.shows.allowed_languages,
+            genres=genre,
+            most_type=most_type if most_type else None,
+        )
+
     elif list_type.lower() == 'watchlist':
         trakt_objects_list = trakt.get_watchlist_movies(authenticate_user)
     else:
