@@ -353,6 +353,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
             misc_helper.unblacklist_genres(genres, cfg['filters']['shows']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres.split(','))))
 
+    # set years range
+    if cfg.filters.shows.blacklisted_min_year and cfg.filters.shows.blacklisted_max_year:
+        years = str(cfg.filters.shows.blacklisted_min_year) + '-' + str(cfg.filters.shows.blacklisted_max_year)
+    else:
+        years = None
+
     # replace sonarr root_folder if folder is supplied
     if folder:
         cfg['sonarr']['root_folder'] = folder
@@ -377,6 +383,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     # get trakt series list
     if list_type.lower() == 'anticipated':
         trakt_objects_list = trakt.get_anticipated_shows(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -384,6 +391,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
 
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_shows(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -391,6 +399,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
 
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -402,6 +411,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_shows(
+            years=years,
             person=actor,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
@@ -412,6 +422,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_shows(
             authenticate_user,
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -420,6 +431,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_shows(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -429,6 +441,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_watched_shows(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -769,6 +782,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
             misc_helper.unblacklist_genres(genres, cfg['filters']['movies']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
+    # set years range
+    if cfg.filters.movies.blacklisted_min_year and cfg.filters.movies.blacklisted_max_year:
+        years = str(cfg.filters.movies.blacklisted_min_year) + '-' + str(cfg.filters.movies.blacklisted_max_year)
+    else:
+        years = None
+
     # replace radarr root_folder if folder is supplied
     if folder:
         cfg['radarr']['root_folder'] = folder
@@ -800,6 +819,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     # get trakt movies list
     if list_type.lower() == 'anticipated':
         trakt_objects_list = trakt.get_anticipated_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -807,6 +827,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
 
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -814,6 +835,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
 
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -821,6 +843,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
 
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -832,6 +855,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_movies(
+            years=years,
             person=actor,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
@@ -842,6 +866,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     elif list_type.lower() == 'recommended':
         trakt_objects_list = trakt.get_recommended_movies(
             authenticate_user,
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -850,6 +875,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     elif list_type.lower().startswith('played'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
@@ -859,6 +885,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
     elif list_type.lower().startswith('watched'):
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_watched_movies(
+            years=years,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
