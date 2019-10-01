@@ -1177,8 +1177,7 @@ Usage: traktarr movies [OPTIONS]
   Add multiple movies to Radarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. 
-                                  For example, 'anticipated', 'trending',
+  -t, --list-type TEXT            Trakt list to process. For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
                                   'watchlist', or any URL to a list.  [required]
   -l, --add-limit INTEGER         Limit number of movies added to Radarr.
@@ -1186,17 +1185,15 @@ Options:
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
   -rt, --rotten_tomatoes INTEGER  Set a minimum Rotten Tomatoes score.
-  -g, --genre TEXT                Only add movies from this genre to Radarr. Only one genre can be
-                                  specified. 
-                                  Use 'ignore' to add movies from any genre, including
-                                  ones with no genre specified.
+  -g, --genres TEXT               Only add movies from this genre to Radarr. Multiple genres are
+                                  specified as a comma-separated list. Use 'ignore' to add movies
+                                  from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
   -ma, --minimum-availability [announced|in_cinemas|released|predb]
                                   Add movies with this minimum availability to Radarr. Default is
                                   'released'.
   -a, --actor TEXT                Only add movies from this actor to Radarr.Only one actor can be
-                                  specified. 
-                                  Requires the 'person' list.
+                                  specified.Requires the 'person' list.
   --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
                                   Requires the 'person' list option with the 'actor' argument.
   --no-search                     Disable search when adding movies to Radarr.
@@ -1245,7 +1242,9 @@ Options:
 
  - Example: `-rt 75`
 
-`-g`, `--genre` - Only add movies from this genre to Radarr.
+`-g`, `--genres` - Only add movies from these genre(s) to Radarr.
+
+- Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
 
 - Can find a list [here](assets/list_of_movie_genres.md).
 
@@ -1323,10 +1322,10 @@ Options:
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
-  -g, --genre TEXT                Only add shows from this genre to Sonarr. Only one genre can be
-                                  specified. 
-                                  Use 'ignore' to add shows from any genre, including
-                                  ones with no genre specified.
+  -g, --genres TEXT               Only add shows from this genre to Sonarr. Multiple genres are
+                                  specified as a comma-separated list. 
+                                  Use 'ignore' to add shows
+                                  from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
   -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
                                   specified. 
@@ -1376,7 +1375,9 @@ Options:
 
  - Example: `-s release`
 
-`-g`, `--genre` - Only add shows from this genre to Sonarr.
+`-g`, `--genres` - Only add shows from this genre(s) to Sonarr.
+
+- Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
 
 - Can find a list [here](assets/list_of_tv_show_genres.md).
 

@@ -91,9 +91,9 @@ class Trakt:
         if countries:
             payload['countries'] = ','.join(countries).lower()
 
-        # currently only support for one genre item, despite name
+        # genres
         if genres:
-            payload['genres'] = genres
+            payload['genres'] = ','.join(genres).lower()
 
         processed = []
 
@@ -496,6 +496,7 @@ class Trakt:
             limit=limit,
             countries=countries,
             languages=languages,
+            genres=genres,
         )
 
     def get_user_list_shows(self, list_url, authenticate_user=None, limit=1000, countries=None, languages=None):
@@ -511,6 +512,7 @@ class Trakt:
             limit=limit,
             countries=countries,
             languages=languages,
+            genres=genres,
         )
 
     ############################################################
@@ -628,6 +630,7 @@ class Trakt:
             limit=limit,
             countries=countries,
             languages=languages,
+            genres=genres,
         )
 
     def get_user_list_movies(self, list_url, authenticate_user=None, limit=1000, countries=None, languages=None):
@@ -643,4 +646,5 @@ class Trakt:
             limit=limit,
             countries=countries,
             languages=languages,
+            genres=genres,
         )

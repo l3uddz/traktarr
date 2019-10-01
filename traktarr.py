@@ -269,7 +269,7 @@ def show(show_id, folder=None, no_search=False):
 @app.command(help='Add multiple shows to Sonarr.', context_settings=dict(max_content_width=100))
 @click.option(
     '--list-type', '-t',
-    help='Trakt list to process. \n'
+    help='Trakt list to process. '
          'For example, \'anticipated\', \'trending\', \'popular\', \'person\', \'watched\', \'played\', '
          '\'recommended\', \'watchlist\', or any URL to a list.',
     required=True)
@@ -289,10 +289,10 @@ def show(show_id, folder=None, no_search=False):
     help='Sort list to process.',
     show_default=True)
 @click.option(
-    '--genre', '-g',
+    '--genres', '-g',
     default=None,
     help='Only add shows from this genre to Sonarr. '
-         'Only one genre can be specified. \n'
+         'Multiple genres are specified as a comma-separated list. '
          'Use \'ignore\' to add shows from any genre, including ones with no genre specified.')
 @click.option(
     '--folder', '-f',
@@ -302,7 +302,7 @@ def show(show_id, folder=None, no_search=False):
     '--actor', '-a',
     default=None,
     help='Only add movies from this actor to Radarr. '
-         'Only one actor can be specified. \n'
+         'Only one actor can be specified. '
          'Requires the \'person\' list option.')
 @click.option(
     '--include-non-acting-roles',
@@ -329,7 +329,7 @@ def show(show_id, folder=None, no_search=False):
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing shows from recommended.')
-def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folder=None, actor=None, no_search=False,
+def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, folder=None, actor=None, no_search=False,
           include_non_acting_roles=False, notifications=False, authenticate_user=None, ignore_blacklist=False,
           remove_rejected_from_recommended=False):
     from media.sonarr import Sonarr
@@ -342,15 +342,16 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
 
     added_shows = 0
 
-    # process genre
-    if genre:
+    # process genres
+    if genres:
         # set special genre keyword to show's blacklisted_genres list
-        if genre.lower() == 'ignore':
+        if genres.lower() == 'ignore':
             cfg['filters']['shows']['blacklisted_genres'] = ['ignore']
-            genre = None
-        # remove genre from show's blacklisted_genres list
+            genres = None
+        # remove genres from show's blacklisted_genres list
         else:
-            misc_helper.unblacklist_genres(genre, cfg['filters']['shows']['blacklisted_genres'])
+            misc_helper.unblacklist_genres(genres, cfg['filters']['shows']['blacklisted_genres'])
+            log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres.split(','))))
 
     # replace sonarr root_folder if folder is supplied
     if folder:
@@ -378,21 +379,21 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_anticipated_shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'person':
@@ -404,7 +405,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
             person=actor,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -413,7 +414,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
             authenticate_user,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower().startswith('played'):
@@ -421,7 +422,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_most_played_shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             most_type=most_type if most_type else None,
         )
 
@@ -430,7 +431,7 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
         trakt_objects_list = trakt.get_most_watched_shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             most_type=most_type if most_type else None,
         )
 
@@ -512,17 +513,17 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genre=None, folde
             if not tvdb_helper.check_series_tvdb_id(series_title, series_year, series_tvdb_id):
                 continue
 
-            # check if genre matches genre supplied via argument
-            if genre and not misc_helper.allowed_genres(genre, 'show', series):
-                log.debug("SKIPPING: \'%s\' because it was not from genre: %s", series_title,
-                          genre.title())
+            # check if genres matches genre(s) supplied via argument
+            if genres and not misc_helper.allowed_genres(genres, 'show', series):
+                log.debug("SKIPPING: \'%s (%s)\' because it was not from the genre(s): %s", series_title,
+                          series_year, ', '.join(map(lambda x: x.title(), genres)))
                 continue
 
             # check if series passes out blacklist criteria inspection
             if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist,
                                                     callback_remove_recommended
                                                     if remove_rejected_from_recommended else None):
-                log.info("ADDING: %s (%s) | Country: %s | Language: %s | Genre: %s | Network: %s",
+                log.info("ADDING: %s (%s) | Country: %s | Language: %s | Genre(s): %s | Network: %s",
                          series_title,
                          series_year,
                          (series['show']['country'] or 'N/A').upper(),
@@ -671,7 +672,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
 @app.command(help='Add multiple movies to Radarr.', context_settings=dict(max_content_width=100))
 @click.option(
     '--list-type', '-t',
-    help='Trakt list to process. \n'
+    help='Trakt list to process. '
          'For example, \'anticipated\', \'trending\', \'popular\', \'person\', \'watched\', \'played\', '
          '\'recommended\', \'watchlist\', or any URL to a list.',
     required=True)
@@ -695,10 +696,10 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
 @click.option(
-    '--genre', '-g',
+    '--genres', '-g',
     default=None,
     help='Only add movies from this genre to Radarr. '
-         'Only one genre can be specified. \n'
+         'Multiple genres are specified as a comma-separated list. '
          'Use \'ignore\' to add movies from any genre, including ones with no genre specified.')
 @click.option(
     '--folder', '-f',
@@ -712,7 +713,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     '--actor', '-a',
     default=None,
     help='Only add movies from this actor to Radarr.'
-         'Only one actor can be specified. \n'
+         'Only one actor can be specified.'
          'Requires the \'person\' list.')
 @click.option(
     '--include-non-acting-roles',
@@ -739,7 +740,7 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=None, genre=None, folder=None,
+def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=None, genres=None, folder=None,
            minimum_availability=None, actor=None, include_non_acting_roles=False, no_search=False, notifications=False,
            authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
     from media.radarr import Radarr
@@ -752,15 +753,21 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
 
     added_movies = 0
 
-    # process genre
-    if genre:
-        # set special genre keyword to movies's blacklisted_genres list
-        if genre.lower() == 'ignore':
+    # process genres
+    if genres:
+        # split comma separated list
+        genres = sorted(genres.split(','), key=str.lower)
+
+        # look for special keyword 'ignore'
+        if len(genres) == 1 and genres[0].lower() == 'ignore':
+            # set special keyword 'ignore' to movies's blacklisted_genres list
             cfg['filters']['movies']['blacklisted_genres'] = ['ignore']
-            genre = None
-        # remove genre from movies's blacklisted_genres list
+            # set genre search parameter to None
+            genres = None
+        # remove genre from movies's blacklisted_genres list, if it's there
         else:
-            misc_helper.unblacklist_genres(genre, cfg['filters']['movies']['blacklisted_genres'])
+            misc_helper.unblacklist_genres(genres, cfg['filters']['movies']['blacklisted_genres'])
+            log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
     # replace radarr root_folder if folder is supplied
     if folder:
@@ -795,28 +802,28 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         trakt_objects_list = trakt.get_anticipated_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower() == 'person':
@@ -828,7 +835,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
             person=actor,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -837,7 +844,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
             authenticate_user,
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
         )
 
     elif list_type.lower().startswith('played'):
@@ -845,7 +852,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         trakt_objects_list = trakt.get_most_played_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             most_type=most_type if most_type else None,
         )
 
@@ -854,7 +861,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         trakt_objects_list = trakt.get_most_watched_movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
-            genres=genre,
+            genres=genres,
             most_type=most_type if most_type else None,
         )
 
@@ -937,10 +944,10 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
             if not tmdb_helper.check_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id):
                 continue
 
-            # check if genre matches genre supplied via argument
-            if genre and not misc_helper.allowed_genres(genre, 'movie', sorted_movie):
-                log.debug("SKIPPING: \'%s (%s)\' because it was not from genre: %s", movie_title,
-                          movie_year, genre.title())
+            # check if genres matches genre(s) supplied via argument
+            if genres and not misc_helper.allowed_genres(genres, 'movie', sorted_movie):
+                log.debug("SKIPPING: \'%s (%s)\' because it was not from the genre(s): %s", movie_title,
+                          movie_year, ', '.join(map(lambda x: x.title(), genres)))
                 continue
 
             # check if movie passes out blacklist criteria inspection
@@ -958,7 +965,7 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                             rotten_tomatoes):
                         continue
 
-                log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre: %s ",
+                log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre(s): %s ",
                          movie_title,
                          movie_year,
                          (sorted_movie['movie']['country'] or 'N/A').upper(),
