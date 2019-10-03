@@ -92,6 +92,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             include_non_acting_roles=False,
     ):
 
@@ -122,6 +123,10 @@ class Trakt:
         # genres list
         if genres:
             payload['genres'] = ','.join(genres).lower()
+
+        # runtimes range
+        if runtimes:
+            payload['runtimes'] = runtimes
 
         processed = []
 
@@ -439,6 +444,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -450,6 +456,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -460,6 +467,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -471,6 +479,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -481,6 +490,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -492,6 +502,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_person_shows(
@@ -502,6 +513,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             include_non_acting_roles=False,
     ):
 
@@ -514,6 +526,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -525,6 +538,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             most_type=None,
     ):
 
@@ -537,6 +551,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -547,6 +562,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             most_type=None,
     ):
 
@@ -559,6 +575,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -570,6 +587,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -582,6 +600,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_watchlist_shows(
@@ -592,6 +611,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -604,6 +624,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_user_list_shows(
@@ -615,6 +636,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         list_user, list_key = extract_list_user_and_key_from_url(list_url)
@@ -631,6 +653,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     ############################################################
@@ -651,6 +674,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -662,6 +686,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -672,6 +697,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -683,6 +709,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -693,6 +720,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -704,6 +732,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_person_movies(
@@ -714,6 +743,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             include_non_acting_roles=False,
     ):
 
@@ -726,6 +756,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -737,6 +768,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
             most_type=None,
     ):
 
@@ -749,6 +781,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     @cache(cache_file=cachefile, retry_if_blank=True)
@@ -760,6 +793,7 @@ class Trakt:
             languages=None,
             genres=None,
             most_type=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -771,6 +805,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_boxoffice_movies(
@@ -780,6 +815,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -791,6 +827,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_recommended_movies(
@@ -801,6 +838,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -813,6 +851,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_watchlist_movies(
@@ -823,6 +862,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -835,6 +875,7 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     def get_user_list_movies(
@@ -846,6 +887,7 @@ class Trakt:
             countries=None,
             languages=None,
             genres=None,
+            runtimes=None,
     ):
 
         list_user, list_key = extract_list_user_and_key_from_url(list_url)
@@ -862,4 +904,5 @@ class Trakt:
             countries=countries,
             languages=languages,
             genres=genres,
+            runtimes=runtimes,
         )

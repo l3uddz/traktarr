@@ -40,6 +40,7 @@
         "fan-film"
       ],
       "blacklisted_min_runtime": 60,
+      "blacklisted_max_runtime": 0,
       "blacklisted_min_year": 2000,
       "blacklisted_max_year": 2019,
       "blacklisted_title_keywords": [
@@ -86,6 +87,7 @@
         "yahoo!"
       ],
       "blacklisted_min_runtime": 15,
+      "blacklisted_max_runtime": 0,
       "blacklisted_min_year": 2010,
       "blacklisted_max_year": 2019,
       "blacklisted_title_keywords": []

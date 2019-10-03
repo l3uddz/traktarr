@@ -387,6 +387,22 @@ def shows(
     else:
         years = None
 
+    # runtimes range
+    if cfg.filters.shows.blacklisted_min_runtime:
+        min_runtime = cfg.filters.shows.blacklisted_min_runtime
+    else:
+        min_runtime = 0
+
+    if cfg.filters.shows.blacklisted_max_runtime and cfg.filters.shows.blacklisted_max_runtime >= min_runtime:
+        max_runtime = cfg.filters.shows.blacklisted_max_runtime
+    else:
+        max_runtime = 9999
+
+    if min_runtime == 0 and max_runtime == 9999:
+        runtimes = None
+    else:
+        runtimes = str(min_runtime) + '-' + str(max_runtime)
+
     # replace sonarr root_folder if folder is supplied
     if folder:
         cfg['sonarr']['root_folder'] = folder
@@ -415,6 +431,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'trending':
@@ -423,6 +440,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'popular':
@@ -431,6 +449,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'person':
@@ -444,6 +463,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -454,6 +474,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower().startswith('played'):
@@ -463,6 +484,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             most_type=most_type if most_type else None,
         )
 
@@ -473,6 +495,7 @@ def shows(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             most_type=most_type if most_type else None,
         )
 
@@ -866,6 +889,22 @@ def movies(
     else:
         years = None
 
+    # runtimes range
+    if cfg.filters.movies.blacklisted_min_runtime:
+        min_runtime = cfg.filters.movies.blacklisted_min_runtime
+    else:
+        min_runtime = 0
+
+    if cfg.filters.movies.blacklisted_max_runtime and cfg.filters.movies.blacklisted_max_runtime >= min_runtime:
+        max_runtime = cfg.filters.movies.blacklisted_max_runtime
+    else:
+        max_runtime = 9999
+
+    if min_runtime == 0 and max_runtime == 9999:
+        runtimes = None
+    else:
+        runtimes = str(min_runtime) + '-' + str(max_runtime)
+
     # replace radarr root_folder if folder is supplied
     if folder:
         cfg['radarr']['root_folder'] = folder
@@ -901,6 +940,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'trending':
@@ -909,6 +949,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'popular':
@@ -917,6 +958,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'boxoffice':
@@ -925,6 +967,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower() == 'person':
@@ -938,6 +981,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             include_non_acting_roles=include_non_acting_roles,
         )
 
@@ -948,6 +992,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
         )
 
     elif list_type.lower().startswith('played'):
@@ -957,6 +1002,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             most_type=most_type if most_type else None,
         )
 
@@ -967,6 +1013,7 @@ def movies(
             countries=cfg.filters.shows.allowed_countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
+            runtimes=runtimes,
             most_type=most_type if most_type else None,
         )
 
