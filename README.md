@@ -361,11 +361,6 @@ You can repeat this process for as many users as you like.
 
 
 ## Automatic
-Used for automatic / scheduled Traktarr tasks.
-
-Movies can be run on a separate schedule then from Shows.
-
-_Note: These settings are only needed if you plan to use Traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
 
 ```json
 "automatic": {
@@ -392,14 +387,45 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
   }
 },
 ```
+Used for automatic / scheduled Traktarr tasks.
+
+Movies can be run on a separate schedule then from Shows.
+
+_Note: These settings are only needed if you plan to use Traktarr on a schedule (vs just using it as a CLI command only; see [Usage](#usage))._
+
+Format:
+
+ - "List Name": # of items to add into Radarr/Sonarr.
+ 
+_Note: The number specified is the number of items that will be added into Radarr/Sonarr. It is not a Trakt list limit, i.e. this is not going to lookup Top X items._
+ 
+### Interval
 
 `interval` - Specify how often (in hours) to run Traktarr task. 
 
-  - Setting `interval` to `0`, will skip the schedule for that task. For example, if you only want to add movies and not TV shows, you can set show's `interval` to `0`.
+  - Setting `interval` to `0`, will skip the schedule for that task. 
+  
+  - For example, if you only want to add movies and not TV shows, you can set show's `interval` to `0`.
 
-`anticipated`, `popular`, `trending`, `boxoffice` (movies only) - Specify how many items from each Trakt list to find.
+### Official Trakt Lists 
 
-`watched` - Adds items that are the most watched by unique Trakt users (multiple viewings excluded).
+`anticipated` - Trakt Anticipated List. 
+
+- Most anticipated movies/shows based on the number of lists a movie/show appears on.
+
+`popular` - Trakt Popular List.
+
+-  Most popular movies/shows. Popularity is calculated using the rating percentage and the number of ratings.
+
+`trending` - Trakt Trending List.
+
+- All movies/shows being watched right now. Movies with the most users are returned first.
+
+`boxoffice` - Trakt Box Office List. Movies only.
+
+- Top 10 grossing movies in the U.S. box office last weekend. Updated every Monday morning.
+
+`watched` - Most watched (unique users) movies in the specified time period.
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -409,7 +435,7 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 
   - `watched_all` - Most watched of all time.
 
-`played` - Adds items that are most the played items by Trakt users (multiple viewings included).
+`played` - Most played (a single user can watch multiple times) items in the specified time period. 
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -421,40 +447,15 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 
 `watchlist` - Specify which watchlists to fetch (see explanation below).
 
-`lists` - Specify which custom lists to fetch (see explanation below).
-
-### Personal Watchlists
-
-The watchlist task can be scheduled with a different item limit for every (authenticated) user.
-
-So for every user, you will add: `"username": limit` to the watchlist key. For example:
-
-```json
-"automatic": {
-  "movies": {
-    "watchlist": {
-        "user1": 10,
-        "user2": 5
-    }
-  },
-  "shows": {
-    "watchlist": {
-        "user1": 2,
-        "user3": 1
-    }
-  }
-},
-```
-
-Of course you can combine this with running the other list types as well.
-
 ### Custom Lists
+
+`lists` - Specify which custom lists to fetch (see explanation below).
 
 You can also schedule any number of public or private custom lists.
 
 For both public and private lists you'll need the url to that list. When viewing the list on Trakt, simply copy the url from the address bar of the your browser.
 
-_Note: These are for non-watchlist lists. If you want to add a watchlist list, use the section above._
+_Note: These are for non-watchlist lists. If you want to add a watchlist list, use the next section below._
 
 #### Public Lists
 
@@ -521,6 +522,28 @@ Private lists can be added in two ways:
      }
    },
    ```
+### Personal Trakt Watchlists
+
+The watchlist task can be scheduled with a different item limit for every (authenticated) user.
+
+So for every user, you will add: `"username": limit` to the watchlist key. For example:
+
+```json
+"automatic": {
+  "movies": {
+    "watchlist": {
+        "user1": 10,
+        "user2": 5
+    }
+  },
+  "shows": {
+    "watchlist": {
+        "user1": 2,
+        "user3": 1
+    }
+  }
+},
+```
 
 
 ## Filters
@@ -1206,9 +1229,11 @@ Options:
   --help                          Show this message and exit.
 ```
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+`-t`, `--list-type` - Trakt list to process. 
 
-- Watched Lists: Movies that are the most watched by unique Trakt users (multiple viewings excluded).
+Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+
+- Top Watched List options:
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -1218,7 +1243,7 @@ Options:
 
   - `watched_all` - Most watched of all time.
 
-- Played Lists: Movies that are the most played by Trakt users (multiple viewings included).
+- Top Played List options:
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -1229,6 +1254,8 @@ Options:
   - `played_all` Most played of all time.
 
 `-l`, `--add-limit` - Limit number of movies added to Radarr.
+
+ - Note: This is a limit on how many items are added into Radarr. Not a limit on how many items to retrieve from Trakt. 
 
 `-d`, `--add-delay` - Add seconds delay between each add request to Radarr. Default is 2.5 seconds.
 
@@ -1343,9 +1370,11 @@ Options:
 ```
 
 
-`-t`, `--list-type` - Trakt list to process. Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+`-t`, `--list-type` - Trakt list to process. 
 
-- Watched Lists: Shows that are the most watched by unique Trakt users (multiple viewings excluded).
+Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+
+- Top Watched List options:
 
   - `watched` / `watched_weekly` - Most watched in the week.
 
@@ -1355,7 +1384,7 @@ Options:
 
   - `watched_all` - Most watched of all time.
 
-- Played Lists: Shows that are the most played by Trakt users (multiple viewings included).
+- Top Played List options:
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -1365,7 +1394,9 @@ Options:
 
   - `played_all` Most played of all time.
 
-`-l`, `--add-limit` - Limit number of shows added to Sonarr.
+`-l`, `--add-limit` - Limit number of shows added to Sonarr. 
+
+ - Note: This is a limit on how many items are added into Sonarr. Not a limit on how many items to retrieve from Trakt. 
 
 `-d`, `--add-delay` - Add seconds delay between each add request to Sonarr. Default is 2.5 seconds.
 
