@@ -3,6 +3,7 @@ import os.path
 import signal
 import sys
 import time
+import re
 
 import click
 import schedule
@@ -293,6 +294,10 @@ def show(
     help='Sort list to process.',
     show_default=True)
 @click.option(
+    '--years', '-y',
+    default=None,
+    help='Range of years to search. For example, \'2000-2010\'.')
+@click.option(
     '--genres', '-g',
     default=None,
     help='Only add shows from this genre to Sonarr. '
@@ -338,6 +343,7 @@ def shows(
         add_limit=0,
         add_delay=2.5,
         sort='votes',
+        years=None,
         genres=None,
         folder=None,
         actor=None,
@@ -371,7 +377,12 @@ def shows(
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres.split(','))))
 
     # set years range
-    if cfg.filters.shows.blacklisted_min_year and cfg.filters.shows.blacklisted_max_year:
+    r = re.compile('[0-9]{4}-[0-9]{4}')
+
+    if years and r.match(years):
+        cfg['filters']['shows']['blacklisted_min_year'] = int(years.split('-')[0])
+        cfg['filters']['shows']['blacklisted_max_year'] = int(years.split('-')[1])
+    elif cfg.filters.shows.blacklisted_min_year and cfg.filters.shows.blacklisted_max_year:
         years = str(cfg.filters.shows.blacklisted_min_year) + '-' + str(cfg.filters.shows.blacklisted_max_year)
     else:
         years = None
@@ -751,6 +762,10 @@ def movie(
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
 @click.option(
+    '--years', '-y',
+    default=None,
+    help='Range of years to search. For example, \'2000-2010\'.')
+@click.option(
     '--genres', '-g',
     default=None,
     help='Only add movies from this genre to Radarr. '
@@ -801,6 +816,7 @@ def movies(
         add_delay=2.5,
         sort='votes',
         rotten_tomatoes=None,
+        years=None,
         genres=None,
         folder=None,
         minimum_availability=None,
@@ -840,7 +856,12 @@ def movies(
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
     # set years range
-    if cfg.filters.movies.blacklisted_min_year and cfg.filters.movies.blacklisted_max_year:
+    r = re.compile('[0-9]{4}-[0-9]{4}')
+
+    if years and r.match(years):
+        cfg['filters']['movies']['blacklisted_min_year'] = int(years.split('-')[0])
+        cfg['filters']['movies']['blacklisted_max_year'] = int(years.split('-')[1])
+    elif cfg.filters.movies.blacklisted_min_year and cfg.filters.movies.blacklisted_max_year:
         years = str(cfg.filters.movies.blacklisted_min_year) + '-' + str(cfg.filters.movies.blacklisted_max_year)
     else:
         years = None
