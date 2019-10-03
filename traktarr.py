@@ -176,7 +176,12 @@ def get_exclusions(pvr, pvr_type, notifications):
     '--no-search',
     is_flag=True,
     help='Disable search when adding show to Sonarr.')
-def show(show_id, folder=None, no_search=False):
+def show(
+        show_id,
+        folder=None,
+        no_search=False,
+):
+
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import sonarr as sonarr_helper
@@ -238,15 +243,18 @@ def show(show_id, folder=None, no_search=False):
     log.debug("Set series type for \'%s (%s)\' to: %s", series_title, series_year, series_type.title())
 
     # add show to sonarr
-    if sonarr.add_series(trakt_show['ids']['tvdb'],
-                         series_title,
-                         trakt_show['ids']['slug'],
-                         quality_profile_id,
-                         language_profile_id,
-                         cfg.sonarr.root_folder,
-                         use_tags,
-                         not no_search,
-                         series_type):
+    if sonarr.add_series(
+            trakt_show['ids']['tvdb'],
+            series_title,
+            trakt_show['ids']['slug'],
+            quality_profile_id,
+            language_profile_id,
+            cfg.sonarr.root_folder,
+            use_tags,
+            not no_search,
+            series_type,
+    ):
+
         if profile_tags is not None and readable_tags is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                      readable_tags)
@@ -325,9 +333,22 @@ def show(show_id, folder=None, no_search=False):
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing shows from recommended.')
-def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, folder=None, actor=None, no_search=False,
-          include_non_acting_roles=False, notifications=False, authenticate_user=None, ignore_blacklist=False,
-          remove_rejected_from_recommended=False):
+def shows(
+        list_type,
+        add_limit=0,
+        add_delay=2.5,
+        sort='votes',
+        genres=None,
+        folder=None,
+        actor=None,
+        no_search=False,
+        include_non_acting_roles=False,
+        notifications=False,
+        authenticate_user=None,
+        ignore_blacklist=False,
+        remove_rejected_from_recommended=False,
+):
+
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import str as misc_str
@@ -464,9 +485,12 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
         remove_rejected_from_recommended = False
 
     # build filtered series list without series that exist in sonarr
-    processed_series_list = sonarr_helper.remove_existing_series(pvr_objects_list, trakt_objects_list,
-                                                                 callback_remove_recommended
-                                                                 if remove_rejected_from_recommended else None)
+    processed_series_list = sonarr_helper.remove_existing_series(
+        pvr_objects_list,
+        trakt_objects_list,
+        callback_remove_recommended if remove_rejected_from_recommended else None
+    )
+
     if processed_series_list is None:
         log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list.")
         if notifications:
@@ -529,9 +553,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
                 continue
 
             # check if series passes out blacklist criteria inspection
-            if not trakt_helper.is_show_blacklisted(series, cfg.filters.shows, ignore_blacklist,
-                                                    callback_remove_recommended
-                                                    if remove_rejected_from_recommended else None):
+            if not trakt_helper.is_show_blacklisted(
+                    series,
+                    cfg.filters.shows,
+                    ignore_blacklist,
+                    callback_remove_recommended if remove_rejected_from_recommended else None,
+            ):
+
                 log.info("ADDING: %s (%s) | Country: %s | Language: %s | Genre(s): %s | Network: %s",
                          series_title,
                          series_year,
@@ -547,20 +575,29 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
 
                 if profile_tags is not None:
                     # determine which tags to use when adding this series
-                    use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags,
-                                                                        series['show']['network'])
-                    readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
+                    use_tags = sonarr_helper.series_tag_id_from_network(
+                        profile_tags,
+                        cfg.sonarr.tags,
+                        series['show']['network'],
+                    )
+                    readable_tags = sonarr_helper.readable_tag_from_ids(
+                        profile_tags,
+                        use_tags,
+                    )
 
                 # add show to sonarr
-                if sonarr.add_series(series['show']['ids']['tvdb'],
-                                     series_title,
-                                     series['show']['ids']['slug'],
-                                     quality_profile_id,
-                                     language_profile_id,
-                                     cfg.sonarr.root_folder,
-                                     use_tags,
-                                     not no_search,
-                                     series_type):
+                if sonarr.add_series(
+                        series['show']['ids']['tvdb'],
+                        series_title,
+                        series['show']['ids']['slug'],
+                        quality_profile_id,
+                        language_profile_id,
+                        cfg.sonarr.root_folder,
+                        use_tags,
+                        not no_search,
+                        series_type,
+                ):
+
                     if profile_tags is not None and readable_tags is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
                                  readable_tags)
@@ -621,7 +658,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     '--no-search',
     is_flag=True,
     help='Disable search when adding movie to Radarr.')
-def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
+def movie(
+        movie_id,
+        folder=None,
+        minimum_availability=None,
+        no_search=False,
+):
+
     from media.radarr import Radarr
     from media.trakt import Trakt
 
@@ -663,14 +706,17 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     log.info("Retrieved Trakt movie information for \'%s\': \'%s (%s)\'", movie_id, trakt_movie['title'], movie_year)
 
     # add movie to radarr
-    if radarr.add_movie(trakt_movie['ids']['tmdb'],
-                        trakt_movie['title'],
-                        trakt_movie['year'],
-                        trakt_movie['ids']['slug'],
-                        quality_profile_id,
-                        cfg.radarr.root_folder,
-                        cfg.radarr.minimum_availability,
-                        not no_search):
+    if radarr.add_movie(
+            trakt_movie['ids']['tmdb'],
+            trakt_movie['title'],
+            trakt_movie['year'],
+            trakt_movie['ids']['slug'],
+            quality_profile_id,
+            cfg.radarr.root_folder,
+            cfg.radarr.minimum_availability,
+            not no_search,
+    ):
+
         log.info("ADDED \'%s (%s)\'", trakt_movie['title'], movie_year)
     else:
         log.error("FAILED ADDING \'%s (%s)\'", trakt_movie['title'], movie_year)
@@ -749,9 +795,24 @@ def movie(movie_id, folder=None, minimum_availability=None, no_search=False):
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing movies from recommended.')
-def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=None, genres=None, folder=None,
-           minimum_availability=None, actor=None, include_non_acting_roles=False, no_search=False, notifications=False,
-           authenticate_user=None, ignore_blacklist=False, remove_rejected_from_recommended=False):
+def movies(
+        list_type,
+        add_limit=0,
+        add_delay=2.5,
+        sort='votes',
+        rotten_tomatoes=None,
+        genres=None,
+        folder=None,
+        minimum_availability=None,
+        actor=None,
+        include_non_acting_roles=False,
+        no_search=False,
+        notifications=False,
+        authenticate_user=None,
+        ignore_blacklist=False,
+        remove_rejected_from_recommended=False,
+):
+
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -977,9 +1038,12 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                 continue
 
             # check if movie passes out blacklist criteria inspection
-            if not trakt_helper.is_movie_blacklisted(sorted_movie, cfg.filters.movies, ignore_blacklist,
-                                                     callback_remove_recommended if remove_rejected_from_recommended
-                                                     else None):
+            if not trakt_helper.is_movie_blacklisted(
+                    sorted_movie,
+                    cfg.filters.movies,
+                    ignore_blacklist,
+                    callback_remove_recommended if remove_rejected_from_recommended else None,
+            ):
 
                 # Skip movie if below user specified min RT score
                 if rotten_tomatoes is not None and cfg.omdb.api_key:
@@ -988,7 +1052,8 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                             movie_title,
                             movie_year,
                             movie_imdb_id,
-                            rotten_tomatoes):
+                            rotten_tomatoes,
+                    ):
                         continue
 
                 log.info("ADDING: \'%s (%s)\' | Country: %s | Language: %s | Genre(s): %s ",
@@ -996,17 +1061,20 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
                          movie_year,
                          (sorted_movie['movie']['country'] or 'N/A').upper(),
                          (sorted_movie['movie']['language'] or 'N/A').upper(),
-                         movie_genres)
+                         movie_genres,
+                         )
 
                 # add movie to radarr
-                if radarr.add_movie(sorted_movie['movie']['ids']['tmdb'],
-                                    movie_title,
-                                    movie_year,
-                                    sorted_movie['movie']['ids']['slug'],
-                                    quality_profile_id,
-                                    cfg.radarr.root_folder,
-                                    cfg.radarr.minimum_availability,
-                                    not no_search):
+                if radarr.add_movie(
+                        sorted_movie['movie']['ids']['tmdb'],
+                        movie_title,
+                        movie_year,
+                        sorted_movie['movie']['ids']['slug'],
+                        quality_profile_id,
+                        cfg.radarr.root_folder,
+                        cfg.radarr.minimum_availability,
+                        not no_search,
+                ):
 
                     log.info("ADDED: \'%s (%s)\'", movie_title, movie_year)
                     if notifications:
@@ -1106,7 +1174,14 @@ def callback_notify(data):
 ############################################################
 
 
-def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False):
+def automatic_shows(
+        add_delay=2.5,
+        sort='votes',
+        no_search=False,
+        notifications=False,
+        ignore_blacklist=False,
+):
+
     from media.trakt import Trakt
 
     total_shows_added = 0
@@ -1140,9 +1215,16 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                     local_ignore_blacklist = True
 
                 # run shows
-                added_shows = shows.callback(list_type=list_type, add_limit=limit,
-                                             add_delay=add_delay, sort=sort, no_search=no_search,
-                                             notifications=notifications, ignore_blacklist=local_ignore_blacklist)
+                added_shows = shows.callback(
+                    list_type=list_type,
+                    add_limit=limit,
+                    add_delay=add_delay,
+                    sort=sort,
+                    no_search=no_search,
+                    notifications=notifications,
+                    ignore_blacklist=local_ignore_blacklist,
+                )
+
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -1158,10 +1240,17 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                         local_ignore_blacklist = True
 
                     # run shows
-                    added_shows = shows.callback(list_type=list_type, add_limit=limit,
-                                                 add_delay=add_delay, sort=sort, no_search=no_search,
-                                                 notifications=notifications, authenticate_user=authenticate_user,
-                                                 ignore_blacklist=local_ignore_blacklist)
+                    added_shows = shows.callback(
+                        list_type=list_type,
+                        add_limit=limit,
+                        add_delay=add_delay,
+                        sort=sort,
+                        no_search=no_search,
+                        notifications=notifications,
+                        authenticate_user=authenticate_user,
+                        ignore_blacklist=local_ignore_blacklist,
+                    )
+
             elif list_type.lower() == 'lists':
 
                 if len(value.items()) == 0:
@@ -1186,10 +1275,16 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                         local_ignore_blacklist = True
 
                     # run shows
-                    added_shows = shows.callback(list_type=list_, add_limit=limit,
-                                                 add_delay=add_delay, sort=sort, no_search=no_search,
-                                                 notifications=notifications, authenticate_user=authenticate_user,
-                                                 ignore_blacklist=local_ignore_blacklist)
+                    added_shows = shows.callback(
+                        list_type=list_,
+                        add_limit=limit,
+                        add_delay=add_delay,
+                        sort=sort,
+                        no_search=no_search,
+                        notifications=notifications,
+                        authenticate_user=authenticate_user,
+                        ignore_blacklist=local_ignore_blacklist,
+                    )
 
             if added_shows is None:
                 if not list_type.lower() == 'lists':
@@ -1211,8 +1306,15 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
     return
 
 
-def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications=False, ignore_blacklist=False,
-                     rotten_tomatoes=None):
+def automatic_movies(
+        add_delay=2.5,
+        sort='votes',
+        no_search=False,
+        notifications=False,
+        ignore_blacklist=False,
+        rotten_tomatoes=None,
+):
+
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -1246,10 +1348,17 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     local_ignore_blacklist = True
 
                 # run movies
-                added_movies = movies.callback(list_type=list_type, add_limit=limit,
-                                               add_delay=add_delay, sort=sort, no_search=no_search,
-                                               notifications=notifications, ignore_blacklist=local_ignore_blacklist,
-                                               rotten_tomatoes=rotten_tomatoes)
+                added_movies = movies.callback(
+                    list_type=list_type,
+                    add_limit=limit,
+                    add_delay=add_delay,
+                    sort=sort,
+                    no_search=no_search,
+                    notifications=notifications,
+                    ignore_blacklist=local_ignore_blacklist,
+                    rotten_tomatoes=rotten_tomatoes,
+                )
+
             elif list_type.lower() == 'watchlist':
                 for authenticate_user, limit in value.items():
                     if limit <= 0:
@@ -1265,11 +1374,18 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                         local_ignore_blacklist = True
 
                     # run movies
-                    added_movies = movies.callback(list_type=list_type, add_limit=limit,
-                                                   add_delay=add_delay, sort=sort, no_search=no_search,
-                                                   notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist,
-                                                   rotten_tomatoes=rotten_tomatoes)
+                    added_movies = movies.callback(
+                        list_type=list_type,
+                        add_limit=limit,
+                        add_delay=add_delay,
+                        sort=sort,
+                        no_search=no_search,
+                        otifications=notifications,
+                        authenticate_user=authenticate_user,
+                        ignore_blacklist=local_ignore_blacklist,
+                        rotten_tomatoes=rotten_tomatoes,
+                    )
+
             elif list_type.lower() == 'lists':
 
                 if len(value.items()) == 0:
@@ -1294,11 +1410,17 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                         local_ignore_blacklist = True
 
                     # run shows
-                    added_movies = movies.callback(list_type=list_, add_limit=limit,
-                                                   add_delay=add_delay, sort=sort, no_search=no_search,
-                                                   notifications=notifications, authenticate_user=authenticate_user,
-                                                   ignore_blacklist=local_ignore_blacklist,
-                                                   rotten_tomatoes=rotten_tomatoes)
+                    added_movies = movies.callback(
+                        list_type=list_,
+                        add_limit=limit,
+                        add_delay=add_delay,
+                        sort=sort,
+                        no_search=no_search,
+                        notifications=notifications,
+                        authenticate_user=authenticate_user,
+                        ignore_blacklist=local_ignore_blacklist,
+                        rotten_tomatoes=rotten_tomatoes,
+                    )
 
             if added_movies is None:
                 if not list_type.lower() == 'lists':
@@ -1348,7 +1470,15 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
     '--ignore-blacklist',
     is_flag=True,
     help='Ignores the blacklist when running the command.')
-def run(add_delay=2.5, sort='votes', no_search=False, run_now=False, no_notifications=False, ignore_blacklist=False):
+def run(
+        add_delay=2.5,
+        sort='votes',
+        no_search=False,
+        run_now=False,
+        no_notifications=False,
+        ignore_blacklist=False,
+):
+
     log.info("Automatic mode is now running.")
 
     # send notification
