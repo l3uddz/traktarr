@@ -143,8 +143,8 @@ def get_objects(pvr, pvr_type, notifications):
     if not objects_list:
         log.error("Aborting due to failure to retrieve %s list from %s", objects_type, pvr_type)
         if notifications:
-            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s list from %s' % (objects_type,
-                                                                                                  pvr_type)})
+            callback_notify({'event': 'error', 'reason': 'Failure to retrieve \'%s\' list from %s' % (objects_type,
+                                                                                                      pvr_type)})
         exit()
     log.info("Retrieved %s %s list, %s found: %d", pvr_type, objects_type, objects_type, len(objects_list))
     return objects_list
@@ -450,11 +450,11 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
         trakt_objects_list = trakt.get_user_list_shows(list_type, authenticate_user)
 
     if not trakt_objects_list:
-        log.error("Aborting due to failure to retrieve Trakt \'%s\' shows list", list_type.capitalize())
+        log.error("Aborting due to failure to retrieve Trakt \'%s\' shows list.", list_type.capitalize())
         if notifications:
             callback_notify(
                 {'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                 'reason': 'Failure to retrieve Trakt %s shows list' % list_type.capitalize()})
+                 'reason': 'Failure to retrieve Trakt \'%s\' shows list.' % list_type.capitalize()})
         return None
     else:
         log.info("Retrieved Trakt \'%s\' shows list, shows found: %d", list_type.capitalize(), len(trakt_objects_list))
@@ -468,10 +468,10 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
                                                                  callback_remove_recommended
                                                                  if remove_rejected_from_recommended else None)
     if processed_series_list is None:
-        log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list")
+        log.error("Aborting due to failure to remove existing Sonarr shows from retrieved Trakt shows list.")
         if notifications:
             callback_notify({'event': 'abort', 'type': 'shows', 'list_type': list_type,
-                             'reason': 'Failure to remove existing Sonarr shows from retrieved Trakt %s shows list'
+                             'reason': 'Failure to remove existing Sonarr shows from retrieved Trakt \'%s\' shows list.'
                                        % list_type.capitalize()})
         return None
     else:
@@ -481,13 +481,13 @@ def shows(list_type, add_limit=0, add_delay=2.5, sort='votes', genres=None, fold
     # sort filtered series list
     if sort == 'release':
         sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'first_aired')
-        log.info("Sorted shows list to process by recent 'release' date")
+        log.info("Sorted shows list to process by recent 'release' date.")
     elif sort == 'rating':
         sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'rating')
-        log.info("Sorted shows list to process by highest 'rating'")
+        log.info("Sorted shows list to process by highest 'rating'.")
     else:
         sorted_series_list = misc_helper.sorted_list(processed_series_list, 'show', 'votes')
-        log.info("Sorted shows list to process by highest 'votes'")
+        log.info("Sorted shows list to process by highest 'votes'.")
 
     # loop series_list
     log.info("Processing list now...")
@@ -894,11 +894,11 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         trakt_objects_list = trakt.get_user_list_movies(list_type, authenticate_user)
 
     if not trakt_objects_list:
-        log.error("Aborting due to failure to retrieve Trakt \'%s\' movies list", list_type.capitalize())
+        log.error("Aborting due to failure to retrieve Trakt \'%s\' movies list.", list_type.capitalize())
         if notifications:
             callback_notify(
                 {'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                 'reason': 'Failure to retrieve Trakt \'%s\' movies list' % list_type.capitalize()})
+                 'reason': 'Failure to retrieve Trakt \'%s\' movies list.' % list_type.capitalize()})
         return None
     else:
         log.info("Retrieved Trakt \'%s\' movies list, movies found: %d", list_type.capitalize(),
@@ -909,33 +909,36 @@ def movies(list_type, add_limit=0, add_delay=2.5, sort='votes', rotten_tomatoes=
         remove_rejected_from_recommended = False
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list = radarr_helper.remove_existing_and_excluded_movies(pvr_objects_list,
-                                                                              pvr_exclusions_list,
-                                                                              trakt_objects_list,
-                                                                              callback_remove_recommended
-                                                                              if remove_rejected_from_recommended else
-                                                                              None)
+    processed_movies_list, removal_successful = radarr_helper.remove_existing_and_excluded_movies(
+        pvr_objects_list,
+        pvr_exclusions_list,
+        trakt_objects_list,
+        callback_remove_recommended if remove_rejected_from_recommended else None)
+
     if processed_movies_list is None:
-        log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list")
-        if notifications:
-            callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
-                             'reason': 'Failure to remove existing Radarr movies from retrieved '
-                                       'Trakt %s movies list' % list_type.capitalize()})
+        if not removal_successful:
+            log.error("Aborting due to failure to remove existing Radarr movies from retrieved Trakt movies list.")
+            if notifications:
+                callback_notify({'event': 'abort', 'type': 'movies', 'list_type': list_type,
+                                 'reason': 'Failure to remove existing Radarr movies from retrieved '
+                                           'Trakt \'%s\' movies list.' % list_type.capitalize()})
+        else:
+            log.info("No more movies left to process in \'%s\' movies list.", list_type.capitalize())
         return None
     else:
-        log.info("Removed existing Radarr movies from Trakt movies list, movies left to process: %d",
+        log.info("Removed existing and excluded Radarr movies from Trakt movies list. Movies left to process: %d",
                  len(processed_movies_list))
 
     # sort filtered movie list
     if sort == 'release':
         sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'released')
-        log.info("Sorted movies list to process by recent 'release' date")
+        log.info("Sorted movies list to process by recent 'release' date.")
     elif sort == 'rating':
         sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'rating')
-        log.info("Sorted movies list to process by highest 'rating'")
+        log.info("Sorted movies list to process by highest 'rating'.")
     else:
         sorted_movies_list = misc_helper.sorted_list(processed_movies_list, 'movie', 'votes')
-        log.info("Sorted movies list to process by highest 'votes'")
+        log.info("Sorted movies list to process by highest 'votes'.")
 
     # display specified min RT score
     if rotten_tomatoes is not None:
@@ -1126,10 +1129,10 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                 limit = value
 
                 if limit <= 0:
-                    log.info("SKIPPED Trakt's \'%s\' shows list", list_type.capitalize())
+                    log.info("SKIPPED Trakt's \'%s\' shows list.", list_type.capitalize())
                     continue
                 else:
-                    log.info("ADDING %d show(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
+                    log.info("ADDING %d show(s) from Trakt's \'%s\' list.", limit, list_type.capitalize())
 
                 local_ignore_blacklist = ignore_blacklist
 
@@ -1162,7 +1165,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
             elif list_type.lower() == 'lists':
 
                 if len(value.items()) == 0:
-                    log.info("SKIPPED Trakt's \'%s\' shows list", list_type.capitalize())
+                    log.info("SKIPPED Trakt's \'%s\' shows list.", list_type.capitalize())
                     continue
 
                 for list_, v in value.items():
@@ -1174,7 +1177,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                         limit = v
 
                     if limit <= 0:
-                        log.info("SKIPPED Trakt's \'%s\' shows list", list_)
+                        log.info("SKIPPED Trakt's \'%s\' shows list.", list_)
                         continue
 
                     local_ignore_blacklist = ignore_blacklist
@@ -1190,7 +1193,7 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
 
             if added_shows is None:
                 if not list_type.lower() == 'lists':
-                    log.error("FAILED ADDING shows from Trakt's \'%s\' list", list_type)
+                    log.info("FAILED ADDING shows from Trakt's \'%s\' list.", list_type)
                 time.sleep(10)
                 continue
             total_shows_added += added_shows
@@ -1232,10 +1235,10 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                 limit = value
 
                 if limit <= 0:
-                    log.info("SKIPPED Trakt's \'%s\' movies list", list_type.capitalize())
+                    log.info("SKIPPED Trakt's \'%s\' movies list.", list_type.capitalize())
                     continue
                 else:
-                    log.info("ADDING %d movie(s) from Trakt's \'%s\' list", limit, list_type.capitalize())
+                    log.info("ADDING %d movie(s) from Trakt's \'%s\' list.", limit, list_type.capitalize())
 
                 local_ignore_blacklist = ignore_blacklist
 
@@ -1282,7 +1285,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                         limit = v
 
                     if limit <= 0:
-                        log.info("SKIPPED Trakt's \'%s\' movies list", list_)
+                        log.info("SKIPPED Trakt's \'%s\' movies list.", list_)
                         continue
 
                     local_ignore_blacklist = ignore_blacklist
@@ -1299,7 +1302,7 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
 
             if added_movies is None:
                 if not list_type.lower() == 'lists':
-                    log.error("FAILED ADDING movies from Trakt's \'%s\' list", list_type.capitalize())
+                    log.info("FAILED ADDING movies from Trakt's \'%s\' list.", list_type.capitalize())
                 time.sleep(10)
                 continue
             total_movies_added += added_movies
