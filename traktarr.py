@@ -154,11 +154,7 @@ def get_exclusions(pvr, pvr_type, notifications):
     objects_list = pvr.get_exclusions()
     objects_type = 'movie' if pvr_type.lower() == 'radarr' else 'show'
     if not objects_list:
-        log.error("Aborting due to failure to retrieve %s exclusion list from %s", objects_type, pvr_type)
-        if notifications:
-            callback_notify({'event': 'error', 'reason': 'Failure to retrieve %s exclusions list from %s' %
-                                                         (objects_type, pvr_type)})
-        exit()
+        log.info("No %s exclusions list found from %s", objects_type, pvr_type)
     log.info("Retrieved %s %s list, %s found: %d", pvr_type, objects_type, objects_type, len(objects_list))
     return objects_list
 

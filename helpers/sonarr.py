@@ -97,6 +97,7 @@ def remove_existing_series(sonarr_series, trakt_series, callback=None):
 
         series_removed = len(trakt_series) - len(new_series_list)
         log.debug("Filtered %d shows from Trakt list that were already in Sonarr.", series_removed)
+        log.debug("New Trakt shows list count: %d", len(new_series_list))
         return new_series_list
     except Exception:
         log.exception("Exception removing existing shows from Trakt list: ")

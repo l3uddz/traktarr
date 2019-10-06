@@ -55,10 +55,10 @@ def remove_existing_movies(radarr_movies, trakt_movies, callback=None):
                 continue
             new_movies_list.append(tmp)
 
-        movies_removed = len(trakt_movies) - len(new_movies_list)
-        log.debug("Filtered %d movies from Trakt list that were already in Radarr.", movies_removed)
+        movies_removed_count = len(trakt_movies) - len(new_movies_list)
+        log.debug("Filtered %d movies from Trakt list that were already in Radarr.", movies_removed_count)
 
-        return new_movies_list, movies_removed
+        return new_movies_list
     except Exception:
         log.exception("Exception removing existing movies from Trakt list: ")
     return None
@@ -99,17 +99,17 @@ def remove_existing_exclusions(radarr_exclusions, trakt_movies, callback=None):
                 continue
             new_movies_list.append(tmp)
 
-        movies_removed = len(trakt_movies) - len(new_movies_list)
-        log.debug("Filtered %d movies from Trakt list that were excluded in Radarr.", movies_removed)
+        movies_removed_count = len(trakt_movies) - len(new_movies_list)
+        log.debug("Filtered %d movies from Trakt list that were excluded in Radarr.", movies_removed_count)
 
-        return new_movies_list, movies_removed
+        return new_movies_list
     except Exception:
         log.exception("Exception removing excluded movies from Trakt list: ")
     return None
 
 
 def remove_existing_and_excluded_movies(radarr_movies, radarr_exclusions, trakt_movies, callback=None):
-    if not radarr_movies or not radarr_exclusions or not trakt_movies:
+    if not radarr_movies or not trakt_movies:
         log.error("Inappropriate parameters were supplied.")
         return None
 
@@ -120,19 +120,19 @@ def remove_existing_and_excluded_movies(radarr_movies, radarr_exclusions, trakt_
             return None
 
         # filter out existing movies in radarr from new trakt list
-        preprocessed_movies_list, movies_removed_1 = remove_existing_movies(radarr_movies, trakt_movies, callback)
-        if not preprocessed_movies_list:
-            return None
-
-        # filter out radarr exclusions from the list above
-        processed_movies_list, movies_removed_2 = remove_existing_exclusions(radarr_exclusions,
-                                                                             preprocessed_movies_list,
-                                                                             callback)
+        processed_movies_list = remove_existing_movies(radarr_movies, trakt_movies, callback)
         if not processed_movies_list:
             return None
 
-        movies_removed_total = movies_removed_1 + movies_removed_2
-        log.debug("Filtered a total of %d movies from the Trakt movies list.", movies_removed_total)
+        # filter out radarr exclusions from the list above
+        if radarr_exclusions:
+            processed_movies_list = remove_existing_exclusions(radarr_exclusions, processed_movies_list, callback)
+            if not processed_movies_list:
+                return None
+
+        movies_removed_count = len(trakt_movies) - len(processed_movies_list)
+        log.debug("Filtered a total of %d movies from the Trakt movies list.", movies_removed_count)
+        log.debug("New Trakt movies list count: %d", len(processed_movies_list))
         return processed_movies_list
     except Exception:
         log.exception("Exception removing existing and excluded movies from Trakt list: ")
