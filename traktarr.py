@@ -1160,6 +1160,11 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                                                  notifications=notifications, authenticate_user=authenticate_user,
                                                  ignore_blacklist=local_ignore_blacklist)
             elif list_type.lower() == 'lists':
+
+                if len(value.items()) == 0:
+                    log.info("SKIPPED Trakt's \'%s\' shows list", list_type.capitalize())
+                    continue
+
                 for list_, v in value.items():
                     if isinstance(v, dict):
                         authenticate_user = v['authenticate_user']
@@ -1167,6 +1172,10 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                     else:
                         authenticate_user = None
                         limit = v
+
+                    if limit <= 0:
+                        log.info("SKIPPED Trakt's \'%s\' shows list", list_)
+                        continue
 
                     local_ignore_blacklist = ignore_blacklist
 
@@ -1180,7 +1189,8 @@ def automatic_shows(add_delay=2.5, sort='votes', no_search=False, notifications=
                                                  ignore_blacklist=local_ignore_blacklist)
 
             if added_shows is None:
-                log.error("FAILED ADDING shows from Trakt's \'%s\' list", list_type)
+                if not list_type.lower() == 'lists':
+                    log.error("FAILED ADDING shows from Trakt's \'%s\' list", list_type)
                 time.sleep(10)
                 continue
             total_shows_added += added_shows
@@ -1258,6 +1268,11 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                                                    ignore_blacklist=local_ignore_blacklist,
                                                    rotten_tomatoes=rotten_tomatoes)
             elif list_type.lower() == 'lists':
+
+                if len(value.items()) == 0:
+                    log.info("SKIPPED Trakt's \'%s\' movies list", list_type.capitalize())
+                    continue
+
                 for list_, v in value.items():
                     if isinstance(v, dict):
                         authenticate_user = v['authenticate_user']
@@ -1265,6 +1280,10 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                     else:
                         authenticate_user = None
                         limit = v
+
+                    if limit <= 0:
+                        log.info("SKIPPED Trakt's \'%s\' movies list", list_)
+                        continue
 
                     local_ignore_blacklist = ignore_blacklist
 
@@ -1279,7 +1298,8 @@ def automatic_movies(add_delay=2.5, sort='votes', no_search=False, notifications
                                                    rotten_tomatoes=rotten_tomatoes)
 
             if added_movies is None:
-                log.error("FAILED ADDING movies from Trakt's \'%s\' list", list_type.capitalize())
+                if not list_type.lower() == 'lists':
+                    log.error("FAILED ADDING movies from Trakt's \'%s\' list", list_type.capitalize())
                 time.sleep(10)
                 continue
             total_movies_added += added_movies
