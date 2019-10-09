@@ -254,9 +254,10 @@ You can repeat this process for as many users as you like.
         "music",
         "animation"
       ],
+      "blacklisted_max_runtime": 0,
       "blacklisted_min_runtime": 60,
-      "blacklisted_max_year": 2019,
       "blacklisted_min_year": 2000,
+      "blacklisted_max_year": 2019,
       "blacklisted_title_keywords": [
         "untitled",
         "barbie",
@@ -301,9 +302,10 @@ You can repeat this process for as many users as you like.
         "yahoo!",
         "fox sports"
       ],
-      "blacklisted_max_year": 2019,
+      "blacklisted_max_runtime": 0,
       "blacklisted_min_runtime": 15,
       "blacklisted_min_year": 2000,
+      "blacklisted_max_year": 2019,
       "blacklisted_title_keywords": [],
       "blacklisted_tvdb_ids": []
     }
@@ -566,9 +568,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       "music",
       "animation"
     ],
-    "blacklisted_max_year": 2019,
+    "blacklisted_max_runtime": 0,
     "blacklisted_min_runtime": 60,
     "blacklisted_min_year": 2000,
+    "blacklisted_max_year": 2019,
     "blacklisted_title_keywords": [
       "untitled",
       "barbie"
@@ -628,11 +631,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     
     - No other list item should be present. 
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+`blacklisted_min_runtime` - Blacklist runtime duration shorter than specified time (in minutes).
 
-`blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
+`blacklisted_max_runtime` - Blacklist runtime duration longer than specified time (in minutes).
+
+  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored. 
 
 `blacklisted_min_year` - Blacklist release dates before specified year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
@@ -687,9 +694,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
     "yahoo!",
     "fox sports"
   ],
+  "blacklisted_max_runtime": 0,
   "blacklisted_min_runtime": 15,
-  "blacklisted_max_year": 2019,
   "blacklisted_min_year": 2000,
+  "blacklisted_max_year": 2019,
   "blacklisted_title_keywords": [],
   "blacklisted_tvdb_ids": []
 }
@@ -747,11 +755,15 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
       
 `blacklisted_networks` - Blacklist certain network.
 
-`blacklisted_min_runtime` - Blacklist runtime duration lower than specified time (in minutes).
+`blacklisted_min_runtime` - Blacklist runtime duration shorter than specified time (in minutes).
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+`blacklisted_max_runtime` - Blacklist runtime duration longer than specified time (in minutes).
+
+  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored. 
 
 `blacklisted_min_year` - Blacklist release dates before specified year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
