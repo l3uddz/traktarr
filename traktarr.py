@@ -990,13 +990,7 @@ def movies(
         )
 
     elif list_type.lower() == 'boxoffice':
-        trakt_objects_list = trakt.get_boxoffice_movies(
-            years=years,
-            countries=countries,
-            languages=languages,
-            genres=genres,
-            runtimes=runtimes,
-        )
+        trakt_objects_list = trakt.get_boxoffice_movies()
 
     elif list_type.lower() == 'person':
         if not actor:

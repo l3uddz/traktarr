@@ -811,11 +811,6 @@ class Trakt:
     def get_boxoffice_movies(
             self,
             limit=1000,
-            years=None,
-            countries=None,
-            languages=None,
-            genres=None,
-            runtimes=None,
     ):
 
         return self._make_items_request(
@@ -823,11 +818,6 @@ class Trakt:
             object_name='movies',
             type_name='anticipated',
             limit=limit,
-            years=years,
-            countries=countries,
-            languages=languages,
-            genres=genres,
-            runtimes=runtimes,
         )
 
     def get_recommended_movies(
