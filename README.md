@@ -949,6 +949,7 @@ Radarr configuration.
 
 `url` - Radarr's URL.
 
+  - Note: If you have URL Base enabled in Radarr's settings, you will need to add that into the URL as well. 
 
 ## Sonarr
 
@@ -978,6 +979,7 @@ Sonarr configuration.
 
 `url` - Sonarr's URL.
 
+  - Note: If you have URL Base enabled in Sonarr's settings, you will need to add that into the URL as well. 
 
 ### Tags
 
