@@ -605,8 +605,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - `ignore` (i.e. `["ignore"]`) Add movies from any country, including ones with no country specified.
 
-    - No other list item should be present. 
-
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
@@ -629,8 +627,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - `ignore` (i.e. `["ignore"]`) - Add movies from any genre, including ones with no genre specified.
     
-    - No other list item should be present. 
-
 `blacklisted_min_runtime` - Blacklist runtime duration shorter than specified time (in minutes).
 
 `blacklisted_max_runtime` - Blacklist runtime duration longer than specified time (in minutes).
@@ -726,8 +722,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   - Blank list (i.e. `[]`) - Add shows from any country.
 
   - `ignore` (i.e. `["ignore"]`) Add shows from any country, including ones with no country specified.
-
-    - No other list item should be present. 
     
 `allowed_languages` - Only add shows with these languages.
 
@@ -750,8 +744,6 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   - Blank list (i.e. `[]`) - Add shows from any genre.
 
   - `ignore` (i.e. `["ignore"]`) - Add shows from any genre, including ones with no genre specified.
-
-    - No other list item should be present. 
       
 `blacklisted_networks` - Blacklist certain network.
 

@@ -96,7 +96,7 @@ def blacklisted_show_country(show, allowed_countries):
     blacklisted = False
     try:
         # ["ignore"] - add show item even if it is missing a country
-        if len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Ignored.", show['show']['title'])
         # List provided - skip adding show item because it is missing a country
         elif not show['show']['country']:
@@ -127,7 +127,7 @@ def blacklisted_show_language(show, allowed_languages):
         allowed_languages = ['en']
     try:
         # ["ignore"] - add show item even if it is missing a language
-        if len(allowed_languages) == 1 and allowed_languages[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in allowed_languages):
             log.debug("\'%s\' | Blacklisted Languages Check  | Ignored.", show['show']['title'])
         # List provided - skip adding show item because it is missing a language
         elif not show['show']['language']:
@@ -150,7 +150,7 @@ def blacklisted_show_genre(show, genres):
     blacklisted = False
     try:
         # ["ignore"] - add show item even if it is missing a genre
-        if len(genres) == 1 and genres[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in genres):
             log.debug("\'%s\' | Blacklisted Genres Check     | Ignored.", show['show']['title'])
         elif not show['show']['genres']:
             log.debug("\'%s\' | Blacklisted Genres Check     | Blacklisted because it had no genre specified.",
@@ -282,7 +282,7 @@ def blacklisted_movie_country(movie, allowed_countries):
     blacklisted = False
     try:
         # ["ignore"] - add movie item even if it is missing a country
-        if len(allowed_countries) == 1 and allowed_countries[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in allowed_countries):
             log.debug("\'%s\' | Blacklisted Countries Check  | Ignored.",
                       movie['movie']['title'])
         # List provided - skip adding movie item because it is missing a country
@@ -313,7 +313,7 @@ def blacklisted_movie_language(movie, allowed_languages):
         allowed_languages = ['en']
     try:
         # ["ignore"] - add movie item even if it is missing a language
-        if len(allowed_languages) == 1 and allowed_languages[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in allowed_languages):
             log.debug("\'%s\' | Blacklisted Languages Check  | Ignored.",
                       movie['movie']['title'])
         # List provided - skip adding movie item because it is missing a language
@@ -337,7 +337,7 @@ def blacklisted_movie_genre(movie, genres):
     blacklisted = False
     try:
         # ["ignore"] - add movie item even if it is missing a genre
-        if len(genres) == 1 and genres[0].lower() == 'ignore':
+        if any('ignore' in s.lower() for s in genres):
             log.debug("\'%s\' | Blacklisted Genres Check     | Ignored.", movie['movie']['title'])
         elif not movie['movie']['genres']:
             log.debug("\'%s\' | Blacklisted Genres Check     | Blacklisted because it had no genre specified.",

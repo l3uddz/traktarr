@@ -367,14 +367,18 @@ def shows(
 
     # process genres
     if genres:
-        # set special genre keyword to show's blacklisted_genres list
-        if genres.lower() == 'ignore':
+        # split comma separated list
+        genres = sorted(genres.split(','), key=str.lower)
+
+        # look for special keyword 'ignore'
+        if 'ignore' in genres:
+            # set special genre keyword to show's blacklisted_genres list
             cfg['filters']['shows']['blacklisted_genres'] = ['ignore']
             genres = None
-        # remove genres from show's blacklisted_genres list
         else:
+            # remove genres from show's blacklisted_genres list
             misc_helper.unblacklist_genres(genres, cfg['filters']['shows']['blacklisted_genres'])
-            log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres.split(','))))
+            log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
     # set years range
     r = re.compile('[0-9]{4}-[0-9]{4}')
@@ -868,13 +872,13 @@ def movies(
         genres = sorted(genres.split(','), key=str.lower)
 
         # look for special keyword 'ignore'
-        if len(genres) == 1 and genres[0].lower() == 'ignore':
+        if 'ignore' in genres:
             # set special keyword 'ignore' to movies's blacklisted_genres list
             cfg['filters']['movies']['blacklisted_genres'] = ['ignore']
             # set genre search parameter to None
             genres = None
-        # remove genre from movies's blacklisted_genres list, if it's there
         else:
+            # remove genre from movies's blacklisted_genres list, if it's there
             misc_helper.unblacklist_genres(genres, cfg['filters']['movies']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
