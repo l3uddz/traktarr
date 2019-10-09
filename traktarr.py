@@ -365,6 +365,12 @@ def shows(
 
     added_shows = 0
 
+    # process countries
+    if not cfg.filters.shows.allowed_countries or 'ignore' in cfg.filters.shows.allowed_countries:
+        countries = None
+    else:
+        countries = cfg.filters.shows.allowed_countries
+
     # process genres
     if genres:
         # split comma separated list
@@ -432,7 +438,7 @@ def shows(
     if list_type.lower() == 'anticipated':
         trakt_objects_list = trakt.get_anticipated_shows(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -441,7 +447,7 @@ def shows(
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_shows(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -450,7 +456,7 @@ def shows(
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_shows(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -464,7 +470,7 @@ def shows(
         trakt_objects_list = trakt.get_person_shows(
             years=years,
             person=actor,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -475,7 +481,7 @@ def shows(
         trakt_objects_list = trakt.get_recommended_shows(
             authenticate_user,
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -485,7 +491,7 @@ def shows(
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_shows(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -496,7 +502,7 @@ def shows(
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_watched_shows(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -866,6 +872,12 @@ def movies(
 
     added_movies = 0
 
+    # process countries
+    if not cfg.filters.movies.allowed_countries or 'ignore' in cfg.filters.movies.allowed_countries:
+        countries = None
+    else:
+        countries = cfg.filters.movies.allowed_countries
+
     # process genres
     if genres:
         # split comma separated list
@@ -941,7 +953,7 @@ def movies(
     if list_type.lower() == 'anticipated':
         trakt_objects_list = trakt.get_anticipated_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -950,7 +962,7 @@ def movies(
     elif list_type.lower() == 'trending':
         trakt_objects_list = trakt.get_trending_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -959,7 +971,7 @@ def movies(
     elif list_type.lower() == 'popular':
         trakt_objects_list = trakt.get_popular_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -968,7 +980,7 @@ def movies(
     elif list_type.lower() == 'boxoffice':
         trakt_objects_list = trakt.get_boxoffice_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -982,7 +994,7 @@ def movies(
         trakt_objects_list = trakt.get_person_movies(
             years=years,
             person=actor,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -993,7 +1005,7 @@ def movies(
         trakt_objects_list = trakt.get_recommended_movies(
             authenticate_user,
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -1003,7 +1015,7 @@ def movies(
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_played_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
@@ -1014,7 +1026,7 @@ def movies(
         most_type = misc_helper.substring_after(list_type.lower(), "_")
         trakt_objects_list = trakt.get_most_watched_movies(
             years=years,
-            countries=cfg.filters.shows.allowed_countries,
+            countries=countries,
             languages=cfg.filters.shows.allowed_languages,
             genres=genres,
             runtimes=runtimes,
