@@ -386,7 +386,7 @@ class Trakt:
     def _renew_oauth_token_if_expired(self, user):
         token_information = self.cfg['trakt'][user]
 
-        # Check if the acces_token for the user is expired
+        # Check if the access_token for the user is expired
         expires_at = token_information['created_at'] + token_information['expires_in']
         if expires_at < round(time.time()):
             log.info("The access token for the user %s has expired. We're requesting a new one; please wait a moment.",

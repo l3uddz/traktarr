@@ -1470,7 +1470,7 @@ def automatic_movies(
                         add_delay=add_delay,
                         sort=sort,
                         no_search=no_search,
-                        otifications=notifications,
+                        notifications=notifications,
                         authenticate_user=authenticate_user,
                         ignore_blacklist=local_ignore_blacklist,
                         rotten_tomatoes=rotten_tomatoes,
