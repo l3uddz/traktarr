@@ -187,7 +187,7 @@ Repeat the following steps for every user you want to authenticate:
 1. Run the following command:
 
    ```
-   traktarr trakt_authentication
+   traktarr trakt-authentication
    ```
 
 
