@@ -182,7 +182,6 @@ def show(
         folder=None,
         no_search=False,
 ):
-
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import sonarr as sonarr_helper
@@ -354,7 +353,6 @@ def shows(
         ignore_blacklist=False,
         remove_rejected_from_recommended=False,
 ):
-
     from media.sonarr import Sonarr
     from media.trakt import Trakt
     from helpers import str as misc_str
@@ -714,7 +712,6 @@ def movie(
         minimum_availability=None,
         no_search=False,
 ):
-
     from media.radarr import Radarr
     from media.trakt import Trakt
 
@@ -801,6 +798,19 @@ def movie(
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
 @click.option(
+    '--imdb-rating', '-ir',
+    default=None,
+    help='Set a minimum IMDB score.')
+@click.option(
+    '--metacritic', '-mr',
+    default=None,
+    type=int,
+    help='Set a minimum Metacritic score.')
+@click.option(
+    '--match-all-ratings', '-ar',
+    is_flag=True,
+    help='Force match all ratings.')
+@click.option(
     '--years', '-y',
     default=None,
     help='Range of years to search. For example, \'2000-2010\'.')
@@ -855,6 +865,9 @@ def movies(
         add_delay=2.5,
         sort='votes',
         rotten_tomatoes=None,
+        imdb_rating=None,
+        metacritic=None,
+        match_all_ratings=False,
         years=None,
         genres=None,
         folder=None,
@@ -867,7 +880,6 @@ def movies(
         ignore_blacklist=False,
         remove_rejected_from_recommended=False,
 ):
-
     from media.radarr import Radarr
     from media.trakt import Trakt
     from helpers import misc as misc_helper
@@ -1092,11 +1104,12 @@ def movies(
         log.info("Sorted movies list to process by highest 'votes'.")
 
     # display specified min RT score
-    if rotten_tomatoes is not None:
+    if rotten_tomatoes is not None or imdb_rating is not None or metacritic is not None:
         if cfg.omdb.api_key:
-            log.info("Minimum Rotten Tomatoes score of %d%% requested.", rotten_tomatoes)
+            log.info("Minimum Rotten Tomatoes score of %d%%, IMDB score %.1f/10, Metacritic score  %d/100 requested.",
+                     rotten_tomatoes, imdb_rating, metacritic)
         else:
-            log.info("Skipping minimum Rotten Tomatoes score check as OMDb API Key is missing.")
+            log.info("Skipping minimum Rotten Tomatoes / IMDB / Metacritic score check as OMDb API Key is missing.")
 
     # loop movies
     log.info("Processing list now...")
@@ -1136,13 +1149,15 @@ def movies(
             ):
 
                 # Skip movie if below user specified min RT score
-                if rotten_tomatoes is not None and cfg.omdb.api_key:
-                    if not omdb_helper.does_movie_have_min_req_rt_score(
+                if (rotten_tomatoes is not None or imdb_rating is not None or metacritic is not None) \
+                        and cfg.omdb.api_key:
+                    if not omdb_helper.does_movie_have_min_req_score(
                             cfg.omdb.api_key,
                             movie_title,
                             movie_year,
                             movie_imdb_id,
-                            rotten_tomatoes,
+                            match_all_ratings,
+                            {'rotten_tomatoes': rotten_tomatoes, 'imdb': imdb_rating, 'metacritic': metacritic}
                     ):
                         continue
 
@@ -1271,7 +1286,6 @@ def automatic_shows(
         notifications=False,
         ignore_blacklist=False,
 ):
-
     from media.trakt import Trakt
 
     total_shows_added = 0
@@ -1403,8 +1417,10 @@ def automatic_movies(
         notifications=False,
         ignore_blacklist=False,
         rotten_tomatoes=None,
+        imdb_rating=None,
+        metacritic=None,
+        match_all_ratings=False,
 ):
-
     from media.trakt import Trakt
 
     total_movies_added = 0
@@ -1447,6 +1463,9 @@ def automatic_movies(
                     notifications=notifications,
                     ignore_blacklist=local_ignore_blacklist,
                     rotten_tomatoes=rotten_tomatoes,
+                    imdb_rating=imdb_rating,
+                    metacritic=metacritic,
+                    match_all_ratings=match_all_ratings,
                 )
 
             elif list_type.lower() == 'watchlist':
@@ -1474,6 +1493,9 @@ def automatic_movies(
                         authenticate_user=authenticate_user,
                         ignore_blacklist=local_ignore_blacklist,
                         rotten_tomatoes=rotten_tomatoes,
+                        imdb_rating=imdb_rating,
+                        metacritic=metacritic,
+                        match_all_ratings=match_all_ratings,
                     )
 
             elif list_type.lower() == 'lists':
@@ -1510,6 +1532,9 @@ def automatic_movies(
                         authenticate_user=authenticate_user,
                         ignore_blacklist=local_ignore_blacklist,
                         rotten_tomatoes=rotten_tomatoes,
+                        imdb_rating=imdb_rating,
+                        metacritic=metacritic,
+                        match_all_ratings=match_all_ratings,
                     )
 
             if added_movies is None:
@@ -1568,7 +1593,6 @@ def run(
         no_notifications=False,
         ignore_blacklist=False,
 ):
-
     log.info("Automatic mode is now running.")
 
     # send notification
@@ -1585,6 +1609,9 @@ def run(
             not no_notifications,
             ignore_blacklist,
             int(cfg.filters.movies.rotten_tomatoes) if cfg.filters.movies.rotten_tomatoes != "" else None,
+            float(cfg.filters.movies.imdb_rating) if cfg.filters.movies.imdb_rating != "" else None,
+            int(cfg.filters.movies.metacritic) if cfg.filters.movies.metacritic != "" else None,
+            cfg.filters.movies.match_all_ratings,
         )
         if run_now:
             movie_schedule.run()

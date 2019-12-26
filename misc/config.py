@@ -80,7 +80,10 @@ class Config(object, metaclass=Singleton):
                 'blacklisted_max_year': 2019,
                 'blacklisted_title_keywords': [],
                 'blacklisted_tmdb_ids': [],
-                'rotten_tomatoes': ""
+                'rotten_tomatoes': "",
+                "imdb_rating": "",
+                "metacritic": "",
+                "match_all_ratings": False
             }
         },
         'radarr': {

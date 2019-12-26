@@ -48,7 +48,10 @@
         "barbie",
         "ufc"
       ],
-      "rotten_tomatoes": 80
+      "rotten_tomatoes": 80,
+      "imdb_rating": 7.1,
+      "metacritic": 60,
+      "match_all_ratings": false
     },
     "shows": {
       "disabled_for": [],
