@@ -614,6 +614,8 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 - Special keywords:
 
   - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  
+  - `ignore` (i.e. `["ignore"]`) Add movies in any language, including ones with no language specified.
 
 `blacklisted_genres` - Blacklist certain genres.
 
@@ -732,6 +734,8 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 - Special keywords:
 
   - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  
+  - `ignore` (i.e. `["ignore"]`) Add shows in any language, including ones with no language specified.
 
 `blacklisted_genres` - Blacklist certain genres.
 
