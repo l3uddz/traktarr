@@ -398,20 +398,20 @@ _Note: These settings are only needed if you plan to use Traktarr on a schedule 
 Format:
 
  - "List Name": # of items to add into Radarr/Sonarr.
- 
+
 _Note: The number specified is the number of items that will be added into Radarr/Sonarr. It is not a Trakt list limit, i.e. this is not going to lookup Top X items._
- 
+
 ### Interval
 
-`interval` - Specify how often (in hours) to run Traktarr task. 
+`interval` - Specify how often (in hours) to run Traktarr task.
 
-  - Setting `interval` to `0`, will skip the schedule for that task. 
-  
+  - Setting `interval` to `0`, will skip the schedule for that task.
+
   - For example, if you only want to add movies and not TV shows, you can set show's `interval` to `0`.
 
-### Official Trakt Lists 
+### Official Trakt Lists
 
-`anticipated` - Trakt Anticipated List. 
+`anticipated` - Trakt Anticipated List.
 
 - Most anticipated movies/shows based on the number of lists a movie/show appears on.
 
@@ -437,7 +437,7 @@ _Note: The number specified is the number of items that will be added into Radar
 
   - `watched_all` - Most watched of all time.
 
-`played` - Most played (a single user can watch multiple times) items in the specified time period. 
+`played` - Most played (a single user can watch multiple times) items in the specified time period.
 
   - `played` / `played_weekly` - Most played in the week.
 
@@ -626,12 +626,12 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   - Blank list (i.e. `[]`) - Add movies from any genre.
 
   - `ignore` (i.e. `["ignore"]`) - Add movies from any genre, including ones with no genre specified.
-    
+
 `blacklisted_min_runtime` - Blacklist runtime duration shorter than specified time (in minutes).
 
 `blacklisted_max_runtime` - Blacklist runtime duration longer than specified time (in minutes).
 
-  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored. 
+  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
@@ -722,7 +722,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   - Blank list (i.e. `[]`) - Add shows from any country.
 
   - `ignore` (i.e. `["ignore"]`) Add shows from any country, including ones with no country specified.
-    
+
 `allowed_languages` - Only add shows with these languages.
 
 - Languages are in [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) format (e.g. `ja` for Japanese.)
@@ -744,14 +744,14 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
   - Blank list (i.e. `[]`) - Add shows from any genre.
 
   - `ignore` (i.e. `["ignore"]`) - Add shows from any genre, including ones with no genre specified.
-      
+
 `blacklisted_networks` - Blacklist certain network.
 
 `blacklisted_min_runtime` - Blacklist runtime duration shorter than specified time (in minutes).
 
 `blacklisted_max_runtime` - Blacklist runtime duration longer than specified time (in minutes).
 
-  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored. 
+  - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
 `blacklisted_min_year` - Blacklist release dates before specified year.
 
@@ -949,7 +949,7 @@ Radarr configuration.
 
 `url` - Radarr's URL.
 
-  - Note: If you have URL Base enabled in Radarr's settings, you will need to add that into the URL as well. 
+  - Note: If you have URL Base enabled in Radarr's settings, you will need to add that into the URL as well.
 
 ## Sonarr
 
@@ -979,7 +979,7 @@ Sonarr configuration.
 
 `url` - Sonarr's URL.
 
-  - Note: If you have URL Base enabled in Sonarr's settings, you will need to add that into the URL as well. 
+  - Note: If you have URL Base enabled in Sonarr's settings, you will need to add that into the URL as well.
 
 ### Tags
 
@@ -1052,7 +1052,7 @@ Trakt Authentication info:
 `api_key` - Your [OMDb](https://www.omdbapi.com/) API Key.
 
 - This is only needed if you wish to use a minimum Rotten Tomatoes score to filter out movies.  
-    
+
 - Use `rotten_tomatoes` in config for automatic scheduling or `--rotten_tomatoes` as an argument for CLI.
 
 # Usage
@@ -1235,7 +1235,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-`-t`, `--list-type` - Trakt list to process. 
+`-t`, `--list-type` - Trakt list to process.
 
 Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
 
@@ -1261,7 +1261,7 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
 `-l`, `--add-limit` - Limit number of movies added to Radarr.
 
- - Note: This is a limit on how many items are added into Radarr. Not a limit on how many items to retrieve from Trakt. 
+ - Note: This is a limit on how many items are added into Radarr. Not a limit on how many items to retrieve from Trakt.
 
 `-d`, `--add-delay` - Add seconds delay between each add request to Radarr. Default is 2.5 seconds.
 
@@ -1294,7 +1294,7 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 `-a`, `--actor` - Only add movies with a specific actor to Radarr.
 
   - Requires the list type `person`.
-  
+
 `--include-non-acting-roles` - Include non-acting roles of the specified actor.
 
   - Requires the list type `person` used with the `-a`/`--actor` option.
@@ -1347,7 +1347,7 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process. 
+  -t, --list-type TEXT            Trakt list to process.
                                   For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
                                   'watchlist', or any URL to a list.  [required]
@@ -1356,12 +1356,12 @@ Options:
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
   -g, --genres TEXT               Only add shows from this genre to Sonarr. Multiple genres are
-                                  specified as a comma-separated list. 
+                                  specified as a comma-separated list.
                                   Use 'ignore' to add shows
                                   from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
   -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
-                                  specified. 
+                                  specified.
                                   Requires the 'person' list option.
   --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
                                   Requires the 'person' list option with the 'actor' argument.
@@ -1376,7 +1376,7 @@ Options:
 ```
 
 
-`-t`, `--list-type` - Trakt list to process. 
+`-t`, `--list-type` - Trakt list to process.
 
 Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
 
@@ -1400,9 +1400,9 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 
   - `played_all` Most played of all time.
 
-`-l`, `--add-limit` - Limit number of shows added to Sonarr. 
+`-l`, `--add-limit` - Limit number of shows added to Sonarr.
 
- - Note: This is a limit on how many items are added into Sonarr. Not a limit on how many items to retrieve from Trakt. 
+ - Note: This is a limit on how many items are added into Sonarr. Not a limit on how many items to retrieve from Trakt.
 
 `-d`, `--add-delay` - Add seconds delay between each add request to Sonarr. Default is 2.5 seconds.
 
@@ -1425,7 +1425,7 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 `-a`, `--actor` - Only add shows with a specific actor to Sonarr.
 
    - Requires the list type `person`.
-   
+
 `--include-non-acting-roles` - Include non-acting roles of the specified actor.
 
   - Requires the list type `person` used with the `-a`/`--actor` option.
@@ -1498,11 +1498,11 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
   ```
   traktarr movies -t person -a 'keanu reeves' -l 10
   ```
-  
+
 - Add movies, with actor 'Tom Cruise', including movies where he has non-acting roles, limited to 10 items.
 
   ```
-  traktarr movies -t person -a 'tom cruise' --include_non_acting_roles -l 10
+  traktarr movies -t person -a 'tom cruise' --include-non-acting-roles -l 10
   ```
 
 ### Shows
