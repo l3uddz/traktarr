@@ -5,7 +5,7 @@
 [![last commit (develop)](https://img.shields.io/github/last-commit/l3uddz/traktarr/develop.svg?colorB=177DC1&label=Last%20Commit&style=flat-square)](https://github.com/l3uddz/traktarr/commits/develop)
 [![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord&style=flat-square)](https://discord.io/cloudbox)
 [![Contributing](https://img.shields.io/badge/Contributing-gray.svg?style=flat-square)](CONTRIBUTING.md)
-[![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](#donate)
+[![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](DONATIONS.md)
 
 
 ---
@@ -1579,17 +1579,3 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
-
-***
-
-# Donate
-
-If you find this project helpful, feel free to make a small donation to the developer:
-
-  - [Monzo](https://monzo.me/jamesbayliss9): Credit Cards, Apple Pay, Google Pay
-
-  - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
-
-  - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
-
-  - BTC: 3CiHME1HZQsNNcDL6BArG7PbZLa8zUUgjL
