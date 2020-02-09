@@ -603,7 +603,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Blank list (i.e. `[]`) - Add movies from any country.
 
-  - `ignore` (i.e. `["ignore"]`) Add movies from any country, including ones with no country specified.
+  - `ignore` (i.e. `["ignore"]`) - Add movies from any country, including ones with no country specified.
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
@@ -613,7 +613,9 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords:
 
-  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  - Blank list (i.e. `[]`) - Add movies with any language.
+
+  - `ignore` (i.e. `["ignore"]`) - Add movies with any language, including ones with no language specified.
 
 `blacklisted_genres` - Blacklist certain genres.
 
@@ -729,7 +731,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Blank list (i.e. `[]`) - Add shows from any country.
 
-  - `ignore` (i.e. `["ignore"]`) Add shows from any country, including ones with no country specified.
+  - `ignore` (i.e. `["ignore"]`) - Add shows from any country, including ones with no country specified.
 
 `allowed_languages` - Only add shows with these languages.
 
@@ -739,8 +741,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords:
 
-  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  - Blank list (i.e. `[]`) - Add shows with any language.
 
+  - `ignore` (i.e. `["ignore"]`) - Add shows with any language, including ones with no language specified.
+  
 `blacklisted_genres` - Blacklist certain genres.
 
 - [List of available TV show genres](assets/list_of_tv_show_genres.md).
