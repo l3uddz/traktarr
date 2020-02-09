@@ -151,7 +151,7 @@ def get_objects(pvr, pvr_type, notifications):
     return objects_list
 
 
-def get_exclusions(pvr, pvr_type, notifications):
+def get_exclusions(pvr, pvr_type):
     objects_list = pvr.get_exclusions()
     objects_type = 'movie' if pvr_type.lower() == 'radarr' else 'show'
     if not objects_list:
@@ -959,7 +959,7 @@ def movies(
     quality_profile_id = get_quality_profile_id(radarr, cfg.radarr.quality)
 
     pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
-    pvr_exclusions_list = get_exclusions(radarr, 'Radarr', notifications)
+    pvr_exclusions_list = get_exclusions(radarr, 'Radarr')
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
