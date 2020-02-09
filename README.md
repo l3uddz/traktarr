@@ -633,9 +633,17 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
-`blacklisted_min_year` - Blacklist release dates before specified year.
+`blacklisted_min_year` - Blacklist release dates before specified year. This can be a 4 digit year, `0`, or `-<number of years to go back>` format. 
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+- If `0`, blacklist movies that came out before the current year. 
+
+- If `-10`, blacklist movies that came out 10 years before the current year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year. This can be a 4 digit year, `0`, or `+<number of years to go forward>` format.
+
+- If `0`, blacklist movies that are coming out after the current year. 
+
+- If `+1`, blacklist movies that are coming out after 1 year from current year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
@@ -753,9 +761,17 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
-`blacklisted_min_year` - Blacklist release dates before specified year.
+`blacklisted_min_year` - Blacklist release dates before specified year. This can be a 4 digit year, `0`, or `-<number of years to go back>` format.
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+- If `0`, blacklist shows that came out before the current year. 
+
+- If `-10`, blacklist shows that came out 10 years before the current year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year. This can be a 4 digit year, `0`, or `+<number of years to go forward>` format.
+
+- If `0`, blacklist shows that are coming out after the current year. 
+
+- If `+1`, blacklist shows that are coming out after 1 year from current year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
@@ -1214,6 +1230,8 @@ Options:
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
   -rt, --rotten_tomatoes INTEGER  Set a minimum Rotten Tomatoes score.
+  -y, --year, --years TEXT        Can be a specific year or a range of years to search. For
+                                  example, '2000' or '2000-2010'.
   -g, --genres TEXT               Only add movies from this genre to Radarr. Multiple genres are
                                   specified as a comma-separated list. Use 'ignore' to add movies
                                   from any genre, including ones with no genre specified.
@@ -1275,6 +1293,10 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
  - Example: `-rt 75`
 
+`-y`, `--year`, `--years` -  Only add movies from from a specific year or range of years.
+
+ - Examples: `-y 2010`, `--years 2010-2020`
+ 
 `-g`, `--genres` - Only add movies from these genre(s) to Radarr.
 
 - Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
@@ -1347,22 +1369,21 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process.
-                                  For example, 'anticipated', 'trending',
+  -t, --list-type TEXT            Trakt list to process. For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
                                   'watchlist', or any URL to a list.  [required]
   -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
+  -y, --year, --years TEXT        Can be a specific year or a range of years to search. For
+                                  example, '2000' or '2000-2010'.
   -g, --genres TEXT               Only add shows from this genre to Sonarr. Multiple genres are
-                                  specified as a comma-separated list.
-                                  Use 'ignore' to add shows
+                                  specified as a comma-separated list. Use 'ignore' to add shows
                                   from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
   -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
-                                  specified.
-                                  Requires the 'person' list option.
+                                  specified. Requires the 'person' list option.
   --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
                                   Requires the 'person' list option with the 'actor' argument.
   --no-search                     Disable search when adding shows to Sonarr.
@@ -1412,6 +1433,10 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 
  - Example: `-s release`
 
+`-y`, `--year`, `--years` -  Only add shows from from a specific year or range of years.
+
+ - Examples: `-y 2010`, `--years 2010-2020`
+ 
 `-g`, `--genres` - Only add shows from this genre(s) to Sonarr.
 
 - Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
@@ -1493,6 +1518,12 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
   traktarr movies -t trending -rt 80
   ```
 
+- Add movies, from the trending list, from the year 2020.
+
+  ```
+  traktarr movies -t trending -y 2020
+  ```
+  
 - Add movies, with actor 'Keanu Reeves', limited to 10 items.
 
   ```

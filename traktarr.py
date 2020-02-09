@@ -3,7 +3,6 @@ import os.path
 import signal
 import sys
 import time
-import re
 
 import click
 import schedule
@@ -294,9 +293,9 @@ def show(
     help='Sort list to process.',
     show_default=True)
 @click.option(
-    '--years', '-y',
+    '--year', '--years', '-y',
     default=None,
-    help='Range of years to search. For example, \'2000-2010\'.')
+    help='Can be a specific year or a range of years to search. For example, \'2000\' or \'2000-2010\'.')
 @click.option(
     '--genres', '-g',
     default=None,
@@ -362,6 +361,7 @@ def shows(
     from helpers import sonarr as sonarr_helper
     from helpers import trakt as trakt_helper
     from helpers import tvdb as tvdb_helper
+    from helpers import parameter as parameter_helper
 
     added_shows = 0
 
@@ -392,16 +392,15 @@ def shows(
             misc_helper.unblacklist_genres(genres, cfg['filters']['shows']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
-    # set years range
-    r = re.compile('[0-9]{4}-[0-9]{4}')
+    # process years parameter
+    years, new_min_year, new_max_year = parameter_helper.years(
+        years,
+        cfg.filters.shows.blacklisted_min_year,
+        cfg.filters.shows.blacklisted_max_year,
+    )
 
-    if years and r.match(years):
-        cfg['filters']['shows']['blacklisted_min_year'] = int(years.split('-')[0])
-        cfg['filters']['shows']['blacklisted_max_year'] = int(years.split('-')[1])
-    elif cfg.filters.shows.blacklisted_min_year and cfg.filters.shows.blacklisted_max_year:
-        years = str(cfg.filters.shows.blacklisted_min_year) + '-' + str(cfg.filters.shows.blacklisted_max_year)
-    else:
-        years = None
+    cfg['filters']['shows']['blacklisted_min_year'] = new_min_year
+    cfg['filters']['shows']['blacklisted_max_year'] = new_max_year
 
     # runtimes range
     if cfg.filters.shows.blacklisted_min_runtime:
@@ -801,9 +800,9 @@ def movie(
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
 @click.option(
-    '--years', '-y',
+    '--year', '--years', '-y',
     default=None,
-    help='Range of years to search. For example, \'2000-2010\'.')
+    help='Can be a specific year or a range of years to search. For example, \'2000\' or \'2000-2010\'.')
 @click.option(
     '--genres', '-g',
     default=None,
@@ -875,6 +874,7 @@ def movies(
     from helpers import trakt as trakt_helper
     from helpers import omdb as omdb_helper
     from helpers import tmdb as tmdb_helper
+    from helpers import parameter as parameter_helper
 
     added_movies = 0
 
@@ -906,16 +906,15 @@ def movies(
             misc_helper.unblacklist_genres(genres, cfg['filters']['movies']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
-    # set years range
-    r = re.compile('[0-9]{4}-[0-9]{4}')
+    # process years parameter
+    years, new_min_year, new_max_year = parameter_helper.years(
+        years,
+        cfg.filters.movies.blacklisted_min_year,
+        cfg.filters.movies.blacklisted_max_year,
+    )
 
-    if years and r.match(years):
-        cfg['filters']['movies']['blacklisted_min_year'] = int(years.split('-')[0])
-        cfg['filters']['movies']['blacklisted_max_year'] = int(years.split('-')[1])
-    elif cfg.filters.movies.blacklisted_min_year and cfg.filters.movies.blacklisted_max_year:
-        years = str(cfg.filters.movies.blacklisted_min_year) + '-' + str(cfg.filters.movies.blacklisted_max_year)
-    else:
-        years = None
+    cfg['filters']['movies']['blacklisted_min_year'] = new_min_year
+    cfg['filters']['movies']['blacklisted_max_year'] = new_max_year
 
     # runtimes range
     if cfg.filters.movies.blacklisted_min_runtime:
