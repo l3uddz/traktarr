@@ -225,14 +225,21 @@ def show(
 
     # profile tags
     profile_tags = None
-    use_tags = None
-    readable_tags = None
+    tag_ids = None
+    tag_names = None
 
-    if cfg.sonarr.tags:
+    if cfg.sonarr.tags is not None:
         profile_tags = get_profile_tags(sonarr)
-        # determine which tags to use when adding this series
-        use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
-        readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
+        if profile_tags is not None:
+            # determine which tags to use when adding this series
+            tag_ids = sonarr_helper.series_tag_ids_list_builder(
+                profile_tags,
+                cfg.sonarr.tags,
+            )
+            tag_names = sonarr_helper.series_tag_names_list_builder(
+                profile_tags,
+                tag_ids,
+            )
 
     # series type
     if any('anime' in s.lower() for s in trakt_show['genres']):
@@ -250,20 +257,20 @@ def show(
             quality_profile_id,
             language_profile_id,
             cfg.sonarr.root_folder,
-            use_tags,
+            tag_ids,
             not no_search,
             series_type,
     ):
 
-        if profile_tags is not None and readable_tags is not None:
+        if profile_tags is not None and tag_names is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                     readable_tags)
+                     tag_names)
         else:
             log.info("ADDED: \'%s (%s)\'", series_title, series_year)
     else:
         if profile_tags is not None:
             log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                      readable_tags)
+                      tag_names)
         else:
             log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
 
@@ -435,7 +442,23 @@ def shows(
     # language profile id
     language_profile_id = get_language_profile_id(sonarr, cfg.sonarr.language)
 
-    profile_tags = get_profile_tags(sonarr) if cfg.sonarr.tags else None
+    # profile tags
+    profile_tags = None
+    tag_ids = None
+    tag_names = None
+
+    if cfg.sonarr.tags is not None:
+        profile_tags = get_profile_tags(sonarr)
+        if profile_tags is not None:
+            # determine which tags to use when adding this series
+            tag_ids = sonarr_helper.series_tag_ids_list_builder(
+                profile_tags,
+                cfg.sonarr.tags,
+            )
+            tag_names = sonarr_helper.series_tag_names_list_builder(
+                profile_tags,
+                tag_ids,
+            )
 
     pvr_objects_list = get_objects(sonarr, 'Sonarr', notifications)
 
@@ -618,22 +641,6 @@ def shows(
                          (series['show']['network'] or 'N/A').upper(),
                          )
 
-                # profile tags
-                use_tags = None
-                readable_tags = None
-
-                if profile_tags is not None:
-                    # determine which tags to use when adding this series
-                    use_tags = sonarr_helper.series_tag_id_from_network(
-                        profile_tags,
-                        cfg.sonarr.tags,
-                        series['show']['network'],
-                    )
-                    readable_tags = sonarr_helper.readable_tag_from_ids(
-                        profile_tags,
-                        use_tags,
-                    )
-
                 # add show to sonarr
                 if sonarr.add_series(
                         series['show']['ids']['tvdb'],
@@ -642,14 +649,14 @@ def shows(
                         quality_profile_id,
                         language_profile_id,
                         cfg.sonarr.root_folder,
-                        use_tags,
+                        tag_ids,
                         not no_search,
                         series_type,
                 ):
 
-                    if profile_tags is not None and readable_tags is not None:
+                    if profile_tags is not None and tag_names is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                 readable_tags)
+                                 tag_names)
                     else:
                         log.info("ADDED: \'%s (%s)\'", series_title, series_year)
                     if notifications:
@@ -658,7 +665,7 @@ def shows(
                 else:
                     if profile_tags is not None:
                         log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                  readable_tags)
+                                  tag_names)
                     else:
                         log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
                     continue

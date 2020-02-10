@@ -36,7 +36,6 @@
     - [Slack](#slack)
   - [Radarr](#radarr)
   - [Sonarr](#sonarr)
-    - [Tags](#tags)
   - [Trakt](#trakt)
   - [OMDb](#omdb)
 - [Usage](#usage)
@@ -335,7 +334,7 @@ You can repeat this process for as many users as you like.
     "language": "English",
     "quality": "HD-1080p",
     "root_folder": "/tv/",
-    "tags": {},
+    "tags": [],
     "url": "http://localhost:8989/"
   },
   "trakt": {
@@ -982,7 +981,7 @@ Sonarr configuration.
   "language": "English",
   "quality": "HD-1080p",
   "root_folder": "/tv/",
-  "tags": {},
+  "tags": [],
   "url": "http://localhost:8989"
 },
 ```
@@ -995,54 +994,28 @@ Sonarr configuration.
 
 `root_folder` - Root folder for TV shows.
 
-`tags` - Assign tags to shows based the network it airs on. More details on this below.
+`tags` - Assign tags to shows. Tags need to be created in Sonarr first.
 
+  - Examples:
+
+    ```json
+    "tags": ["anime"]
+    ```
+ 
+     ```json
+    "tags": ["anime", "jap"]
+    ```
+    
+    ```json
+    "tags": [
+      "anime", 
+      "jap"
+    ]
+    ```
+    
 `url` - Sonarr's URL.
 
   - Note: If you have URL Base enabled in Sonarr's settings, you will need to add that into the URL as well.
-
-### Tags
-
-The `tags` option allows Sonarr to assign tags to shows from specific television networks, so that Sonarr can filter in/out certain keywords from releases.
-
-**Example:**
-
-To show how tags work, we will create a tag `AMZN` and assign it to certain television networks that usually have AMZN releases.
-
-1. First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
-
-   ```
-   Must contain: BluRay, Amazon, AMZN
-   Must not contain:
-   Tags: AMZN
-   ```
-
-2. And, finally, we will edit the Traktarr config and assign the `AMZN` tag to some networks.
-
-   ```json
-   "tags": {
-     "amzn": [
-       "hbo",
-       "amc",
-       "usa network",
-       "tnt",
-       "starz",
-       "the cw",
-       "fx",
-       "fox",
-       "abc",
-       "nbc",
-       "cbs",
-       "tbs",
-       "amazon",
-       "syfy",
-       "cinemax",
-       "bravo",
-       "showtime",
-       "paramount network"
-     ]
-   }
-   ```
 
 ## Trakt
 

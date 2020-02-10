@@ -3,22 +3,21 @@ from misc.log import logger
 log = logger.get_logger(__name__)
 
 
-def series_tag_id_from_network(profile_tags, network_tags, network):
+def series_tag_ids_list_builder(profile_tags, config_tags):
     try:
-        tags = []
-        for tag_name, tag_networks in network_tags.items():
-            for tag_network in tag_networks:
-                if tag_network.lower() in network.lower() and tag_name.lower() in profile_tags:
-                    log.debug("Using %s tag for network: %s", tag_name, network)
-                    tags.append(profile_tags[tag_name.lower()])
-        if tags:
-            return tags
+        tag_ids = []
+        for tag_name in config_tags:
+            if tag_name.lower() in profile_tags:
+                log.debug("Validated Tag: %s", tag_name)
+                tag_ids.append(profile_tags[tag_name.lower()])
+        if tag_ids:
+            return tag_ids
     except Exception:
-        log.exception("Exception determining tag to use for network %s: ", network)
+        log.exception("Exception building Tags IDs list")
     return None
 
 
-def readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
+def series_tag_names_list_builder(profile_tag_ids, chosen_tag_ids):
     try:
         if not chosen_tag_ids:
             return None
@@ -30,7 +29,7 @@ def readable_tag_from_ids(profile_tag_ids, chosen_tag_ids):
         if tags:
             return tags
     except Exception:
-        log.exception("Exception building readable tag name list from ids %s: ", chosen_tag_ids)
+        log.exception("Exception building Tag Names list from Tag IDs %s: ", chosen_tag_ids)
     return None
 
 
