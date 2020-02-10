@@ -557,7 +557,7 @@ def shows(
         remove_rejected_from_recommended = False
 
     # build filtered series list without series that exist in sonarr
-    processed_series_list = sonarr_helper.remove_existing_series(
+    processed_series_list = sonarr_helper.remove_existing_series_from_trakt_list(
         pvr_objects_list,
         trakt_objects_list,
         callback_remove_recommended if remove_rejected_from_recommended else None
@@ -1066,7 +1066,7 @@ def movies(
         remove_rejected_from_recommended = False
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list, removal_successful = radarr_helper.remove_existing_and_excluded_movies(
+    processed_movies_list, removal_successful = radarr_helper.remove_existing_and_excluded_movies_from_trakt_list(
         pvr_objects_list,
         pvr_exclusions_list,
         trakt_objects_list,
