@@ -1216,10 +1216,11 @@ Options:
   -ma, --minimum-availability [announced|in_cinemas|released|predb]
                                   Add movies with this minimum availability to Radarr. Default is
                                   'released'.
-  -a, --actor TEXT                Only add movies from this actor to Radarr.Only one actor can be
-                                  specified.Requires the 'person' list.
-  --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
-                                  Requires the 'person' list option with the 'actor' argument.
+  -p, --person TEXT               Only add movies from this person (e.g. actor) to Radarr. Only
+                                  one person can be specified. Requires the 'person' list type.
+  --include-non-acting-roles      Include non-acting roles such as 'Director', 'As Himself',
+                                  'Narrator', etc. Requires the 'person' list type with the
+                                  'person' argument.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
   --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
@@ -1290,13 +1291,13 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
   - Default is `released` (Physical/Web).
 
-`-a`, `--actor` - Only add movies with a specific actor to Radarr.
+`-p`, `--person` - Only add movies with a specific person to Radarr.
 
   - Requires the list type `person`.
 
-`--include-non-acting-roles` - Include non-acting roles of the specified actor.
+`--include-non-acting-roles` - Include non-acting roles of the specified person.
 
-  - Requires the list type `person` used with the `-a`/`--actor` option.
+  - Requires the list type `person` used with the `-p`/`--person` option.
 
 `--no-search` - Tells Radarr to not automatically search for added movies.
 
@@ -1359,10 +1360,11 @@ Options:
                                   specified as a comma-separated list. Use 'ignore' to add shows
                                   from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
-  -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
-                                  specified. Requires the 'person' list option.
-  --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
-                                  Requires the 'person' list option with the 'actor' argument.
+  -p, --person TEXT               Only add shows from this person (e.g. actor) to Sonarr. Only one
+                                  person can be specified. Requires the 'person' list type.
+  --include-non-acting-roles      Include non-acting roles such as 'Director', 'As Himself',
+                                  'Narrator', etc. Requires the 'person' list type with the
+                                  'person' argument.
   --no-search                     Disable search when adding shows to Sonarr.
   --notifications                 Send notifications.
   --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
@@ -1424,13 +1426,13 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 
  - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
 
-`-a`, `--actor` - Only add shows with a specific actor to Sonarr.
+`-p`, `--person` - Only add shows with a specific person to Sonarr.
 
    - Requires the list type `person`.
 
-`--include-non-acting-roles` - Include non-acting roles of the specified actor.
+`--include-non-acting-roles` - Include non-acting roles of the specified person.
 
-  - Requires the list type `person` used with the `-a`/`--actor` option.
+  - Requires the list type `person` used with the `-p`/`--person` option.
 
 `--no-search` - Tells Sonarr to not automatically search for added shows.
 

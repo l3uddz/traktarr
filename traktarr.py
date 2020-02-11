@@ -314,16 +314,16 @@ def show(
     default=None,
     help='Add shows with this root folder to Sonarr.')
 @click.option(
-    '--actor', '-a',
+    '--person', '-p',
     default=None,
-    help='Only add shows from this actor to Sonarr. '
-         'Only one actor can be specified. '
-         'Requires the \'person\' list option.')
+    help='Only add shows from this person (e.g. actor) to Sonarr. '
+         'Only one person can be specified. '
+         'Requires the \'person\' list type.')
 @click.option(
     '--include-non-acting-roles',
     is_flag=True,
-    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. \n'
-         'Requires the \'person\' list option with the \'actor\' argument.')
+    help='Include non-acting roles such as \'Director\', \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list type with the \'person\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -334,7 +334,7 @@ def show(
     help='Send notifications.')
 @click.option(
     '--authenticate-user',
-    help='Specify which user to authenticate with to retrieve Trakt lists. \n'
+    help='Specify which user to authenticate with to retrieve Trakt lists. '
          'Defaults to first user in the config')
 @click.option(
     '--ignore-blacklist',
@@ -352,7 +352,7 @@ def shows(
         years=None,
         genres=None,
         folder=None,
-        actor=None,
+        person=None,
         no_search=False,
         include_non_acting_roles=False,
         notifications=False,
@@ -491,13 +491,13 @@ def shows(
         )
 
     elif list_type.lower() == 'person':
-        if not actor:
-            log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
+        if not person:
+            log.error("You must specify an person with the \'--person\' / \'-p\' parameter when using the \'person\'" +
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_shows(
             years=years,
-            person=actor,
+            person=person,
             countries=countries,
             languages=languages,
             genres=genres,
@@ -825,16 +825,16 @@ def movie(
     type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
     help='Add movies with this minimum availability to Radarr. Default is \'released\'.')
 @click.option(
-    '--actor', '-a',
+    '--person', '-p',
     default=None,
-    help='Only add movies from this actor to Radarr.'
-         'Only one actor can be specified.'
-         'Requires the \'person\' list.')
+    help='Only add movies from this person (e.g. actor) to Radarr. '
+         'Only one person can be specified. '
+         'Requires the \'person\' list type.')
 @click.option(
     '--include-non-acting-roles',
     is_flag=True,
-    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. \n'
-         'Requires the \'person\' list option with the \'actor\' argument.')
+    help='Include non-acting roles such as \'Director\', \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list type with the \'person\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -845,7 +845,7 @@ def movie(
     help='Send notifications.')
 @click.option(
     '--authenticate-user',
-    help='Specify which user to authenticate with to retrieve Trakt lists. \n'
+    help='Specify which user to authenticate with to retrieve Trakt lists. '
          'Defaults to first user in the config.')
 @click.option(
     '--ignore-blacklist',
@@ -865,7 +865,7 @@ def movies(
         genres=None,
         folder=None,
         minimum_availability=None,
-        actor=None,
+        person=None,
         include_non_acting_roles=False,
         no_search=False,
         notifications=False,
@@ -999,13 +999,13 @@ def movies(
         trakt_objects_list = trakt.get_boxoffice_movies()
 
     elif list_type.lower() == 'person':
-        if not actor:
-            log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
+        if not person:
+            log.error("You must specify an person with the \'--person\' / \'-p\' parameter when using the \'person\'" +
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_movies(
             years=years,
-            person=actor,
+            person=person,
             countries=countries,
             languages=languages,
             genres=genres,
