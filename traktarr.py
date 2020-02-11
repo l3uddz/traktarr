@@ -316,7 +316,7 @@ def show(
 @click.option(
     '--actor', '-a',
     default=None,
-    help='Only add movies from this actor to Radarr. '
+    help='Only add shows from this actor to Sonarr. '
          'Only one actor can be specified. '
          'Requires the \'person\' list option.')
 @click.option(
