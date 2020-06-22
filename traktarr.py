@@ -344,6 +344,10 @@ def show(
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing shows from recommended.')
+@click.option(
+    '--dry-run',
+    is_flag=True,
+    help='Shows the list of shows remaining after processing, takes no action on them.')
 def shows(
         list_type,
         add_limit=0,
@@ -359,6 +363,7 @@ def shows(
         authenticate_user=None,
         ignore_blacklist=False,
         remove_rejected_from_recommended=False,
+        dry_run=False,
 ):
 
     from media.sonarr import Sonarr
@@ -641,34 +646,37 @@ def shows(
                          (series['show']['network'] or 'N/A').upper(),
                          )
 
-                # add show to sonarr
-                if sonarr.add_series(
-                        series['show']['ids']['tvdb'],
-                        series_title,
-                        series['show']['ids']['slug'],
-                        quality_profile_id,
-                        language_profile_id,
-                        cfg.sonarr.root_folder,
-                        tag_ids,
-                        not no_search,
-                        series_type,
-                ):
-
-                    if profile_tags is not None and tag_names is not None:
-                        log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                 tag_names)
-                    else:
-                        log.info("ADDED: \'%s (%s)\'", series_title, series_year)
-                    if notifications:
-                        callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
-                    added_shows += 1
+                if dry_run:
+                    log.info("dry-run: SKIPPING")
                 else:
-                    if profile_tags is not None:
-                        log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                  tag_names)
+                    # add show to sonarr
+                    if sonarr.add_series(
+                            series['show']['ids']['tvdb'],
+                            series_title,
+                            series['show']['ids']['slug'],
+                            quality_profile_id,
+                            language_profile_id,
+                            cfg.sonarr.root_folder,
+                            tag_ids,
+                            not no_search,
+                            series_type,
+                    ):
+
+                        if profile_tags is not None and tag_names is not None:
+                            log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
+                                     tag_names)
+                        else:
+                            log.info("ADDED: \'%s (%s)\'", series_title, series_year)
+                        if notifications:
+                            callback_notify({'event': 'add_show', 'list_type': list_type, 'show': series['show']})
+                        added_shows += 1
                     else:
-                        log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
-                    continue
+                        if profile_tags is not None:
+                            log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
+                                      tag_names)
+                        else:
+                            log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
+                        continue
 
             else:
                 log.info("SKIPPED: \'%s (%s)\'", series_title, series_year)
@@ -855,6 +863,10 @@ def movie(
     '--remove-rejected-from-recommended',
     is_flag=True,
     help='Removes rejected/existing movies from recommended.')
+@click.option(
+    '--dry-run',
+    is_flag=True,
+    help='Shows the list of movies remaining after processing, takes no action on them.')
 def movies(
         list_type,
         add_limit=0,
@@ -872,6 +884,7 @@ def movies(
         authenticate_user=None,
         ignore_blacklist=False,
         remove_rejected_from_recommended=False,
+        dry_run=False,
 ):
 
     from media.radarr import Radarr
@@ -1160,25 +1173,28 @@ def movies(
                          movie_genres,
                          )
 
-                # add movie to radarr
-                if radarr.add_movie(
-                        sorted_movie['movie']['ids']['tmdb'],
-                        movie_title,
-                        movie_year,
-                        sorted_movie['movie']['ids']['slug'],
-                        quality_profile_id,
-                        cfg.radarr.root_folder,
-                        cfg.radarr.minimum_availability,
-                        not no_search,
-                ):
-
-                    log.info("ADDED: \'%s (%s)\'", movie_title, movie_year)
-                    if notifications:
-                        callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': sorted_movie['movie']})
-                    added_movies += 1
+                if dry_run:
+                    log.info("dry-run: SKIPPING")
                 else:
-                    log.error("FAILED ADDING: \'%s (%s)\'", movie_title, movie_year)
-                    continue
+                    # add movie to radarr
+                    if radarr.add_movie(
+                            sorted_movie['movie']['ids']['tmdb'],
+                            movie_title,
+                            movie_year,
+                            sorted_movie['movie']['ids']['slug'],
+                            quality_profile_id,
+                            cfg.radarr.root_folder,
+                            cfg.radarr.minimum_availability,
+                            not no_search,
+                    ):
+
+                        log.info("ADDED: \'%s (%s)\'", movie_title, movie_year)
+                        if notifications:
+                            callback_notify({'event': 'add_movie', 'list_type': list_type, 'movie': sorted_movie['movie']})
+                        added_movies += 1
+                    else:
+                        log.error("FAILED ADDING: \'%s (%s)\'", movie_title, movie_year)
+                        continue
             else:
                 log.info("SKIPPED: \'%s (%s)\'", movie_title, movie_year)
                 continue
