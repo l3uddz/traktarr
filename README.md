@@ -191,7 +191,7 @@ Repeat the following steps for every user you want to authenticate:
    ```
 
 
-2. You wil get the following prompt:
+2. You will get the following prompt:
 
    ```
    - We're talking to Trakt to get your verification code. Please wait a moment...
@@ -947,6 +947,9 @@ Radarr configuration.
 
 `root_folder` - Root folder for movies.
 
+  - Note: If you need the root folder to be a Windows share replace each \ with \\\\. \
+Example: `C:\Path\To\Movies` will be `C:\\Path\\To\\Movies` and `\\Server\Path\To\Movies` will be `\\\\Server\\Path\\To\\Movies`
+
 `url` - Radarr's URL.
 
   - Note: If you have URL Base enabled in Radarr's settings, you will need to add that into the URL as well.
@@ -974,6 +977,9 @@ Sonarr configuration.
 `quality` - Quality Profile that TV shows are assigned to.
 
 `root_folder` - Root folder for TV shows.
+
+  - Note: If you need the root folder to be a Windows share replace each \ with \\\\. \
+Example: `C:\Path\To\TV Shows` will be `C:\\Path\\To\\TV Shows` and `\\Server\Path\To\TV Shows` will be `\\\\Server\\Path\\To\\TV Shows`
 
 `tags` - Assign tags to shows based the network it airs on. More details on this below.
 
