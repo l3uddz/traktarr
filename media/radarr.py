@@ -31,7 +31,7 @@ class Radarr(PVR):
 
         payload = dict_merge(payload, {
             'tmdbId': movie_tmdb_id,
-            'year': movie_year,
+            'year': int(movie_year),
             'minimumAvailability': minimum_availability,
             'addOptions': {
                 'searchForMovie': search_missing

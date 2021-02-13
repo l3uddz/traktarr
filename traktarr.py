@@ -3,7 +3,6 @@ import os.path
 import signal
 import sys
 import time
-import re
 
 import click
 import schedule
@@ -151,7 +150,7 @@ def get_objects(pvr, pvr_type, notifications):
     return objects_list
 
 
-def get_exclusions(pvr, pvr_type, notifications):
+def get_exclusions(pvr, pvr_type):
     objects_list = pvr.get_exclusions()
     objects_type = 'movie' if pvr_type.lower() == 'radarr' else 'show'
     if not objects_list:
@@ -226,14 +225,21 @@ def show(
 
     # profile tags
     profile_tags = None
-    use_tags = None
-    readable_tags = None
+    tag_ids = None
+    tag_names = None
 
-    if cfg.sonarr.tags:
+    if cfg.sonarr.tags is not None:
         profile_tags = get_profile_tags(sonarr)
-        # determine which tags to use when adding this series
-        use_tags = sonarr_helper.series_tag_id_from_network(profile_tags, cfg.sonarr.tags, trakt_show['network'])
-        readable_tags = sonarr_helper.readable_tag_from_ids(profile_tags, use_tags)
+        if profile_tags is not None:
+            # determine which tags to use when adding this series
+            tag_ids = sonarr_helper.series_tag_ids_list_builder(
+                profile_tags,
+                cfg.sonarr.tags,
+            )
+            tag_names = sonarr_helper.series_tag_names_list_builder(
+                profile_tags,
+                tag_ids,
+            )
 
     # series type
     if any('anime' in s.lower() for s in trakt_show['genres']):
@@ -251,20 +257,20 @@ def show(
             quality_profile_id,
             language_profile_id,
             cfg.sonarr.root_folder,
-            use_tags,
+            tag_ids,
             not no_search,
             series_type,
     ):
 
-        if profile_tags is not None and readable_tags is not None:
+        if profile_tags is not None and tag_names is not None:
             log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                     readable_tags)
+                     tag_names)
         else:
             log.info("ADDED: \'%s (%s)\'", series_title, series_year)
     else:
         if profile_tags is not None:
             log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                      readable_tags)
+                      tag_names)
         else:
             log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
 
@@ -294,9 +300,9 @@ def show(
     help='Sort list to process.',
     show_default=True)
 @click.option(
-    '--years', '-y',
+    '--year', '--years', '-y',
     default=None,
-    help='Range of years to search. For example, \'2000-2010\'.')
+    help='Can be a specific year or a range of years to search. For example, \'2000\' or \'2000-2010\'.')
 @click.option(
     '--genres', '-g',
     default=None,
@@ -308,16 +314,16 @@ def show(
     default=None,
     help='Add shows with this root folder to Sonarr.')
 @click.option(
-    '--actor', '-a',
+    '--person', '-p',
     default=None,
-    help='Only add movies from this actor to Radarr. '
-         'Only one actor can be specified. '
-         'Requires the \'person\' list option.')
+    help='Only add shows from this person (e.g. actor) to Sonarr. '
+         'Only one person can be specified. '
+         'Requires the \'person\' list type.')
 @click.option(
     '--include-non-acting-roles',
     is_flag=True,
-    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. \n'
-         'Requires the \'person\' list option with the \'actor\' argument.')
+    help='Include non-acting roles such as \'Director\', \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list type with the \'person\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -328,7 +334,7 @@ def show(
     help='Send notifications.')
 @click.option(
     '--authenticate-user',
-    help='Specify which user to authenticate with to retrieve Trakt lists. \n'
+    help='Specify which user to authenticate with to retrieve Trakt lists. '
          'Defaults to first user in the config')
 @click.option(
     '--ignore-blacklist',
@@ -346,7 +352,7 @@ def shows(
         years=None,
         genres=None,
         folder=None,
-        actor=None,
+        person=None,
         no_search=False,
         include_non_acting_roles=False,
         notifications=False,
@@ -362,6 +368,7 @@ def shows(
     from helpers import sonarr as sonarr_helper
     from helpers import trakt as trakt_helper
     from helpers import tvdb as tvdb_helper
+    from helpers import parameter as parameter_helper
 
     added_shows = 0
 
@@ -392,16 +399,15 @@ def shows(
             misc_helper.unblacklist_genres(genres, cfg['filters']['shows']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
-    # set years range
-    r = re.compile('[0-9]{4}-[0-9]{4}')
+    # process years parameter
+    years, new_min_year, new_max_year = parameter_helper.years(
+        years,
+        cfg.filters.shows.blacklisted_min_year,
+        cfg.filters.shows.blacklisted_max_year,
+    )
 
-    if years and r.match(years):
-        cfg['filters']['shows']['blacklisted_min_year'] = int(years.split('-')[0])
-        cfg['filters']['shows']['blacklisted_max_year'] = int(years.split('-')[1])
-    elif cfg.filters.shows.blacklisted_min_year and cfg.filters.shows.blacklisted_max_year:
-        years = str(cfg.filters.shows.blacklisted_min_year) + '-' + str(cfg.filters.shows.blacklisted_max_year)
-    else:
-        years = None
+    cfg['filters']['shows']['blacklisted_min_year'] = new_min_year
+    cfg['filters']['shows']['blacklisted_max_year'] = new_max_year
 
     # runtimes range
     if cfg.filters.shows.blacklisted_min_runtime:
@@ -436,7 +442,23 @@ def shows(
     # language profile id
     language_profile_id = get_language_profile_id(sonarr, cfg.sonarr.language)
 
-    profile_tags = get_profile_tags(sonarr) if cfg.sonarr.tags else None
+    # profile tags
+    profile_tags = None
+    tag_ids = None
+    tag_names = None
+
+    if cfg.sonarr.tags is not None:
+        profile_tags = get_profile_tags(sonarr)
+        if profile_tags is not None:
+            # determine which tags to use when adding this series
+            tag_ids = sonarr_helper.series_tag_ids_list_builder(
+                profile_tags,
+                cfg.sonarr.tags,
+            )
+            tag_names = sonarr_helper.series_tag_names_list_builder(
+                profile_tags,
+                tag_ids,
+            )
 
     pvr_objects_list = get_objects(sonarr, 'Sonarr', notifications)
 
@@ -469,13 +491,13 @@ def shows(
         )
 
     elif list_type.lower() == 'person':
-        if not actor:
-            log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
+        if not person:
+            log.error("You must specify an person with the \'--person\' / \'-p\' parameter when using the \'person\'" +
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_shows(
             years=years,
-            person=actor,
+            person=person,
             countries=countries,
             languages=languages,
             genres=genres,
@@ -535,7 +557,7 @@ def shows(
         remove_rejected_from_recommended = False
 
     # build filtered series list without series that exist in sonarr
-    processed_series_list = sonarr_helper.remove_existing_series(
+    processed_series_list = sonarr_helper.remove_existing_series_from_trakt_list(
         pvr_objects_list,
         trakt_objects_list,
         callback_remove_recommended if remove_rejected_from_recommended else None
@@ -619,22 +641,6 @@ def shows(
                          (series['show']['network'] or 'N/A').upper(),
                          )
 
-                # profile tags
-                use_tags = None
-                readable_tags = None
-
-                if profile_tags is not None:
-                    # determine which tags to use when adding this series
-                    use_tags = sonarr_helper.series_tag_id_from_network(
-                        profile_tags,
-                        cfg.sonarr.tags,
-                        series['show']['network'],
-                    )
-                    readable_tags = sonarr_helper.readable_tag_from_ids(
-                        profile_tags,
-                        use_tags,
-                    )
-
                 # add show to sonarr
                 if sonarr.add_series(
                         series['show']['ids']['tvdb'],
@@ -643,14 +649,14 @@ def shows(
                         quality_profile_id,
                         language_profile_id,
                         cfg.sonarr.root_folder,
-                        use_tags,
+                        tag_ids,
                         not no_search,
                         series_type,
                 ):
 
-                    if profile_tags is not None and readable_tags is not None:
+                    if profile_tags is not None and tag_names is not None:
                         log.info("ADDED: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                 readable_tags)
+                                 tag_names)
                     else:
                         log.info("ADDED: \'%s (%s)\'", series_title, series_year)
                     if notifications:
@@ -659,7 +665,7 @@ def shows(
                 else:
                     if profile_tags is not None:
                         log.error("FAILED ADDING: \'%s (%s)\' with Sonarr Tags: %s", series_title, series_year,
-                                  readable_tags)
+                                  tag_names)
                     else:
                         log.info("FAILED ADDING: \'%s (%s)\'", series_title, series_year)
                     continue
@@ -801,9 +807,9 @@ def movie(
     type=int,
     help='Set a minimum Rotten Tomatoes score.')
 @click.option(
-    '--years', '-y',
+    '--year', '--years', '-y',
     default=None,
-    help='Range of years to search. For example, \'2000-2010\'.')
+    help='Can be a specific year or a range of years to search. For example, \'2000\' or \'2000-2010\'.')
 @click.option(
     '--genres', '-g',
     default=None,
@@ -819,16 +825,16 @@ def movie(
     type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
     help='Add movies with this minimum availability to Radarr. Default is \'released\'.')
 @click.option(
-    '--actor', '-a',
+    '--person', '-p',
     default=None,
-    help='Only add movies from this actor to Radarr.'
-         'Only one actor can be specified.'
-         'Requires the \'person\' list.')
+    help='Only add movies from this person (e.g. actor) to Radarr. '
+         'Only one person can be specified. '
+         'Requires the \'person\' list type.')
 @click.option(
     '--include-non-acting-roles',
     is_flag=True,
-    help='Include non-acting roles such as \'As Himself\', \'Narrator\', etc. \n'
-         'Requires the \'person\' list option with the \'actor\' argument.')
+    help='Include non-acting roles such as \'Director\', \'As Himself\', \'Narrator\', etc. '
+         'Requires the \'person\' list type with the \'person\' argument.')
 @click.option(
     '--no-search',
     is_flag=True,
@@ -839,7 +845,7 @@ def movie(
     help='Send notifications.')
 @click.option(
     '--authenticate-user',
-    help='Specify which user to authenticate with to retrieve Trakt lists. \n'
+    help='Specify which user to authenticate with to retrieve Trakt lists. '
          'Defaults to first user in the config.')
 @click.option(
     '--ignore-blacklist',
@@ -859,7 +865,7 @@ def movies(
         genres=None,
         folder=None,
         minimum_availability=None,
-        actor=None,
+        person=None,
         include_non_acting_roles=False,
         no_search=False,
         notifications=False,
@@ -875,6 +881,7 @@ def movies(
     from helpers import trakt as trakt_helper
     from helpers import omdb as omdb_helper
     from helpers import tmdb as tmdb_helper
+    from helpers import parameter as parameter_helper
 
     added_movies = 0
 
@@ -906,16 +913,15 @@ def movies(
             misc_helper.unblacklist_genres(genres, cfg['filters']['movies']['blacklisted_genres'])
             log.debug("Filter Trakt results with genre(s): %s", ', '.join(map(lambda x: x.title(), genres)))
 
-    # set years range
-    r = re.compile('[0-9]{4}-[0-9]{4}')
+    # process years parameter
+    years, new_min_year, new_max_year = parameter_helper.years(
+        years,
+        cfg.filters.movies.blacklisted_min_year,
+        cfg.filters.movies.blacklisted_max_year,
+    )
 
-    if years and r.match(years):
-        cfg['filters']['movies']['blacklisted_min_year'] = int(years.split('-')[0])
-        cfg['filters']['movies']['blacklisted_max_year'] = int(years.split('-')[1])
-    elif cfg.filters.movies.blacklisted_min_year and cfg.filters.movies.blacklisted_max_year:
-        years = str(cfg.filters.movies.blacklisted_min_year) + '-' + str(cfg.filters.movies.blacklisted_max_year)
-    else:
-        years = None
+    cfg['filters']['movies']['blacklisted_min_year'] = new_min_year
+    cfg['filters']['movies']['blacklisted_max_year'] = new_max_year
 
     # runtimes range
     if cfg.filters.movies.blacklisted_min_runtime:
@@ -959,7 +965,7 @@ def movies(
     quality_profile_id = get_quality_profile_id(radarr, cfg.radarr.quality)
 
     pvr_objects_list = get_objects(radarr, 'Radarr', notifications)
-    pvr_exclusions_list = get_exclusions(radarr, 'Radarr', notifications)
+    pvr_exclusions_list = get_exclusions(radarr, 'Radarr')
 
     # get trakt movies list
     if list_type.lower() == 'anticipated':
@@ -993,13 +999,13 @@ def movies(
         trakt_objects_list = trakt.get_boxoffice_movies()
 
     elif list_type.lower() == 'person':
-        if not actor:
-            log.error("You must specify an actor with the \'--actor\' / \'-a\' parameter when using the \'person\'" +
+        if not person:
+            log.error("You must specify an person with the \'--person\' / \'-p\' parameter when using the \'person\'" +
                       " list type!")
             return None
         trakt_objects_list = trakt.get_person_movies(
             years=years,
-            person=actor,
+            person=person,
             countries=countries,
             languages=languages,
             genres=genres,
@@ -1060,7 +1066,7 @@ def movies(
         remove_rejected_from_recommended = False
 
     # build filtered movie list without movies that exist in radarr
-    processed_movies_list, removal_successful = radarr_helper.remove_existing_and_excluded_movies(
+    processed_movies_list, removal_successful = radarr_helper.remove_existing_and_excluded_movies_from_trakt_list(
         pvr_objects_list,
         pvr_exclusions_list,
         trakt_objects_list,

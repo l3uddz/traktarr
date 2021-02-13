@@ -5,7 +5,7 @@
 [![last commit (develop)](https://img.shields.io/github/last-commit/l3uddz/traktarr/develop.svg?colorB=177DC1&label=Last%20Commit&style=flat-square)](https://github.com/l3uddz/traktarr/commits/develop)
 [![Discord](https://img.shields.io/discord/381077432285003776.svg?colorB=177DC1&label=Discord&style=flat-square)](https://discord.io/cloudbox)
 [![Contributing](https://img.shields.io/badge/Contributing-gray.svg?style=flat-square)](CONTRIBUTING.md)
-[![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](#donate)
+[![Donate](https://img.shields.io/badge/Donate-gray.svg?style=flat-square)](DONATIONS.md)
 
 
 ---
@@ -36,7 +36,6 @@
     - [Slack](#slack)
   - [Radarr](#radarr)
   - [Sonarr](#sonarr)
-    - [Tags](#tags)
   - [Trakt](#trakt)
   - [OMDb](#omdb)
 - [Usage](#usage)
@@ -335,7 +334,7 @@ You can repeat this process for as many users as you like.
     "language": "English",
     "quality": "HD-1080p",
     "root_folder": "/tv/",
-    "tags": {},
+    "tags": [],
     "url": "http://localhost:8989/"
   },
   "trakt": {
@@ -603,7 +602,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Blank list (i.e. `[]`) - Add movies from any country.
 
-  - `ignore` (i.e. `["ignore"]`) Add movies from any country, including ones with no country specified.
+  - `ignore` (i.e. `["ignore"]`) - Add movies from any country, including ones with no country specified.
 
 `allowed_languages` - Only add movies with these languages. Listed as two-letter language codes.
 
@@ -613,7 +612,9 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords:
 
-  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  - Blank list (i.e. `[]`) - Add movies with any language.
+
+  - `ignore` (i.e. `["ignore"]`) - Add movies with any language, including ones with no language specified.
 
 `blacklisted_genres` - Blacklist certain genres.
 
@@ -633,9 +634,17 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
-`blacklisted_min_year` - Blacklist release dates before specified year.
+`blacklisted_min_year` - Blacklist release dates before specified year. This can be a 4 digit year, `0`, or `-<number of years to go back>` format. 
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+- If `0`, blacklist movies that came out before the current year. 
+
+- If `-10`, blacklist movies that came out 10 years before the current year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year. This can be a 4 digit year, `0`, or `+<number of years to go forward>` format.
+
+- If `0`, blacklist movies that are coming out after the current year. 
+
+- If `+1`, blacklist movies that are coming out after 1 year from current year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
@@ -721,7 +730,7 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Blank list (i.e. `[]`) - Add shows from any country.
 
-  - `ignore` (i.e. `["ignore"]`) Add shows from any country, including ones with no country specified.
+  - `ignore` (i.e. `["ignore"]`) - Add shows from any country, including ones with no country specified.
 
 `allowed_languages` - Only add shows with these languages.
 
@@ -731,8 +740,10 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
 - Special keywords:
 
-  - Blank list (i.e. `[]`) - Only add shows that are in English (`en`).
+  - Blank list (i.e. `[]`) - Add shows with any language.
 
+  - `ignore` (i.e. `["ignore"]`) - Add shows with any language, including ones with no language specified.
+  
 `blacklisted_genres` - Blacklist certain genres.
 
 - [List of available TV show genres](assets/list_of_tv_show_genres.md).
@@ -753,9 +764,17 @@ Use filters to specify the movie/shows's country of origin or blacklist (i.e. fi
 
   - Has to be longer than `blacklisted_min_runtime` or else it will be ignored.
 
-`blacklisted_min_year` - Blacklist release dates before specified year.
+`blacklisted_min_year` - Blacklist release dates before specified year. This can be a 4 digit year, `0`, or `-<number of years to go back>` format.
 
-`blacklisted_max_year` - Blacklist release dates after specified year.
+- If `0`, blacklist shows that came out before the current year. 
+
+- If `-10`, blacklist shows that came out 10 years before the current year.
+
+`blacklisted_max_year` - Blacklist release dates after specified year. This can be a 4 digit year, `0`, or `+<number of years to go forward>` format.
+
+- If `0`, blacklist shows that are coming out after the current year. 
+
+- If `+1`, blacklist shows that are coming out after 1 year from current year.
 
 `blacklisted_title_keywords` - Blacklist certain words in titles.
 
@@ -962,7 +981,7 @@ Sonarr configuration.
   "language": "English",
   "quality": "HD-1080p",
   "root_folder": "/tv/",
-  "tags": {},
+  "tags": [],
   "url": "http://localhost:8989"
 },
 ```
@@ -975,54 +994,28 @@ Sonarr configuration.
 
 `root_folder` - Root folder for TV shows.
 
-`tags` - Assign tags to shows based the network it airs on. More details on this below.
+`tags` - Assign tags to shows. Tags need to be created in Sonarr first.
 
+  - Examples:
+
+    ```json
+    "tags": ["anime"]
+    ```
+ 
+     ```json
+    "tags": ["anime", "jap"]
+    ```
+    
+    ```json
+    "tags": [
+      "anime", 
+      "jap"
+    ]
+    ```
+    
 `url` - Sonarr's URL.
 
   - Note: If you have URL Base enabled in Sonarr's settings, you will need to add that into the URL as well.
-
-### Tags
-
-The `tags` option allows Sonarr to assign tags to shows from specific television networks, so that Sonarr can filter in/out certain keywords from releases.
-
-**Example:**
-
-To show how tags work, we will create a tag `AMZN` and assign it to certain television networks that usually have AMZN releases.
-
-1. First, we will create a tag in Sonarr (Settings > Indexers > Restrictions).
-
-   ```
-   Must contain: BluRay, Amazon, AMZN
-   Must not contain:
-   Tags: AMZN
-   ```
-
-2. And, finally, we will edit the Traktarr config and assign the `AMZN` tag to some networks.
-
-   ```json
-   "tags": {
-     "amzn": [
-       "hbo",
-       "amc",
-       "usa network",
-       "tnt",
-       "starz",
-       "the cw",
-       "fx",
-       "fox",
-       "abc",
-       "nbc",
-       "cbs",
-       "tbs",
-       "amazon",
-       "syfy",
-       "cinemax",
-       "bravo",
-       "showtime",
-       "paramount network"
-     ]
-   }
-   ```
 
 ## Trakt
 
@@ -1214,6 +1207,8 @@ Options:
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
   -rt, --rotten_tomatoes INTEGER  Set a minimum Rotten Tomatoes score.
+  -y, --year, --years TEXT        Can be a specific year or a range of years to search. For
+                                  example, '2000' or '2000-2010'.
   -g, --genres TEXT               Only add movies from this genre to Radarr. Multiple genres are
                                   specified as a comma-separated list. Use 'ignore' to add movies
                                   from any genre, including ones with no genre specified.
@@ -1221,10 +1216,11 @@ Options:
   -ma, --minimum-availability [announced|in_cinemas|released|predb]
                                   Add movies with this minimum availability to Radarr. Default is
                                   'released'.
-  -a, --actor TEXT                Only add movies from this actor to Radarr.Only one actor can be
-                                  specified.Requires the 'person' list.
-  --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
-                                  Requires the 'person' list option with the 'actor' argument.
+  -p, --person TEXT               Only add movies from this person (e.g. actor) to Radarr. Only
+                                  one person can be specified. Requires the 'person' list type.
+  --include-non-acting-roles      Include non-acting roles such as 'Director', 'As Himself',
+                                  'Narrator', etc. Requires the 'person' list type with the
+                                  'person' argument.
   --no-search                     Disable search when adding movies to Radarr.
   --notifications                 Send notifications.
   --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
@@ -1275,6 +1271,10 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
  - Example: `-rt 75`
 
+`-y`, `--year`, `--years` -  Only add movies from from a specific year or range of years.
+
+ - Examples: `-y 2010`, `--years 2010-2020`
+ 
 `-g`, `--genres` - Only add movies from these genre(s) to Radarr.
 
 - Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
@@ -1291,13 +1291,13 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
   - Default is `released` (Physical/Web).
 
-`-a`, `--actor` - Only add movies with a specific actor to Radarr.
+`-p`, `--person` - Only add movies with a specific person to Radarr.
 
   - Requires the list type `person`.
 
-`--include-non-acting-roles` - Include non-acting roles of the specified actor.
+`--include-non-acting-roles` - Include non-acting roles of the specified person.
 
-  - Requires the list type `person` used with the `-a`/`--actor` option.
+  - Requires the list type `person` used with the `-p`/`--person` option.
 
 `--no-search` - Tells Radarr to not automatically search for added movies.
 
@@ -1347,24 +1347,24 @@ Usage: traktarr shows [OPTIONS]
   Add multiple shows to Sonarr.
 
 Options:
-  -t, --list-type TEXT            Trakt list to process.
-                                  For example, 'anticipated', 'trending',
+  -t, --list-type TEXT            Trakt list to process. For example, 'anticipated', 'trending',
                                   'popular', 'person', 'watched', 'played', 'recommended',
                                   'watchlist', or any URL to a list.  [required]
   -l, --add-limit INTEGER         Limit number of shows added to Sonarr.
   -d, --add-delay FLOAT           Seconds between each add request to Sonarr.  [default: 2.5]
   -s, --sort [rating|release|votes]
                                   Sort list to process.  [default: votes]
+  -y, --year, --years TEXT        Can be a specific year or a range of years to search. For
+                                  example, '2000' or '2000-2010'.
   -g, --genres TEXT               Only add shows from this genre to Sonarr. Multiple genres are
-                                  specified as a comma-separated list.
-                                  Use 'ignore' to add shows
+                                  specified as a comma-separated list. Use 'ignore' to add shows
                                   from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add shows with this root folder to Sonarr.
-  -a, --actor TEXT                Only add movies from this actor to Radarr. Only one actor can be
-                                  specified.
-                                  Requires the 'person' list option.
-  --include-non-acting-roles      Include non-acting roles such as 'As Himself', 'Narrator', etc.
-                                  Requires the 'person' list option with the 'actor' argument.
+  -p, --person TEXT               Only add shows from this person (e.g. actor) to Sonarr. Only one
+                                  person can be specified. Requires the 'person' list type.
+  --include-non-acting-roles      Include non-acting roles such as 'Director', 'As Himself',
+                                  'Narrator', etc. Requires the 'person' list type with the
+                                  'person' argument.
   --no-search                     Disable search when adding shows to Sonarr.
   --notifications                 Send notifications.
   --authenticate-user TEXT        Specify which user to authenticate with to retrieve Trakt lists.
@@ -1412,6 +1412,10 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 
  - Example: `-s release`
 
+`-y`, `--year`, `--years` -  Only add shows from from a specific year or range of years.
+
+ - Examples: `-y 2010`, `--years 2010-2020`
+ 
 `-g`, `--genres` - Only add shows from this genre(s) to Sonarr.
 
 - Multiple genres are passed as comma-separated lists. The effect of this is equivalent of boolean OR. (ie. include items from any of these genres).
@@ -1422,13 +1426,13 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 
  - Example: `-f /mnt/unionfs/Media/Shows/Shows-Kids/`
 
-`-a`, `--actor` - Only add shows with a specific actor to Sonarr.
+`-p`, `--person` - Only add shows with a specific person to Sonarr.
 
    - Requires the list type `person`.
 
-`--include-non-acting-roles` - Include non-acting roles of the specified actor.
+`--include-non-acting-roles` - Include non-acting roles of the specified person.
 
-  - Requires the list type `person` used with the `-a`/`--actor` option.
+  - Requires the list type `person` used with the `-p`/`--person` option.
 
 `--no-search` - Tells Sonarr to not automatically search for added shows.
 
@@ -1493,6 +1497,12 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
   traktarr movies -t trending -rt 80
   ```
 
+- Add movies, from the trending list, from the year 2020.
+
+  ```
+  traktarr movies -t trending -y 2020
+  ```
+  
 - Add movies, with actor 'Keanu Reeves', limited to 10 items.
 
   ```
@@ -1548,17 +1558,3 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
   ```
   traktarr shows -t watchlist --authenticate-user user1
   ```
-
-***
-
-# Donate
-
-If you find this project helpful, feel free to make a small donation to the developer:
-
-  - [Monzo](https://monzo.me/jamesbayliss9): Credit Cards, Apple Pay, Google Pay
-
-  - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
-
-  - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
-
-  - BTC: 3CiHME1HZQsNNcDL6BArG7PbZLa8zUUgjL

@@ -23,7 +23,13 @@ If applicable, add screenshots to help explain your problem.
 **Logs**
 Link to debug or trace log files.
 
-You can enable debug mode with `core.debug` in the `config.json` file.
+You can enable debug mode with `core.debug` in the `config.json` file:
+
+```json
+  "core": {
+    "debug": true
+  },
+```
 
 **System Information**
 
