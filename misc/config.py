@@ -95,8 +95,7 @@ class Config(object, metaclass=Singleton):
             'language': 'English',
             'quality': 'HD-1080p',
             'root_folder': '/tv/',
-            'tags': {
-            },
+            'tags': [],
             'url': 'http://localhost:8989/'
         },
         'omdb': {

@@ -100,17 +100,15 @@ class Trakt:
         if payload is None:
             payload = {}
 
-        # languages list
-        if not languages:
-            languages = ['en']
-        languages = ','.join(languages).lower()
-
         payload = dict_merge(payload, {
             'extended': 'full',
             'limit': limit,
             'page': 1,
-            'languages': languages,
         })
+
+        # languages list
+        if languages:
+            payload['languages'] = ','.join(languages).lower()
 
         # years range
         if years:
