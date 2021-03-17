@@ -34,6 +34,7 @@
     - [Apprise](#apprise)
     - [Pushover](#pushover)
     - [Slack](#slack)
+    - [Pushbullet](#pushbullet)
   - [Radarr](#radarr)
   - [Sonarr](#sonarr)
   - [Trakt](#trakt)
@@ -818,6 +819,7 @@ Supported `services`:
  - `apprise`
  - `pushover`
  - `slack`
+ - `pushbullet`
 
 _Note: The key name can be anything, but the `service` key must be must be the exact service name (e.g. `pushover`). See below for example._
 
@@ -939,7 +941,40 @@ _Note: The key name can be anything, but the `service` key must be must be the e
 
  - Default is `:movie_camera:`
 
+### Pushbullet
 
+```json
+"notifications": {
+  "pushbullet": {
+    "service": "pushbullet",
+    "access_token": "",
+    "device": "",
+    "sender": ""
+  },
+  "verbose": false
+},
+```
+`access_token` - Can be generated at [Access Token](https://www.pushbullet.com/#settings/account)
+
+- Required.
+
+`device` - Device identifier for specifying a target recipient device
+
+- Optional.
+
+- If not specified, notifications will be sent to all connected devices
+
+- Choices are: a `device identifier` or a `device nickname`; obtainable at [Devices](https://www.pushbullet.com/#devices/)
+
+- `Device identifier`: select your device and copy the identifier from the address bar
+
+- `Device nickname`: The name of your device, for example `Chrome`. All devices matching this name will receive notifications.
+
+`sender`- Name that should be displayed in the notification
+
+- Optional.
+
+- Default is `Traktarr`
 
 ## Radarr
 

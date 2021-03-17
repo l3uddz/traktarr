@@ -3,13 +3,15 @@ from misc.log import logger
 from .apprise import Apprise
 from .pushover import Pushover
 from .slack import Slack
+from .pushbullet import Pushbullet
 
 log = logger.get_logger(__name__)
 
 SERVICES = {
     'apprise': Apprise,
     'pushover': Pushover,
-    'slack': Slack
+    'slack': Slack,
+    'pushbullet': Pushbullet
 }
 
 
