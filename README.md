@@ -1506,13 +1506,13 @@ Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (T
 - Add movies, with actor 'Keanu Reeves', limited to 10 items.
 
   ```
-  traktarr movies -t person -a 'keanu reeves' -l 10
+  traktarr movies -t person -p 'keanu reeves' -l 10
   ```
 
 - Add movies, with actor 'Tom Cruise', including movies where he has non-acting roles, limited to 10 items.
 
   ```
-  traktarr movies -t person -a 'tom cruise' --include-non-acting-roles -l 10
+  traktarr movies -t person -p 'tom cruise' --include-non-acting-roles -l 10
   ```
 
 ### Shows
