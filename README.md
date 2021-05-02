@@ -1233,7 +1233,7 @@ Options:
 
 `-t`, `--list-type` - Trakt list to process.
 
-Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-p`/`--person` argument).
 
 - Top Watched List options:
 
@@ -1378,7 +1378,7 @@ Options:
 
 `-t`, `--list-type` - Trakt list to process.
 
-Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-a`/`--actor` argument).
+Choices are: `anticipated`, `trending`, `popular`, `watched`, `played`, `URL` (Trakt list), or `person` (used with `-p`/`--person` argument).
 
 - Top Watched List options:
 
