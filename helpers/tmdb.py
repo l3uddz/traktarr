@@ -18,7 +18,8 @@ def validate_movie_tmdb_id(movie_title, movie_year, movie_tmdb_id):
 
 def verify_movie_exists_on_tmdb(movie_title, movie_year, movie_tmdb_id):
     try:
-        req = requests.get('https://www.themoviedb.org/movie/%s' % movie_tmdb_id)
+        headers = {"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"}
+        req = requests.get('https://www.themoviedb.org/movie/%s' % movie_tmdb_id, headers=headers)
         if req.status_code == 200:
             log.debug("\'%s (%s)\' [TMDb ID: %s] exists on TMDb.", movie_title, movie_year, movie_tmdb_id)
             return True
