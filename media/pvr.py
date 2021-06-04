@@ -26,7 +26,7 @@ class PVR(ABC):
         try:
             # request system status to validate api_key
             req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/system/status'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/v3/system/status'),
                 headers=self.headers,
                 timeout=60,
                 allow_redirects=False
@@ -72,7 +72,7 @@ class PVR(ABC):
         try:
             # make request
             req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/profile'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/v3/profile'),
                 headers=self.headers,
                 timeout=60,
                 allow_redirects=False
