@@ -72,7 +72,7 @@ class PVR(ABC):
         try:
             # make request
             req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/v3/profile'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/v3/qualityProfile'),
                 headers=self.headers,
                 timeout=60,
                 allow_redirects=False
