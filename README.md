@@ -186,7 +186,7 @@ Repeat the following steps for every user you want to authenticate:
 1. Run the following command:
 
    ```
-   traktarr trakt_authentication
+   traktarr trakt-authentication
    ```
 
 
@@ -1148,7 +1148,7 @@ Commands:
   run                   Run Traktarr in automatic mode.
   show                  Add a single show to Sonarr.
   shows                 Add multiple shows to Sonarr.
-  trakt_authentication  Authenticate Traktarr.
+  trakt-authentication  Authenticate Traktarr.
   ```
 
 ### Movie (Single Movie)
