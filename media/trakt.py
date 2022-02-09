@@ -218,11 +218,8 @@ class Trakt:
                     log.error("Failed to retrieve %s %s, request response: %d", type_name, object_name, req.status_code)
                     break
 
-            if len(processed):
-                log.debug("Found %d %s %s", len(processed), type_name, object_name)
-                return processed
-
-            return None
+            log.debug("Found %d %s %s", len(processed), type_name, object_name)
+            return processed
         except Exception:
             log.exception("Exception retrieving %s %s: ", type_name, object_name)
         return None

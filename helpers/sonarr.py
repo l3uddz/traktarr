@@ -67,19 +67,19 @@ def series_to_tvdb_dict(sonarr_series):
 def remove_existing_series_from_trakt_list(sonarr_series, trakt_series, callback=None):
     new_series_list = []
 
-    if not sonarr_series or not trakt_series:
+    if sonarr_series is None or trakt_series is None:
         log.error("Inappropriate parameters were supplied.")
         return None
 
     try:
         # clean up trakt_series list
         trakt_series = filter_trakt_series_list(trakt_series, callback)
-        if not trakt_series:
+        if trakt_series is None:
             return None
 
         # turn sonarr series result into a dict with tvdb id as keys
         processed_series = series_to_tvdb_dict(sonarr_series)
-        if not processed_series:
+        if processed_series is None:
             return None
 
         # loop list adding to series that do not already exist
