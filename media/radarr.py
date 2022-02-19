@@ -24,8 +24,6 @@ class Radarr(PVR):
             minimum_availability = 'announced'
         elif min_availability_temp == 'in_cinemas':
             minimum_availability = 'inCinemas'
-        elif min_availability_temp == 'predb':
-            minimum_availability = 'preDB'
         else:
             minimum_availability = 'released'
 

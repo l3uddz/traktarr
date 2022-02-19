@@ -960,7 +960,7 @@ Radarr configuration.
 
 `minimum_availability` - The minimum availability the movies are set to.
 
-  - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+  - Choices are `announced`, `in_cinemas` or `released` (Physical/Web).
 
   - Default is `released` (Physical/Web).
 
@@ -1165,7 +1165,7 @@ Usage: traktarr movie [OPTIONS]
 Options:
   -id, --movie-id TEXT  Trakt Movie ID.  [required]
   -f, --folder TEXT     Add movie with this root folder to Radarr.
-  -ma, --minimum-availability [announced|in_cinemas|released|predb]
+  -ma, --minimum-availability [announced|in_cinemas|released]
                         Add movies with this minimum availability to Radarr.
   --no-search           Disable search when adding movie to Radarr.
   --help                Show this message and exit.
@@ -1179,7 +1179,7 @@ Options:
 
 `minimum_availability` - The minimum availability the movies are set to.
 
-   - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+   - Choices are `announced`, `in_cinemas` or `released` (Physical/Web).
 
    - Default is `released` (Physical/Web).
 
@@ -1213,7 +1213,7 @@ Options:
                                   specified as a comma-separated list. Use 'ignore' to add movies
                                   from any genre, including ones with no genre specified.
   -f, --folder TEXT               Add movies with this root folder to Radarr.
-  -ma, --minimum-availability [announced|in_cinemas|released|predb]
+  -ma, --minimum-availability [announced|in_cinemas|released]
                                   Add movies with this minimum availability to Radarr. Default is
                                   'released'.
   -p, --person TEXT               Only add movies from this person (e.g. actor) to Radarr. Only
@@ -1287,7 +1287,7 @@ Choices are: `anticipated`, `trending`, `popular`, `boxoffice`, `watched`, `play
 
 `minimum_availability` - The minimum availability the movies are set to.
 
-  - Choices are `announced`, `in_cinemas`, `released` (Physical/Web), or `predb`.
+  - Choices are `announced`, `in_cinemas` or `released` (Physical/Web).
 
   - Default is `released` (Physical/Web).
 
