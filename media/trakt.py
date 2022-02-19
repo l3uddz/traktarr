@@ -66,8 +66,7 @@ class Trakt:
             req, resp_data = self._make_request(url, payload)
 
             if req.status_code == 200 and len(resp_data):
-                resp_json = json.loads(resp_data)
-                return resp_json
+                return json.loads(resp_data)
             elif req.status_code == 401:
                 log.error("The authentication to Trakt is revoked. Please re-authenticate.")
                 exit()
@@ -133,9 +132,9 @@ class Trakt:
 
         try:
             resp_data = ''
+            max_attempts = 6
             while True:
                 attempts = 0
-                max_attempts = 6
                 retrieve_error = False
                 while attempts <= max_attempts:
                     try:

@@ -177,9 +177,11 @@ class PVR(ABC):
             if 'json' in req.headers['Content-Type'].lower():
                 response_json = misc.get_response_dict(req.json(), identifier_field, identifier)
 
-            if (req.status_code == 201 or req.status_code == 200) \
-                    and (response_json and identifier_field in response_json) \
-                    and response_json[identifier_field] == identifier:
+            if (
+                req.status_code in [201, 200]
+                and (response_json and identifier_field in response_json)
+                and response_json[identifier_field] == identifier
+            ):
                 log.debug("Successfully added: \'%s [%d]\'", payload['title'], identifier)
                 return True
             elif response_json and ('errorMessage' in response_json or 'message' in response_json):

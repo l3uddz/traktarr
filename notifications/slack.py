@@ -31,7 +31,7 @@ class Slack:
                 payload['channel'] = self.channel
 
             resp = requests.post(self.webhook_url, json=payload, timeout=30)
-            return True if resp.status_code == 200 else False
+            return resp.status_code == 200
 
         except Exception:
             log.exception("Error sending notification to %r", self.webhook_url)
