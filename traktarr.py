@@ -716,7 +716,7 @@ def shows(
     help='Add movie with this root folder to Radarr.')
 @click.option(
     '--minimum-availability', '-ma',
-    type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
+    type=click.Choice(['announced', 'in_cinemas', 'released']),
     help='Add movies with this minimum availability to Radarr. Default is \'released\'.')
 @click.option(
     '--no-search',
@@ -738,7 +738,7 @@ def movie(
     log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
     # replace radarr.minimum_availability if minimum_availability is supplied
-    valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
+    valid_min_avail = ['announced', 'in_cinemas', 'released']
 
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
@@ -830,7 +830,7 @@ def movie(
     help='Add movies with this root folder to Radarr.')
 @click.option(
     '--minimum-availability', '-ma',
-    type=click.Choice(['announced', 'in_cinemas', 'released', 'predb']),
+    type=click.Choice(['announced', 'in_cinemas', 'released']),
     help='Add movies with this minimum availability to Radarr. Default is \'released\'.')
 @click.option(
     '--person', '-p',
@@ -958,7 +958,7 @@ def movies(
     log.debug('Set root folder to: \'%s\'', cfg['radarr']['root_folder'])
 
     # replace radarr.minimum_availability if minimum_availability is supplied
-    valid_min_avail = ['announced', 'in_cinemas', 'released', 'predb']
+    valid_min_avail = ['announced', 'in_cinemas', 'released']
 
     if minimum_availability:
         cfg['radarr']['minimum_availability'] = minimum_availability
