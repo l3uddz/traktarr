@@ -28,7 +28,7 @@ class Pushover:
                 'priority': self.priority,
             }
             resp = requests.post('https://api.pushover.net/1/messages.json', data=payload, timeout=30)
-            return True if resp.status_code == 200 else False
+            return resp.status_code == 200
 
         except Exception:
             log.exception("Error sending notification to %r", self.user_token)

@@ -147,13 +147,12 @@ class Config(object, metaclass=Singleton):
         return self.log_path
 
     def build_config(self):
-        if not os.path.exists(self.config_path):
-            print("Dumping default config to: %s" % self.config_path)
-            with open(self.config_path, 'w') as fp:
-                json.dump(self.base_config, fp, sort_keys=True, indent=2)
-            return True
-        else:
+        if os.path.exists(self.config_path):
             return False
+        print("Dumping default config to: %s" % self.config_path)
+        with open(self.config_path, 'w') as fp:
+            json.dump(self.base_config, fp, sort_keys=True, indent=2)
+        return True
 
     def dump_config(self):
         if os.path.exists(self.config_path):
@@ -184,10 +183,10 @@ class Config(object, metaclass=Singleton):
                     continue
 
                 # iterate children
-                if isinstance(v, dict) or isinstance(v, list):
+                if isinstance(v, (dict, list)):
                     merged[k], did_upgrade = self.__inner_upgrade(settings1[k], settings2[k], key=k,
                                                                   overwrite=overwrite)
-                    sub_upgraded = did_upgrade if did_upgrade else sub_upgraded
+                    sub_upgraded = did_upgrade or sub_upgraded
                 elif settings1[k] != settings2[k] and overwrite:
                     merged = settings1
                     sub_upgraded = True
