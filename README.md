@@ -334,6 +334,7 @@ You can repeat this process for as many users as you like.
     "language": "English",
     "quality": "HD-1080p",
     "root_folder": "/tv/",
+    "season_folder": true,
     "tags": [],
     "url": "http://localhost:8989/"
   },
@@ -981,6 +982,7 @@ Sonarr configuration.
   "language": "English",
   "quality": "HD-1080p",
   "root_folder": "/tv/",
+  "season_folder": true,
   "tags": [],
   "url": "http://localhost:8989"
 },
@@ -993,6 +995,8 @@ Sonarr configuration.
 `quality` - Quality Profile that TV shows are assigned to.
 
 `root_folder` - Root folder for TV shows.
+
+`season_folder` - Sort episodes into season folders.
 
 `tags` - Assign tags to shows. Tags need to be created in Sonarr first.
 

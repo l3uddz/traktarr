@@ -95,6 +95,7 @@ class Config(object, metaclass=Singleton):
             'language': 'English',
             'quality': 'HD-1080p',
             'root_folder': '/tv/',
+            'season_folder': True,
             'tags': [],
             'url': 'http://localhost:8989/'
         },

@@ -106,6 +106,7 @@
     "quality": "HD-1080p",
     "url": "http://localhost:8989/",
     "root_folder": "/tv/",
+    "season_folder": true,
     "tags": {}
   },
   "omdb": {
