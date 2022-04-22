@@ -1349,7 +1349,7 @@ def automatic_shows(
 
                     local_ignore_blacklist = ignore_blacklist
 
-                    if "watchlist:%s".format(authenticate_user) in cfg.filters.shows.disabled_for:
+                    if "watchlist:{}".format(authenticate_user) in cfg.filters.shows.disabled_for:
                         local_ignore_blacklist = True
 
                     # run shows
@@ -1384,7 +1384,7 @@ def automatic_shows(
 
                     local_ignore_blacklist = ignore_blacklist
 
-                    if "list:%s".format(list_) in cfg.filters.shows.disabled_for:
+                    if "list:{}".format(list_) in cfg.filters.shows.disabled_for:
                         local_ignore_blacklist = True
 
                     # run shows
@@ -1483,7 +1483,7 @@ def automatic_movies(
 
                     local_ignore_blacklist = ignore_blacklist
 
-                    if "watchlist:%s".format(authenticate_user) in cfg.filters.movies.disabled_for:
+                    if "watchlist:{}".format(authenticate_user) in cfg.filters.movies.disabled_for:
                         local_ignore_blacklist = True
 
                     # run movies
@@ -1519,7 +1519,7 @@ def automatic_movies(
 
                     local_ignore_blacklist = ignore_blacklist
 
-                    if "list:%s".format(list_) in cfg.filters.movies.disabled_for:
+                    if "list:{}".format(list_) in cfg.filters.movies.disabled_for:
                         local_ignore_blacklist = True
 
                     # run shows
