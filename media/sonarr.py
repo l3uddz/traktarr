@@ -13,7 +13,7 @@ log = logger.get_logger(__name__)
 
 class Sonarr(PVR):
     def get_objects(self):
-        return self._get_objects('api/series')
+        return self._get_objects('api/v3/series')
 
     @backoff.on_predicate(backoff.expo, lambda x: x is None, max_tries=4, on_backoff=backoff_handler)
     def get_tags(self):
@@ -21,7 +21,7 @@ class Sonarr(PVR):
         try:
             # make request
             req = requests.get(
-                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/tag'),
+                os.path.join(misc_str.ensure_endswith(self.server_url, "/"), 'api/v3/tag'),
                 headers=self.headers,
                 timeout=60,
                 allow_redirects=False
@@ -52,15 +52,12 @@ class Sonarr(PVR):
             'seasons': [],
             'seasonFolder': season_folder,
             'seriesType': series_type,
+            'languageProfileId': language_profile_id,
             'addOptions': {
                 'searchForMissingEpisodes': search_missing
             }
         })
 
-        if language_profile_id:
-            payload['languageProfileId'] = language_profile_id
-            endpoint = 'api/v3/series'
-        else:
-            endpoint = 'api/series'
+         endpoint = 'api/v3/series'
 
         return self._add_object(endpoint, payload, identifier_field='tvdbId', identifier=series_tvdb_id)
