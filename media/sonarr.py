@@ -58,6 +58,6 @@ class Sonarr(PVR):
             }
         })
 
-         endpoint = 'api/v3/series'
+        endpoint = 'api/v3/series'
 
         return self._add_object(endpoint, payload, identifier_field='tvdbId', identifier=series_tvdb_id)
