@@ -41,7 +41,7 @@ def remove_existing_movies_from_trakt_list(radarr_movies, trakt_movies, callback
     try:
         # turn radarr movies result into a dict with tmdb id as keys
         processed_movies = movies_to_tmdb_dict(radarr_movies)
-        if not processed_movies:
+        if processed_movies is None:
             return None
 
         # loop list adding to movies that do not already exist

@@ -547,7 +547,7 @@ def shows(
     else:
         trakt_objects_list = trakt.get_user_list_shows(list_type, authenticate_user)
 
-    if not trakt_objects_list:
+    if trakt_objects_list is None:
         log.error("Aborting due to failure to retrieve Trakt \'%s\' shows list.", list_type.capitalize())
         if notifications:
             callback_notify(
